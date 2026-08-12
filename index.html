@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Portfolio + The Record — Mobile Frame</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #0a0a0a;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    padding: 40px 20px;
+  }
+
+  /* ---------- Phone chrome ---------- */
+  .phone {
+    position: relative;
+    width: 421px;
+    padding: 12px;
+    background: #060606;
+    border-radius: 58px;
+    box-shadow: 0 0 0 2px #1f1f1f, 0 0 0 8px #0d0d0d, 0 40px 80px rgba(0,0,0,.7);
+  }
+  .phone .side-btn { position: absolute; background: #1a1a1a; border-radius: 3px; }
+  .phone .side-btn.mute { left: -3px; top: 118px; width: 3px; height: 28px; }
+  .phone .side-btn.vol-up { left: -3px; top: 165px; width: 3px; height: 48px; }
+  .phone .side-btn.vol-down { left: -3px; top: 222px; width: 3px; height: 48px; }
+  .phone .side-btn.power { right: -3px; top: 190px; width: 3px; height: 70px; }
+
+  .screen {
+    position: relative;
+    width: 397px;
+    height: 852px;
+    background: #000;
+    border-radius: 46px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .screen::-webkit-scrollbar { width: 0; height: 0; }
+
+  .dynamic-island {
+    position: absolute;
+    top: 14px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100px;
+    height: 26px;
+    background: #000;
+    border-radius: 16px;
+    z-index: 50;
+  }
+
+  .home-indicator {
+    position: absolute;
+    bottom: 6px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 110px;
+    height: 4px;
+    background: #3a3a3a;
+    border-radius: 3px;
+    z-index: 50;
+  }
+
+  /* ---------- Design frame (393px, matches Figma root) ---------- */
+  .frame {
+    position: relative;
+    width: 393px;
+    min-height: 2592px;
+    background: #000;
+    border: none;
+    box-sizing: border-box;
+    color: #ffffff;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    overflow: hidden;
+    transition: min-height .35s ease;
+  }
+
+  .abs { position: absolute; white-space: nowrap; line-height: normal; }
+  .divider { position: absolute; background: #1c1c1c; height: 1px; }
+  .dot { position: absolute; border-radius: 50%; }
+
+  .tags-row {
+    position: absolute;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    row-gap: 8px;
+    column-gap: 14px;
+    max-width: 361px;
+  }
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 10px;
+    font-weight: 500;
+    color: #ffffff;
+    white-space: nowrap;
+  }
+  .tag .tag-dot {
+    width: 4.65px;
+    height: 4.65px;
+    border-radius: 50%;
+    flex: none;
+  }
+
+  .row-divider {
+    position: absolute;
+    left: 16px;
+    width: 360.79px;
+    height: 1px;
+    background: #1c1c1c;
+  }
+
+  @keyframes pulse-dot {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.35; }
+  }
+  .pulse-dot { animation: pulse-dot 2s ease-in-out infinite; }
+
+  /* ================= THE RECORD (V2 · elevated list) ================= */
+  /* Second in-phone page — slides in over the dashboard when the user taps
+     the Calibration section. Same design tokens as the dashboard greys. */
+  #records-screen {
+    position: absolute;
+    top: 12px; left: 12px;
+    width: 397px; height: 852px;
+    background: #000;
+    border-radius: 46px;
+    /* above the dashboard's sticky nav (z 40), below the phone chrome
+       (dynamic island / home indicator at z 50) */
+    z-index: 45;
+    overflow: hidden;
+    display: flex; flex-direction: column;
+    transform: translateX(104%);
+    visibility: hidden;
+    transition: transform 340ms cubic-bezier(0.32, 0.72, 0, 1), visibility 0s linear 340ms;
+  }
+  #records-screen.open {
+    transform: translateX(0);
+    visibility: visible;
+    transition: transform 340ms cubic-bezier(0.32, 0.72, 0, 1), visibility 0s linear 0s;
+  }
+
+  /* top nav — same spec as the dashboard's fixed bar (71px, hairline bottom) */
+  .rec-head {
+    flex: none; position: relative; height: 71px;
+    display: flex; align-items: center; gap: 15px;
+    padding: 20px 16px 0 24px;
+    border-bottom: 1px solid #1c1c1c;
+    background: #000;
+  }
+  .rec-back {
+    background: none; border: none; padding: 4px 8px 4px 0;
+    display: flex; align-items: center;
+    cursor: pointer;
+  }
+  .rec-back:active svg path { stroke: #565b5e; }
+  .rec-title { font-size: 17px; font-weight: 600; letter-spacing: -0.4px; color: #fff; flex: 1; }
+  .rec-count { font-size: 11px; color: #565b5e; }
+  .rec-body { flex: 1; overflow-y: auto; overflow-x: hidden; padding: 0 26px; scrollbar-width: none; }
+  .rec-body::-webkit-scrollbar { display: none; }
+  .rec-intro { padding: 17px 0 6px; font-size: 11px; line-height: 1.6; color: #565b5e; }
+
+  .e2-row {
+    display: flex; justify-content: space-between; align-items: center; gap: 18px;
+    padding: 27px 0; border-bottom: 1px solid #1c1c1c;
+  }
+  .e2-row:last-child { border-bottom: none; }
+  .e2-left { display: flex; flex-direction: column; gap: 9px; min-width: 0; }
+  .e2-nm { font-size: 15px; font-weight: 500; color: #fff; letter-spacing: -0.01em; display: flex; align-items: center; gap: 9px; }
+  .e2-dot { width: 6px; height: 6px; border-radius: 50%; flex: none; animation: pulse-dot 2.6s ease-in-out infinite; }
+  .e2-meta { font-size: 11px; color: #565b5e; letter-spacing: -0.01em; }
+  .e2-right { text-align: right; flex-shrink: 0; display: flex; flex-direction: column; gap: 8px; }
+  .e2-val { font-size: 15px; font-weight: 300; font-variant-numeric: tabular-nums; letter-spacing: -0.01em; line-height: 1; }
+  .e2-val .u { font-size: 9.5px; color: #565b5e; font-weight: 400; margin-left: 4px; letter-spacing: 0; }
+  .e2-sub { font-size: 10px; letter-spacing: 0.05em; }
+
+  /* invisible tap target over the Calibration section on the dashboard */
+  #cal-link { position: absolute; cursor: pointer; }
+  #cal-link:active { background: rgba(255,255,255,0.03); border-radius: 8px; }
+</style>
+</head>
+<body>
+
+<div class="phone">
+  <div class="side-btn mute"></div>
+  <div class="side-btn vol-up"></div>
+  <div class="side-btn vol-down"></div>
+  <div class="side-btn power"></div>
+
+  <div class="screen" id="screen">
+    <div class="dynamic-island"></div>
+
+    <div id="sticky-header" style="position:sticky; top:0; left:0; width:100%; height:0; z-index:40;">
+      <div id="sticky-topbar" style="position:absolute; top:0; left:0; width:100%; height:71px; background:#000; box-sizing:border-box;">
+        <div id="topbar-hairline" style="position:absolute; left:0; bottom:0; width:100%; height:1px; background:#1c1c1c; transition:opacity .3s ease;"></div>
+        <div style="position:absolute; left:31px; top:25px; font-size:23px; font-weight:700; letter-spacing:-1px; color:#fff;">//</div>
+        <!-- Iteration 2: market status folds into the bar itself, no added height -->
+        <!-- two-line stack on the left (timer over markets), total value on the
+             right — nothing renders under the dynamic island (bottom y≈40) -->
+        <div id="topbar-inline" style="position:absolute; left:62px; right:112px; top:0; height:71px; padding-top:14px; display:flex; align-items:center; opacity:0; transition:opacity .3s ease; pointer-events:none;">
+          <div style="display:flex; flex-direction:column; gap:6px;">
+            <span style="font-size:11.5px; color:#fff; letter-spacing:-0.19px; font-variant-numeric:tabular-nums; line-height:1;"><span id="stat-clock-inline">13:14:26</span> ET</span>
+            <span style="display:flex; align-items:center; gap:5px; line-height:1;">
+              <span style="width:4.65px; height:4.65px; border-radius:50%; background:#30d158; flex:none;"></span>
+              <span style="font-size:10px; color:#929292; letter-spacing:0.28px;">US</span>
+              <span style="width:4.65px; height:4.65px; border-radius:50%; background:#30d158; flex:none; margin-left:5px;"></span>
+              <span style="font-size:10px; color:#929292; letter-spacing:0.28px;">CA</span>
+            </span>
+          </div>
+          <span style="width:33px; flex:none;"></span>
+          <span id="inline-total" style="font-size:12.5px; letter-spacing:-0.3px; color:#fff; opacity:0; transition:opacity .3s ease; font-variant-numeric:tabular-nums;"><span id="stat-total-value-inline">173,249.00</span> <span style="color:#565b5e;">CAD</span></span>
+        </div>
+        <svg style="position:absolute; left:298px; top:31px;" width="17" height="17" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M7 13C10.3137 13 13 10.3137 13 7C13 3.68629 10.3137 1 7 1C3.68629 1 1 3.68629 1 7C1 10.3137 3.68629 13 7 13Z" stroke="white" stroke-width="1.3"/>
+          <path d="M11.2 11.2L16 16" stroke="white" stroke-width="1.3"/>
+        </svg>
+        <svg style="position:absolute; left:347px; top:34px;" width="17" height="13" viewBox="0 0 17 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M0 1H17" stroke="white" stroke-width="1.3"/>
+          <path d="M0 6.5H17" stroke="white" stroke-width="1.3"/>
+          <path d="M0 12H17" stroke="white" stroke-width="1.3"/>
+        </svg>
+      </div>
+    </div>
+
+    <div class="frame">
+
+      <!-- ============ HEADER ============ -->
+      <div class="abs" style="left:31px; top:26px; font-size:23px; font-weight:700; letter-spacing:-1px;">//</div>
+
+      <svg class="abs" style="left:298px; top:31px;" width="17" height="17" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M7 13C10.3137 13 13 10.3137 13 7C13 3.68629 10.3137 1 7 1C3.68629 1 1 3.68629 1 7C1 10.3137 3.68629 13 7 13Z" stroke="white" stroke-width="1.3"/>
+        <path d="M11.2 11.2L16 16" stroke="white" stroke-width="1.3"/>
+      </svg>
+
+      <svg class="abs" style="left:347px; top:34px;" width="17" height="13" viewBox="0 0 17 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M0 1H17" stroke="white" stroke-width="1.3"/>
+        <path d="M0 6.5H17" stroke="white" stroke-width="1.3"/>
+        <path d="M0 12H17" stroke="white" stroke-width="1.3"/>
+      </svg>
+
+      <div class="divider" style="left:1px; top:71px; width:391px;"></div>
+
+      <!-- ============ MARKET STATUS ============ -->
+      <div id="orig-market-status" class="abs" style="left:15.6px; top:87.4px; width:200px; height:11px;">
+        <div class="abs" style="left:0px; top:0px; font-size:12px; color:#ffffff; letter-spacing:-0.19px;"><span id="stat-clock">13:14:26</span> ET</div>
+        <div class="abs" style="left:73.5px; top:0px; font-size:11.2px; color:#565b5e;">|</div>
+        <div class="dot" style="left:86.6px; top:5.1px; width:4.65px; height:4.65px; background:#30d158;"></div>
+        <div class="abs" style="left:95.9px; top:2.8px; font-size:10px; color:#929292; letter-spacing:0.28px; text-transform:uppercase;">US</div>
+        <div class="dot" style="left:120.4px; top:5.1px; width:4.65px; height:4.65px; background:#30d158;"></div>
+        <div class="abs" style="left:129.7px; top:2.8px; font-size:10px; color:#929292; letter-spacing:0.28px; text-transform:uppercase;">CA</div>
+      </div>
+
+      <!-- ============ ACTIVITY TICKER 1 (severity order: red > orange > yellow > green) ============ -->
+      <div class="dot" style="left:16.1px; top:138.2px; width:4.65px; height:4.65px; background:#ff3533;"></div>
+      <div class="abs" style="left:26.8px; top:135px; font-size:10px; font-weight:500;">
+        Kill criteria 2 triggered: margin below 68%
+      </div>
+
+      <div class="dot" style="left:16.1px; top:169.2px; width:4.65px; height:4.65px; background:#fbc308;"></div>
+      <div class="abs" style="left:26.8px; top:166px; font-size:10px; font-weight:500;">
+        Earnings <span style="color:#929292;">(3)</span>
+      </div>
+      <svg class="abs" style="left:88.8px; top:170px;" width="6" height="3" viewBox="0 0 6.70711 4.06066" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M0.353553 0.353553L3.35355 3.35355L6.35355 0.353553" stroke="#C7C7C7"/>
+      </svg>
+      <div class="abs" style="left:16.1px; top:182px; font-size:10px; font-weight:500; color:#929292;">BWEN</div>
+      <div class="abs" style="left:16.1px; top:198px; font-size:10px; font-weight:500; color:#929292;">MSFT</div>
+      <div class="abs" style="left:16.1px; top:214px; font-size:10px; font-weight:500; color:#929292;">TSLA</div>
+
+      <div class="dot" style="left:16.1px; top:248.2px; width:4.65px; height:4.65px; background:#fbc308;"></div>
+      <div class="abs" style="left:26.8px; top:245px; font-size:10px; font-weight:500;">
+        Contribution missed: no deposit this cycle <span style="color:#929292;">04.28.26</span>
+      </div>
+
+      <div class="dot" style="left:16.1px; top:279.2px; width:4.65px; height:4.65px; background:#30d158;"></div>
+      <div class="abs" style="left:26.8px; top:276px; font-size:10px; font-weight:500;">
+        BWEN Filled <span style="font-weight:500;">1000 @ 87.00</span> <span style="color:#929292;">05.06.26</span>
+      </div>
+
+      <div class="dot" style="left:16.1px; top:310.2px; width:4.65px; height:4.65px; background:#30d158;"></div>
+      <div class="abs" style="left:26.8px; top:307px; font-size:10px; font-weight:500;">
+        Contribution processed: $500 <span style="color:#929292;">05.06.26</span>
+      </div>
+
+      <div id="shifted-content" style="position:absolute; top:0; left:0; width:100%;">
+
+      <!-- ============ TOTAL VALUE ============ -->
+      <div class="abs" style="right:16px; top:332.4px; font-size:13px; color:#929292; letter-spacing:-0.22px;">Total Value</div>
+      <div class="abs" style="right:16px; top:356.3px; font-size:28px; letter-spacing:-0.56px;">
+        <span id="stat-total-value">173,249.00</span> <span style="color:#565b5e;">CAD</span>
+      </div>
+
+      <!-- ============ CORE SECTION (collapsible) ============ -->
+      <div class="divider" style="left:14.5px; top:461px; width:366px;"></div>
+      <div class="abs" style="left:14.5px; top:492px; font-size:18px; color:#c7c7c7; letter-spacing:-0.36px;">Core</div>
+      <div class="abs" style="left:14.5px; top:522.7px; font-size:15px; color:#565b5e; letter-spacing:-0.3px;">Managed</div>
+      <div id="core-toggle" class="abs" style="right:6px; top:489px; width:24px; height:24px; display:flex; align-items:center; justify-content:center; cursor:pointer;">
+        <svg id="core-chevron-svg" style="transition:transform .3s ease;" width="6" height="3" viewBox="0 0 6.70711 4.06066" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M0.353553 0.353553L3.35355 3.35355L6.35355 0.353553" stroke="#C7C7C7"/>
+        </svg>
+      </div>
+
+      <div id="core-value-label" class="abs" style="right:16px; top:736px; font-size:13px; color:#929292; letter-spacing:-0.22px; transition:top .35s ease, right .35s ease;">Value</div>
+      <div id="stat-core-value" class="abs" style="right:16px; top:758.3px; font-size:22px; letter-spacing:-0.44px; transition:top .35s ease, right .35s ease;">126,471.77</div>
+      <div class="abs core-detail" style="left:205.8px; top:790.3px; font-size:13px; letter-spacing:-0.26px; color:#929292;">
+        All Time <span id="stat-core-allchg" style="color:#c7c7c7;">+6,365.65</span> <span id="stat-core-allpct" style="color:#c7c7c7;">(+5.3%)</span>
+      </div>
+
+      <div class="abs core-detail" style="left:321.6px; top:856.3px; font-size:13px; color:#929292; letter-spacing:-0.22px;">Projection</div>
+      <div class="abs core-detail" style="left:336px; top:878.5px; font-size:15px; color:#c7c7c7; letter-spacing:-0.3px;">1.68M</div>
+
+      <!-- ============ ALLOCATION ============ -->
+      <div class="abs core-detail" style="left:244px; top:929.2px; font-size:13px; color:#929292; letter-spacing:-0.24px;">Equity (S&amp;P 500)</div>
+      <div class="abs core-detail" style="left:352.8px; top:929.2px; font-size:13px; color:#c7c7c7; letter-spacing:-0.24px;">50%</div>
+      <div class="abs core-detail" style="left:265.2px; top:949.7px; font-size:13px; color:#929292; letter-spacing:-0.24px;">Fixed Income</div>
+      <div class="abs core-detail" style="left:352.8px; top:949.7px; font-size:13px; color:#c7c7c7; letter-spacing:-0.24px;">25%</div>
+      <div class="abs core-detail" style="left:259.5px; top:970.1px; font-size:13px; color:#929292; letter-spacing:-0.24px;">Money Market</div>
+      <div class="abs core-detail" style="left:352.8px; top:970.1px; font-size:13px; color:#c7c7c7; letter-spacing:-0.24px;">25%</div>
+
+      <div id="below-core" style="position:absolute; top:0; left:0; width:100%; transition:transform .35s ease;">
+
+      <!-- ============ ACTIVE SECTION ============ -->
+      <div class="divider" style="left:14.5px; top:1078.97px; width:366px;"></div>
+      <div class="abs" style="left:14.5px; top:1109.97px; font-size:18px; color:#c7c7c7; letter-spacing:-0.36px;">Active</div>
+      <div class="abs" style="left:14.5px; top:1140.67px; font-size:15px; color:#565b5e; letter-spacing:-0.3px;">Self-Directed</div>
+      <div class="abs" style="left:331.2px; top:1109.97px; font-size:15px; color:#c7c7c7; letter-spacing:-0.3px;">RRSP</div>
+      <svg class="abs" style="left:374px; top:1118.6px;" width="6" height="3" viewBox="0 0 6.70711 4.06066" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M0.353553 0.353553L3.35355 3.35355L6.35355 0.353553" stroke="#C7C7C7"/>
+      </svg>
+
+      <div class="abs" style="right:16px; top:1208.67px; font-size:13px; color:#929292; letter-spacing:-0.22px;">Value</div>
+      <div id="stat-active-value" class="abs" style="right:16px; top:1230.92px; font-size:22px; letter-spacing:-0.44px;">46,777.23</div>
+      <div class="abs" style="left:205.8px; top:1262.92px; font-size:13px; letter-spacing:-0.26px; color:#929292;">
+        All Time <span id="stat-active-allchg" style="color:#c7c7c7;">+2,353.46</span> <span id="stat-active-allpct" style="color:#c7c7c7;">(+5.3%)</span>
+      </div>
+
+      <!-- ============ CASH ============ -->
+      <div class="abs" style="left:309.6px; top:1331.92px; font-size:13px; color:#929292; letter-spacing:-0.26px;">Cash (10%)</div>
+      <div class="abs" style="left:317.6px; top:1353.92px; font-size:15px; color:#c7c7c7; letter-spacing:-0.3px;">4,677.72</div>
+
+      <!-- ============ BENCHMARK ============ -->
+      <div class="abs" style="left:14.5px; top:1442.92px; font-size:15px; letter-spacing:-0.3px;">
+        S&amp;P 500 Benchmark <span style="color:#929292;">·</span> <span style="color:#565b5e;">All Accounts · 3y 2m</span>
+      </div>
+      <svg class="abs" style="left:374.5px; top:1447.4px;" width="6" height="10" viewBox="0 0 6 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M1 1L5 5L1 9" stroke="#565B5E" stroke-width="1.2"/>
+      </svg>
+
+      <div class="abs" style="left:14.5px; top:1486.92px; font-size:13px; color:#929292; letter-spacing:-0.26px;">Portfolio Value</div>
+      <div class="abs" style="left:14.5px; top:1519.92px; font-size:13px; color:#929292; letter-spacing:-0.26px;">S&amp;P 500 Equivalent Value</div>
+      <div id="stat-bench-portfolio" class="abs" style="right:16px; top:1484.92px; font-size:13px; color:#c7c7c7; letter-spacing:-0.3px;">46,777.23</div>
+      <div id="stat-bench-sp500" class="abs" style="right:16px; top:1517.92px; font-size:13px; color:#c7c7c7; letter-spacing:-0.3px;">44,593.05</div>
+
+      <!-- ============ DIFFERENCE ============ -->
+      <div class="divider" style="left:16px; top:1550.92px; width:361px;"></div>
+      <div class="divider" style="left:16px; top:1600.92px; width:361px;"></div>
+      <div class="abs" style="left:16px; top:1567.58px; font-size:13px; color:#929292; letter-spacing:-0.26px;">Difference</div>
+      <div id="stat-diff-value" class="abs" style="right:76px; top:1566.51px; font-size:15px; letter-spacing:-0.3px;">+2,184.18</div>
+      <div id="stat-diff-pct" class="abs" style="right:16px; top:1568.51px; font-size:13px; color:#929292; letter-spacing:-0.26px;">+4.90%</div>
+
+      <!-- ============ CALIBRATION ============ -->
+      <div class="abs" style="left:300.3px; top:1647.92px; font-size:15px; color:#c7c7c7; letter-spacing:-0.3px;">Calibration</div>
+      <div class="abs" style="left:283px; top:1674.88px; font-size:13px; color:#929292; letter-spacing:-0.24px;">Accuracy</div>
+      <div class="abs" style="left:348.7px; top:1674.88px; font-size:13px; color:#c7c7c7; letter-spacing:-0.24px;">54%</div>
+      <div class="abs" style="left:278.5px; top:1695.75px; font-size:13px; color:#929292; letter-spacing:-0.24px;">Predictions</div>
+      <div class="abs" style="left:360.3px; top:1696.26px; font-size:13px; color:#c7c7c7; letter-spacing:-0.24px;">17</div>
+      <div class="abs" style="left:205.3px; top:1717.64px; font-size:13px; color:#929292; letter-spacing:-0.24px;">Next Judgment</div>
+      <div class="abs" style="left:309px; top:1717.64px; font-size:13px; color:#c7c7c7; letter-spacing:-0.24px;">Apr 1, 2027</div>
+      <div id="cal-link" style="left:180px; top:1638px; width:210px; height:102px;" onclick="openRecords()"></div>
+
+      <!-- ============ ACTIVE POSITIONS HEADER ============ -->
+      <div class="abs" style="left:14.5px; top:1814.4px; font-size:15px; letter-spacing:-0.3px;">Active Positions</div>
+      <div class="abs" style="left:133px; top:1813.5px; font-size:15px; letter-spacing:-0.3px;">24</div>
+      <svg class="abs" style="left:162.2px; top:1819.5px;" width="11" height="7" viewBox="0 0 11 7" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M1 1.5L5.5 6L10 1.5" stroke="#929292" stroke-width="1.2"/>
+      </svg>
+      <div class="abs" style="left:273.4px; top:1813.5px; font-size:15px; color:#929292; letter-spacing:-0.3px;">Open Orders</div>
+      <div class="abs" style="left:367.1px; top:1813.5px; font-size:15px; color:#929292; letter-spacing:-0.3px;">2</div>
+
+      <!-- ============ POSITIONS LIST ============ -->
+      <div id="positions-list"></div>
+
+      </div><!-- /below-core -->
+
+      </div><!-- /shifted-content -->
+
+    </div>
+  </div>
+
+  <!-- ============ THE RECORD (slides in over the dashboard) ============ -->
+  <div id="records-screen">
+    <div class="dynamic-island"></div>
+    <div class="rec-head">
+      <button class="rec-back" onclick="closeRecords()" aria-label="Back">
+        <svg width="11" height="19" viewBox="0 0 11 19" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M9.5 1.5L2 9.5L9.5 17.5" stroke="#C7C7C7" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <span class="rec-title">The record</span>
+      <span class="rec-count" id="rec-count">—</span>
+    </div>
+    <div class="rec-body">
+      <div class="rec-intro">Every sealed forecast — the append-only ledger. A sale, a re-underwrite, or a killed thesis each gets its own status; nothing is ever overwritten.</div>
+      <div id="rec-list" style="padding-bottom:56px"></div>
+    </div>
+  </div>
+
+  <div class="home-indicator"></div>
+</div>
+
+<script>
+  const TAG_COLORS = {
+    "Earnings": "#fdad00",
+    "Open Order": "#fdad00",
+    "Reverse Split": "#fd6900",
+    "Stock Split": "#fd6900",
+    "Investment Case": "#fd6900",
+    "52 Week High": "#ffffff",
+    "52 Week Low": "#ffffff",
+    "Delisted": "#fd0200",
+    "Stock Halted": "#fd0200",
+    "Order Complete": "#02cb45",
+    "No Thesis/Kill Criteria": "#fbc308"
+  };
+
+  const positions = [
+    { ticker: "ORIO.TO", weight: "25% WT", category: "Emerging Compounder", value: "18,950.00 CAD", pct: "+42.6%", price: "87.60 CAD", change: "+7.8%",
+      desc: "Parent moat compounding; the NASDAQ listing re-rates it over 3–5 years.", tags: ["Earnings", "Reverse Split"] },
+    { ticker: "BWEN", weight: "25% WT", category: "Emerging Compounder", value: "12,950.00 CAD", pct: "+22.6%", price: "82.40 USD", change: "-2.8%",
+      desc: "Delisting risk — watching the appeal. No add until it clears.", tags: ["Delisted"] },
+    { ticker: "EOSCR", weight: "15% WT", category: "Emerging Compounder", value: "12,950.00 CAD", pct: "+22.6%", price: "82.40 USD", change: "-2.8%",
+      desc: "", tags: ["No Thesis/Kill Criteria"] },
+    { ticker: "BWEN", weight: "25% WT", category: "Emerging Compounder", value: "12,950.00 CAD", pct: "+22.6%", price: "82.40 USD", change: "-2.8%",
+      desc: "Delisting risk — watching the appeal. No add until it clears.", tags: ["Delisted"] },
+    { ticker: "AMD", weight: "25% WT", category: "Emerging Compounder", value: "12,950.00 CAD", pct: "+22.6%", price: "82.40 USD", change: "-2.8%",
+      desc: "Trimmed into strength — revisit after the next print.", tags: ["Order Complete"] },
+    { ticker: "MSFT", weight: "8% WT", category: "Core Compounder", value: "22,150.00 CAD", pct: "+18.4%", price: "410.20 USD", change: "+1.2%",
+      desc: "Cloud and AI capex compounding; sizing up on pullbacks.", tags: ["Earnings"] },
+    { ticker: "TSLA", weight: "6% WT", category: "Special Situation", value: "9,840.00 CAD", pct: "-8.1%", price: "245.60 USD", change: "-3.4%",
+      desc: "Delivery miss last quarter; watching margin trend.", tags: ["No Thesis/Kill Criteria", "52 Week Low"] },
+    { ticker: "NVDA", weight: "12% WT", category: "Core Compounder", value: "31,200.00 CAD", pct: "+64.2%", price: "118.30 USD", change: "+2.9%",
+      desc: "AI infrastructure buildout still early; core position.", tags: ["52 Week High"] },
+    { ticker: "GOOGL", weight: "7% WT", category: "Core Compounder", value: "15,600.00 CAD", pct: "+9.7%", price: "172.40 USD", change: "+0.6%",
+      desc: "", tags: [] },
+    { ticker: "AAPL", weight: "5% WT", category: "Index Anchor", value: "11,300.00 CAD", pct: "+4.2%", price: "228.90 USD", change: "-0.3%",
+      desc: "", tags: [] },
+    { ticker: "SHOP.TO", weight: "4% WT", category: "Emerging Compounder", value: "8,450.00 CAD", pct: "+31.5%", price: "118.75 CAD", change: "+5.1%",
+      desc: "Merchant GMV reacceleration; margin expansion story intact.", tags: ["Stock Split", "Open Order"] },
+    { ticker: "ENB.TO", weight: "3% WT", category: "Index Anchor", value: "6,200.00 CAD", pct: "+6.8%", price: "58.30 CAD", change: "+0.4%",
+      desc: "", tags: [] },
+    { ticker: "CNQ.TO", weight: "3% WT", category: "Cyclical Value", value: "5,980.00 CAD", pct: "-2.4%", price: "47.15 CAD", change: "-1.1%",
+      desc: "Oil price weakness weighing on the name.", tags: ["No Thesis/Kill Criteria"] },
+    { ticker: "BAM", weight: "4% WT", category: "Core Compounder", value: "7,650.00 CAD", pct: "+14.9%", price: "52.80 USD", change: "+0.9%",
+      desc: "", tags: ["Open Order"] },
+    { ticker: "CP.TO", weight: "3% WT", category: "Index Anchor", value: "5,540.00 CAD", pct: "+7.3%", price: "112.60 CAD", change: "-0.2%",
+      desc: "", tags: [] },
+    { ticker: "ATD.TO", weight: "3% WT", category: "Core Compounder", value: "5,120.00 CAD", pct: "+11.2%", price: "78.40 CAD", change: "+0.5%",
+      desc: "", tags: ["Investment Case"] },
+    { ticker: "TD.TO", weight: "2% WT", category: "Index Anchor", value: "4,300.00 CAD", pct: "-3.6%", price: "82.10 CAD", change: "-0.7%",
+      desc: "Litigation overhang capping re-rating near term.", tags: ["No Thesis/Kill Criteria", "Investment Case"] },
+    { ticker: "RY.TO", weight: "2% WT", category: "Index Anchor", value: "4,150.00 CAD", pct: "+5.9%", price: "148.30 CAD", change: "+0.3%",
+      desc: "", tags: [] },
+    { ticker: "BNS.TO", weight: "2% WT", category: "Turnaround Bet", value: "3,880.00 CAD", pct: "-6.7%", price: "62.90 CAD", change: "-1.8%",
+      desc: "Latin America exposure still a drag on ROE.", tags: ["No Thesis/Kill Criteria", "52 Week Low"] },
+    { ticker: "WCN", weight: "3% WT", category: "Core Compounder", value: "6,010.00 CAD", pct: "+19.3%", price: "245.70 USD", change: "+1.0%",
+      desc: "", tags: ["52 Week High"] },
+    { ticker: "FTS.TO", weight: "2% WT", category: "Index Anchor", value: "3,600.00 CAD", pct: "+3.1%", price: "61.20 CAD", change: "+0.1%",
+      desc: "", tags: [] },
+    { ticker: "L.TO", weight: "2% WT", category: "Index Anchor", value: "3,420.00 CAD", pct: "+8.4%", price: "78.90 CAD", change: "+0.4%",
+      desc: "", tags: [] },
+    { ticker: "DOL.TO", weight: "3% WT", category: "Core Compounder", value: "5,760.00 CAD", pct: "+22.7%", price: "152.40 CAD", change: "+0.8%",
+      desc: "Discount retail resilient through the cycle.", tags: ["Earnings"] },
+    { ticker: "CSU.TO", weight: "4% WT", category: "Core Compounder", value: "8,900.00 CAD", pct: "+45.6%", price: "4,320.00 CAD", change: "+1.4%",
+      desc: "Serial acquirer compounding at a steady clip.", tags: ["Earnings", "52 Week High"] }
+  ];
+
+  const ROW_GAP = 20;
+  const LIST_TOP = 1867.67;
+
+  // Section rhythm within a row (matches the original design's spacing):
+  // header group -> 16px gap -> description -> 16px gap -> tags -> 16px gap -> divider.
+  // Rows without a description (or without tags) simply skip that block and its
+  // gap, instead of leaving a description-sized hole.
+  // Each row ends with a quiet full-width "vs S&P" footer line (VS_H),
+  // mirroring the benchmark section's Difference row.
+  const HEADER_H = 36.45, SECTION_GAP = 16, DESC_H = 17, TAGS_H = 16.64, VS_H = 14;
+
+  const listEl = document.getElementById('positions-list');
+  let html = '';
+  let cursorTop = LIST_TOP;
+  positions.forEach((r, i) => {
+    const top = cursorTop;
+    const changePositive = r.change.trim().startsWith('+');
+    const hasDesc = r.desc.length > 0;
+    const hasTags = r.tags.length > 0;
+
+    // per-position S&P comparison: same capital, same holding period, indexed.
+    // spRet is a stable per-position S&P return for the holding window.
+    const spRet = 6 + ((i * 37) % 25);
+    r._spRet = spRet;
+    const _v = parseMoney(r.value).num, _p = parsePct(r.pct);
+    const _cost = _v / (1 + _p / 100);
+    const _diff = _v - _cost * (1 + spRet / 100);
+    const _diffPct = _p - spRet;
+    const vsTxt = fmtSignedMoney(_diff) + ' CAD (' + fmtPct(_diffPct) + ')';
+    const vsColor = _diff >= 0 ? '#c7c7c7' : '#929292';
+
+    let localCursor = HEADER_H;
+    let descTop = null, tagsTop = null;
+    if (hasDesc) { localCursor += SECTION_GAP; descTop = localCursor; localCursor += DESC_H; }
+    if (hasTags) { localCursor += SECTION_GAP; tagsTop = localCursor; localCursor += TAGS_H; }
+    localCursor += SECTION_GAP;
+    const vsTop = localCursor;
+    localCursor += VS_H;
+    localCursor += SECTION_GAP;
+    const rowHeight = localCursor;
+
+    html += `
+      <div id="pos-ticker-${i}" class="abs" style="left:16px; top:${top + 0.93}px; font-size:13px; font-weight:500; text-transform:uppercase;">${r.ticker}</div>
+      <div id="pos-weight-${i}" class="abs" style="left:16px; top:${top + 0.93}px; font-size:13px; color:#929292; letter-spacing:-0.24px; text-transform:uppercase; visibility:hidden;">${r.weight}</div>
+      <div class="abs" style="left:16px; top:${top + 21.95}px; font-size:10px; color:#929292;">${r.category}</div>
+      <div id="pos-value-${i}" class="abs" style="left:167px; top:${top}px; font-size:13px; font-weight:300; letter-spacing:-0.28px; text-align:right; width:150px;">${r.value}</div>
+      <div id="pos-pct-${i}" class="abs" style="left:327px; top:${top}px; font-size:13px; color:#929292; letter-spacing:-0.24px; text-align:right; width:50px;">${r.pct}</div>
+      <div id="pos-price-${i}" class="abs" style="left:167px; top:${top + 20.45}px; font-size:13px; font-weight:300; letter-spacing:-0.28px; text-align:right; width:150px;">${r.price}</div>
+      <div id="pos-change-${i}" class="abs" style="left:327px; top:${top + 20.45}px; font-size:13px; font-weight:${changePositive ? 700 : 400}; color:${changePositive ? '#ffffff' : '#929292'}; letter-spacing:-0.24px; text-align:right; width:50px;">${r.change}</div>
+      <div class="abs" style="left:16px; top:${top + vsTop}px; width:361px; text-align:right; font-size:11.5px; letter-spacing:-0.22px; font-variant-numeric:tabular-nums;"><span style="color:#929292;">vs S&amp;P&nbsp;&nbsp;</span><span id="pos-vs-${i}" style="color:${vsColor};">${vsTxt}</span></div>
+      ${hasDesc ? `<div class="abs" style="left:16px; top:${top + descTop}px; font-size:12px; color:#c7c7c7; letter-spacing:-0.19px; max-width:361px; overflow:hidden; text-overflow:ellipsis;">${r.desc}</div>` : ''}
+      ${hasTags ? `<div class="tags-row" style="left:16px; top:${top + tagsTop}px;">${r.tags.map(label => `<span class="tag"><span class="tag-dot" style="background:${TAG_COLORS[label]};"></span>${label}</span>`).join('')}</div>` : ''}
+      <div class="row-divider" style="top:${top + rowHeight}px;"></div>
+    `;
+    cursorTop += rowHeight + ROW_GAP;
+  });
+  listEl.innerHTML = html;
+  const lastRowBottom = cursorTop - ROW_GAP;
+
+  // Measure each ticker's actual rendered width so the weight label sits
+  // a fixed 8px after it, instead of guessing width from character count.
+  positions.forEach((r, i) => {
+    const tickerEl = document.getElementById(`pos-ticker-${i}`);
+    const weightEl = document.getElementById(`pos-weight-${i}`);
+    const w = tickerEl.getBoundingClientRect().width;
+    weightEl.style.left = (16 + w + 8) + 'px';
+    weightEl.style.visibility = 'visible';
+  });
+
+  // Extra breathing room above "Total Value" (between it and the alert feed),
+  // applied once via the #shifted-content wrapper transform below.
+  const TOP_SPACING_EXTRA = 32;
+
+  const frameEl = document.querySelector('.frame');
+  const fullMinHeight = lastRowBottom + 40 + TOP_SPACING_EXTRA;
+  frameEl.style.minHeight = fullMinHeight + 'px';
+  document.getElementById('shifted-content').style.transform = `translateY(${TOP_SPACING_EXTRA}px)`;
+
+  // ---- Core section: collapsible ----
+  (function () {
+    const CORE_COLLAPSE_DELTA = 507.27;
+    const belowCoreEl = document.getElementById('below-core');
+    const chevron = document.getElementById('core-chevron-svg');
+    const valueLabel = document.getElementById('core-value-label');
+    const valueNum = document.getElementById('stat-core-value');
+    let collapsed = false;
+
+    function apply() {
+      document.querySelectorAll('.core-detail').forEach(el => { el.style.display = collapsed ? 'none' : ''; });
+      belowCoreEl.style.transform = collapsed ? `translateY(-${CORE_COLLAPSE_DELTA}px)` : 'translateY(0)';
+      frameEl.style.minHeight = (fullMinHeight - (collapsed ? CORE_COLLAPSE_DELTA : 0)) + 'px';
+      chevron.style.transform = collapsed ? 'rotate(-90deg)' : 'rotate(0deg)';
+      if (collapsed) {
+        valueLabel.style.top = '493px'; valueLabel.style.right = '34px';
+        valueNum.style.top = '517px'; valueNum.style.right = '16px';
+      } else {
+        valueLabel.style.top = '736px'; valueLabel.style.right = '16px';
+        valueNum.style.top = '758.3px'; valueNum.style.right = '16px';
+      }
+    }
+    document.getElementById('core-toggle').addEventListener('click', () => {
+      collapsed = !collapsed;
+      apply();
+    });
+  })();
+
+  // ================= LIVE "REAL-TIME" DATA SIMULATION =================
+  function fmtMoney(v, decimals = 2) {
+    return v.toLocaleString('en-US', { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
+  }
+  function fmtSignedMoney(v, decimals = 2) {
+    return (v >= 0 ? '+' : '-') + Math.abs(v).toLocaleString('en-US', { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
+  }
+  function fmtPct(v, decimals = 1) {
+    return (v >= 0 ? '+' : '-') + Math.abs(v).toFixed(decimals) + '%';
+  }
+  function parseMoney(str) {
+    const m = str.match(/^([\d,]+\.\d+)\s*(\w+)$/);
+    return m ? { num: parseFloat(m[1].replace(/,/g, '')), ccy: m[2] } : { num: 0, ccy: '' };
+  }
+  function parsePct(str) {
+    return parseFloat(str.replace('%', '').replace('+', ''));
+  }
+  function flash(el, up, settleColor) {
+    el.style.color = settleColor;
+  }
+
+  // ---- Top-level portfolio stats ----
+  function makeLiveStat(id, baseValue, opts = {}) {
+    const el = document.getElementById(id);
+    if (!el) return null;
+    const settleColor = opts.settleColor || getComputedStyle(el).color;
+    const mirrorEl = opts.mirrorId ? document.getElementById(opts.mirrorId) : null;
+    const mirrorEl2 = opts.mirrorId2 ? document.getElementById(opts.mirrorId2) : null;
+    return Object.assign({ el, mirrorEl, mirrorEl2, base: baseValue, value: baseValue, kind: 'money', decimals: 2,
+      volatility: 0.0012, reversion: 0.05, wrap: null, settleColor }, opts);
+  }
+  function tickLiveStat(s) {
+    const magnitude = Math.max(Math.abs(s.value), 1);
+    const noise = (Math.random() * 2 - 1) * s.volatility * magnitude;
+    const revert = (s.base - s.value) * s.reversion;
+    const delta = noise + revert;
+    s.value += delta;
+    let text = s.kind === 'pct' ? fmtPct(s.value, s.decimals)
+      : s.kind === 'signedMoney' ? fmtSignedMoney(s.value, s.decimals)
+      : fmtMoney(s.value, s.decimals);
+    if (s.wrap) text = s.wrap(text);
+    s.el.textContent = text;
+    flash(s.el, delta >= 0, s.settleColor);
+    if (s.mirrorEl) s.mirrorEl.textContent = text;
+    if (s.mirrorEl2) s.mirrorEl2.textContent = text;
+  }
+
+  const liveStats = [
+    makeLiveStat('stat-total-value', 173249.00, { volatility: 0.0006, reversion: 0.06, mirrorId: 'stat-total-value-inline' }),
+    makeLiveStat('stat-core-value', 126471.77, { volatility: 0.0012, reversion: 0.05 }),
+    makeLiveStat('stat-core-allchg', 6365.65, { kind: 'signedMoney', volatility: 0.012, reversion: 0.06 }),
+    makeLiveStat('stat-core-allpct', 5.3, { kind: 'pct', volatility: 0.02, reversion: 0.08, wrap: t => `(${t})` }),
+    makeLiveStat('stat-active-value', 46777.23, { volatility: 0.0012, reversion: 0.05 }),
+    makeLiveStat('stat-active-allchg', 2353.46, { kind: 'signedMoney', volatility: 0.012, reversion: 0.06 }),
+    makeLiveStat('stat-active-allpct', 5.3, { kind: 'pct', volatility: 0.02, reversion: 0.08, wrap: t => `(${t})` }),
+    makeLiveStat('stat-bench-portfolio', 46777.23, { volatility: 0.0012, reversion: 0.05 }),
+    makeLiveStat('stat-bench-sp500', 44593.05, { volatility: 0.0008, reversion: 0.05 }),
+    makeLiveStat('stat-diff-value', 2184.18, { kind: 'signedMoney', volatility: 0.02, reversion: 0.06 }),
+    makeLiveStat('stat-diff-pct', 4.90, { kind: 'pct', decimals: 2, volatility: 0.02, reversion: 0.08 }),
+  ].filter(Boolean);
+
+  setInterval(() => {
+    liveStats.forEach(s => { if (Math.random() < 0.55) tickLiveStat(s); });
+  }, 1200);
+
+  // ---- Header clock (drives both the in-page clock and the sticky-nav mirror) ----
+  (function () {
+    const el = document.getElementById('stat-clock');
+    const elInline = document.getElementById('stat-clock-inline');
+    if (!el) return;
+    let h = 13, m = 14, sec = 26;
+    setInterval(() => {
+      sec++; if (sec >= 60) { sec = 0; m++; }
+      if (m >= 60) { m = 0; h++; }
+      if (h >= 24) h = 0;
+      const text = `${h}:${String(m).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
+      el.textContent = text;
+      if (elInline) elInline.textContent = text;
+    }, 1000);
+  })();
+
+  // ---- Sticky nav: once the in-page market status scrolls up behind the
+  // pinned 71px bar, its compact copy fades into the bar itself (no added
+  // height). The total value joins it only after the big number is passed. ----
+  (function () {
+    const target = document.getElementById('orig-market-status');
+    const screenEl = document.getElementById('screen');
+    const inlineBar = document.getElementById('topbar-inline');
+    const inlineTotal = document.getElementById('inline-total');
+    const totalValueEl = document.getElementById('stat-total-value');
+    if (!target || !screenEl || !inlineBar) return;
+    const STICKY_HEADER_H = 71;
+    let ticking = false;
+    function update() {
+      ticking = false;
+      const screenTop = screenEl.getBoundingClientRect().top;
+      const targetBottom = target.getBoundingClientRect().bottom - screenTop;
+      const show = targetBottom < STICKY_HEADER_H;
+      let totalPast = false;
+      if (totalValueEl) {
+        const totalBottom = totalValueEl.parentElement.getBoundingClientRect().bottom - screenTop;
+        totalPast = totalBottom < STICKY_HEADER_H;
+      }
+      inlineBar.style.opacity = show ? '1' : '0';
+      if (inlineTotal) inlineTotal.style.opacity = (show && totalPast) ? '1' : '0';
+    }
+    screenEl.addEventListener('scroll', () => {
+      if (!ticking) { ticking = true; requestAnimationFrame(update); }
+    });
+    update();
+  })();
+
+  // ---- Position rows: price / value / all-time % / today's change ----
+  const positionLive = positions.map((r, i) => {
+    const value = parseMoney(r.value);
+    const price = parseMoney(r.price);
+    return {
+      valueEl: document.getElementById(`pos-value-${i}`),
+      pctEl: document.getElementById(`pos-pct-${i}`),
+      priceEl: document.getElementById(`pos-price-${i}`),
+      changeEl: document.getElementById(`pos-change-${i}`),
+      vsEl: document.getElementById(`pos-vs-${i}`),
+      spRet: r._spRet,
+      valueBase: value.num, value: value.num, valueCcy: value.ccy,
+      priceBase: price.num, price: price.num, priceCcy: price.ccy,
+      pctBase: parsePct(r.pct), pct: parsePct(r.pct),
+      changeBase: parsePct(r.change), change: parsePct(r.change),
+    };
+  });
+
+  function tickPosition(row) {
+    const deltaFrac = (Math.random() * 2 - 1) * 0.003;
+    row.price += row.price * deltaFrac;
+    row.value += row.value * deltaFrac;
+    row.change += deltaFrac * 100;
+    row.pct += deltaFrac * 100 * 0.4;
+    row.price += (row.priceBase - row.price) * 0.03;
+    row.value += (row.valueBase - row.value) * 0.03;
+    row.change += (row.changeBase - row.change) * 0.05;
+    row.pct += (row.pctBase - row.pct) * 0.05;
+
+    const up = deltaFrac >= 0;
+    row.valueEl.textContent = `${fmtMoney(row.value)} ${row.valueCcy}`;
+    row.priceEl.textContent = `${fmtMoney(row.price)} ${row.priceCcy}`;
+    row.pctEl.textContent = fmtPct(row.pct);
+    const changePositive = row.change >= 0;
+    row.changeEl.textContent = fmtPct(row.change);
+    row.changeEl.style.fontWeight = changePositive ? '700' : '400';
+
+    flash(row.valueEl, up, '#ffffff');
+    flash(row.priceEl, up, '#ffffff');
+    flash(row.pctEl, up, '#929292');
+    flash(row.changeEl, up, changePositive ? '#ffffff' : '#929292');
+
+    // vs S&P — same capital indexed over the same window, live like the rest
+    if (row.vsEl) {
+      const cost = row.value / (1 + row.pct / 100);
+      const diff = row.value - cost * (1 + row.spRet / 100);
+      const diffPct = row.pct - row.spRet;
+      row.vsEl.textContent = fmtSignedMoney(diff) + ' CAD (' + fmtPct(diffPct) + ')';
+      row.vsEl.style.color = diff >= 0 ? '#c7c7c7' : '#929292';
+    }
+  }
+
+  setInterval(() => {
+    positionLive.forEach(row => { if (Math.random() < 0.18) tickPosition(row); });
+  }, 900);
+
+  // ================= THE RECORD — data engine + navigation =================
+  // Ported from the calibration prototype (V2 · elevated list).
+  // Semantics: the hurdle IS the excess-over-S&P target; hit ⟺ vs S&P ≥ hurdle.
+  // Open calls tick like a quote feed and resolve at their horizon
+  // (demo-scaled: 1y ≈ 2 min, 3y ≈ 4 min, 5y ≈ 6 min), then shift down
+  // into the judged section of the ledger. Sold-early keeps shadow-tracking.
+  const REC_COLORS = { hit: '#6E9179', miss: '#AE574F', seal: '#C99AD0', gold: '#C9A24B', t: '#929292', d: '#565b5e', p: '#ffffff' };
+  const REC_STATUS = {
+    open:       ['Open',       REC_COLORS.p],
+    hit:        ['Hit',        REC_COLORS.hit],
+    miss:       ['Miss',       REC_COLORS.miss],
+    superseded: ['Superseded', REC_COLORS.seal],
+    sold:       ['Sold-early', REC_COLORS.gold],
+    void:       ['Void',       REC_COLORS.t]
+  };
+  const REC_DUR = { 1: 120, 3: 240, 5: 360 }; // seconds per horizon (demo)
+  const REC_NAMES = ['NVDA','POWL','CELH','V','SHOP','ODD','COST','AEHR','MSFT','IESC','HRMY','SMCI','ANET','VRT'];
+  const recStep = (v, lo, hi) => Math.max(lo, Math.min(hi, Math.round(v / 5) * 5));
+  const recRnd = a => a[Math.floor(Math.random() * a.length)];
+
+  function recMkClosed() {
+    const hz = recRnd([1, 3, 5]);
+    const conf = recStep(35 + Math.random() * 55, 0, 100);
+    const ret = recStep(15 + Math.random() * 35, 15, 100);
+    const clear = Math.random() < (conf / 100) * 0.76;
+    let ex = clear ? ret + Math.random() * 14 : ret - (3 + Math.random() * 45);
+    ex = Math.max(-42, Math.min(58, ex));
+    return { name: recRnd(REC_NAMES), hz, conf, ret, ex, status: ex >= ret ? 'hit' : 'miss' };
+  }
+  function recMkOpen() {
+    const hz = recRnd([1, 3, 5]);
+    const conf = recStep(45 + Math.random() * 40, 0, 100);
+    const ret = recStep(20 + Math.random() * 25, 15, 100);
+    const clear = Math.random() < (conf / 100) * 0.8;
+    let fin = clear ? ret + Math.random() * 14 : ret - (3 + Math.random() * 45);
+    fin = Math.max(-40, Math.min(56, fin));
+    const dur = REC_DUR[hz];
+    const born = Date.now() - (0.25 + Math.random() * 0.4) * dur * 1000;
+    return { name: recRnd(REC_NAMES), hz, conf, ret, fin, perf: 0, born, status: 'open' };
+  }
+  // 17 entries — matches "Predictions 17" on the dashboard's Calibration block
+  const REC = {
+    open: [recMkOpen(), recMkOpen(), recMkOpen(), recMkOpen()],
+    closed: [
+      { name: 'SHOP', hz: 3, conf: 65, ret: 30, status: 'superseded' },
+      { name: 'AEHR', hz: 1, conf: 60, ret: 25, status: 'sold',
+        perf: 6.4, fin: 14, born: Date.now() - 0.17 * REC_DUR[1] * 1000, settled: false },
+      { name: 'SMCI', hz: 3, conf: 70, ret: 35, status: 'void' },
+      ...Array.from({ length: 10 }, recMkClosed)
+    ]
+  };
+
+  const recEntries = () => [...REC.open, ...REC.closed];
+  const recIsLive = p => p.status === 'open' || (p.status === 'sold' && !p.settled);
+  const recValOf = p => p.perf != null && (p.status === 'open' || p.status === 'sold') ? p.perf : p.ex;
+  const recExTxt = v => v == null ? '—' : (v >= 0 ? '+' : '−') + Math.abs(v).toFixed(1) + '%';
+  const recExCol = v => v == null ? REC_COLORS.d : (v >= 0 ? REC_COLORS.hit : REC_COLORS.miss);
+  const recDescOf = p =>
+    p.status === 'superseded' ? 're-underwritten' :
+    p.status === 'void' ? 'thesis killed' :
+    p.status === 'sold' ? 'exited early · tracked to horizon' : 'scored at horizon';
+
+  let recordsOpen = false;
+  setInterval(() => {
+    const nowMs = Date.now();
+    for (let i = REC.open.length - 1; i >= 0; i--) {
+      const d = REC.open[i];
+      const dur = REC_DUR[d.hz];
+      const age = (nowMs - d.born) / 1000;
+      if (age >= dur) {
+        d.status = d.fin >= d.ret ? 'hit' : 'miss';
+        d.ex = d.fin;
+        REC.open.splice(i, 1); REC.closed.unshift(d);
+        continue;
+      }
+      const settle = Math.pow(age / dur, 1.2);
+      d.perf += ((d.fin * settle) - d.perf) * 0.12 + (Math.random() - 0.5) * 1.6 * (1 - settle * 0.7);
+    }
+    for (const d of REC.closed) {
+      if (d.status !== 'sold' || d.settled) continue;
+      const dur = REC_DUR[d.hz];
+      const age = (nowMs - d.born) / 1000;
+      if (age >= dur) { d.settled = true; d.perf = d.fin; d.ex = d.fin; continue; }
+      const settle = Math.pow(age / dur, 1.2);
+      d.perf += ((d.fin * settle) - d.perf) * 0.12 + (Math.random() - 0.5) * 1.6 * (1 - settle * 0.7);
+      d.ex = d.perf;
+    }
+    if (recordsOpen) renderRecords();
+  }, 1200);
+
+  function renderRecords() {
+    const all = recEntries();
+    document.getElementById('rec-count').textContent = all.length + ' entries';
+    document.getElementById('rec-list').innerHTML = all.map(p => {
+      const v = recValOf(p), st = REC_STATUS[p.status];
+      const live = recIsLive(p);
+      const col = recExCol(v);
+      const dot = live ? '<span class="e2-dot" style="background:' + col + '"></span>' : '';
+      const right = live
+        ? '<span class="e2-val" style="color:' + col + '">' + recExTxt(v) + '<span class="u">vs S&P</span></span>' +
+          (p.status === 'sold'
+            ? '<span class="e2-sub" style="color:' + REC_COLORS.gold + '">Sold-early</span>'
+            : '<span class="e2-sub" style="color:' + col + '">Tracking</span>')
+        : '<span class="e2-val" style="color:' + st[1] + '">' + st[0] + '</span>' +
+          '<span class="e2-sub" style="color:' + REC_COLORS.d + '">' + recDescOf(p) + '</span>';
+      return '<div class="e2-row">' +
+        '<div class="e2-left">' +
+          '<span class="e2-nm">' + dot + p.name + '</span>' +
+          '<span class="e2-meta">' + p.conf + '% conf · +' + p.ret + '% hurdle · ' + p.hz + '-year</span>' +
+        '</div>' +
+        '<div class="e2-right">' + right + '</div>' +
+      '</div>';
+    }).join('');
+  }
+
+  function openRecords() {
+    recordsOpen = true;
+    renderRecords();
+    document.getElementById('records-screen').classList.add('open');
+  }
+  function closeRecords() {
+    recordsOpen = false;
+    document.getElementById('records-screen').classList.remove('open');
+  }
+  renderRecords();
+</script>
+
+</body>
+</html>
