@@ -258,7 +258,7 @@
              right — nothing renders under the dynamic island (bottom y≈40) -->
         <div id="topbar-inline" style="position:absolute; left:62px; right:112px; top:0; height:71px; padding-top:14px; display:flex; align-items:center; opacity:0; transition:opacity .3s ease; pointer-events:none;">
           <div style="display:flex; flex-direction:column; gap:6px;">
-            <span style="font-size:11.5px; color:#fff; letter-spacing:-0.19px; font-variant-numeric:tabular-nums; line-height:1; white-space:nowrap;"><span id="stat-clock-inline">13:14:26</span> ET</span>
+            <span style="font-size:11.5px; color:#fff; letter-spacing:-0.19px; font-variant-numeric:tabular-nums; line-height:1; white-space:nowrap;"><span id="stat-clock-inline">13:14:26</span> ET<span id="clock-session-icon" style="margin-left:6px;"></span></span>
             <span style="display:flex; align-items:center; gap:5px; line-height:1;">
               <span class="mkt-dot" style="width:4.65px; height:4.65px; border-radius:50%; background:#30d158; flex:none;"></span>
               <span style="font-size:10px; color:#929292; letter-spacing:0.28px;">US</span>
@@ -980,6 +980,14 @@
       if (s === 'pre') window.__setClock(7, 46, 12);
       else if (s === 'after') window.__setClock(17, 32, 5);
       else window.__setClock(13, 14, 26);
+    }
+    // session icon beside the top-bar clock — sunrise pre-market, moon after
+    const clockIcon = document.getElementById('clock-session-icon');
+    if (clockIcon) {
+      clockIcon.innerHTML =
+        s === 'pre' ? '<svg width="11" height="10" viewBox="0 0 14 12" fill="none" stroke="#fbc308" stroke-width="1.1" stroke-linecap="round" style="vertical-align:-1px;"><path d="M3.6 9.2a3.4 3.4 0 0 1 6.8 0"/><path d="M1 9.2h12"/><path d="M7 1.2v1.7"/><path d="M2.9 3.1l1.2 1.2"/><path d="M11.1 3.1l-1.2 1.2"/></svg>'
+        : s === 'after' ? '<svg width="10" height="10" viewBox="0 0 13 13" fill="none" style="vertical-align:-1px;"><path d="M11.2 8.3A5 5 0 0 1 4.7 1.8a5.4 5.4 0 1 0 6.5 6.5Z" stroke="#4a7dff" stroke-width="1.1" stroke-linejoin="round"/></svg>'
+        : '';
     }
     buildPositions();
   }
