@@ -128,6 +128,32 @@
   }
   .pulse-dot { animation: pulse-dot 2s ease-in-out infinite; }
 
+  /* ================= STATE SWITCHER (outside the phone) ================= */
+  .iter-wrap { position: fixed; top: 20px; left: 20px; z-index: 600; }
+  .iter-burger {
+    width: 42px; height: 42px; border: 1px solid #262626; border-radius: 9px;
+    background: rgba(17,17,17,0.85); backdrop-filter: blur(8px);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 4.5px; cursor: pointer;
+  }
+  .iter-burger:hover { border-color: #3a3a3a; }
+  .iter-burger span { display: block; width: 16px; height: 1.5px; background: #c7c7c7; border-radius: 1px; }
+  .iter-menu {
+    position: absolute; top: 50px; left: 0; min-width: 258px;
+    background: #111; border: 1px solid #262626; border-radius: 10px; padding: 6px;
+    opacity: 0; transform: translateY(-6px); pointer-events: none;
+    transition: opacity .16s ease, transform .16s ease;
+    box-shadow: 0 20px 50px rgba(0,0,0,.6);
+  }
+  .iter-menu.open { opacity: 1; transform: translateY(0); pointer-events: all; }
+  .iter-head { padding: 9px 12px 7px; font-size: 10px; letter-spacing: .14em; color: #565b5e; font-weight: 500; }
+  .iter-item { padding: 10px 12px; border-radius: 7px; cursor: pointer; display: flex; flex-direction: column; gap: 3px; }
+  .iter-item:hover { background: rgba(255,255,255,.05); }
+  .iter-item.on { background: rgba(255,255,255,.04); }
+  .iter-item .ttl { font-size: 13px; color: #929292; letter-spacing: -0.01em; }
+  .iter-item.on .ttl { color: #fff; }
+  .iter-item .sub { font-size: 11px; color: #565b5e; letter-spacing: -0.01em; }
+
   /* ================= THE RECORD (V2 · elevated list) ================= */
   /* Second in-phone page — slides in over the dashboard when the user taps
      the Calibration section. Same design tokens as the dashboard greys. */
@@ -193,6 +219,27 @@
 </head>
 <body>
 
+<div class="iter-wrap">
+  <button class="iter-burger" onclick="toggleStateMenu(event)" aria-label="States">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="iter-menu" id="stateMenuPanel">
+    <div class="iter-head">MARKET · STATES</div>
+    <div class="iter-item on" id="state-item-market" onclick="setMarketState('market')">
+      <span class="ttl">Market hours</span>
+      <span class="sub">Everything live · green market dots</span>
+    </div>
+    <div class="iter-item" id="state-item-pre" onclick="setMarketState('pre')">
+      <span class="ttl">Pre-market</span>
+      <span class="sub">Sunrise line per position · red dots · daily moves frozen</span>
+    </div>
+    <div class="iter-item" id="state-item-after" onclick="setMarketState('after')">
+      <span class="ttl">After hours</span>
+      <span class="sub">Moon line per position · red dots · daily moves frozen</span>
+    </div>
+  </div>
+</div>
+
 <div class="phone">
   <div class="side-btn mute"></div>
   <div class="side-btn vol-up"></div>
@@ -213,9 +260,9 @@
           <div style="display:flex; flex-direction:column; gap:6px;">
             <span style="font-size:11.5px; color:#fff; letter-spacing:-0.19px; font-variant-numeric:tabular-nums; line-height:1;"><span id="stat-clock-inline">13:14:26</span> ET</span>
             <span style="display:flex; align-items:center; gap:5px; line-height:1;">
-              <span style="width:4.65px; height:4.65px; border-radius:50%; background:#30d158; flex:none;"></span>
+              <span class="mkt-dot" style="width:4.65px; height:4.65px; border-radius:50%; background:#30d158; flex:none;"></span>
               <span style="font-size:10px; color:#929292; letter-spacing:0.28px;">US</span>
-              <span style="width:4.65px; height:4.65px; border-radius:50%; background:#30d158; flex:none; margin-left:5px;"></span>
+              <span class="mkt-dot" style="width:4.65px; height:4.65px; border-radius:50%; background:#30d158; flex:none; margin-left:5px;"></span>
               <span style="font-size:10px; color:#929292; letter-spacing:0.28px;">CA</span>
             </span>
           </div>
@@ -256,9 +303,9 @@
       <div id="orig-market-status" class="abs" style="left:15.6px; top:87.4px; width:200px; height:11px;">
         <div class="abs" style="left:0px; top:0px; font-size:12px; color:#ffffff; letter-spacing:-0.19px;"><span id="stat-clock">13:14:26</span> ET</div>
         <div class="abs" style="left:73.5px; top:0px; font-size:11.2px; color:#565b5e;">|</div>
-        <div class="dot" style="left:86.6px; top:5.1px; width:4.65px; height:4.65px; background:#30d158;"></div>
+        <div class="dot mkt-dot" style="left:86.6px; top:5.1px; width:4.65px; height:4.65px; background:#30d158;"></div>
         <div class="abs" style="left:95.9px; top:2.8px; font-size:10px; color:#929292; letter-spacing:0.28px; text-transform:uppercase;">US</div>
-        <div class="dot" style="left:120.4px; top:5.1px; width:4.65px; height:4.65px; background:#30d158;"></div>
+        <div class="dot mkt-dot" style="left:120.4px; top:5.1px; width:4.65px; height:4.65px; background:#30d158;"></div>
         <div class="abs" style="left:129.7px; top:2.8px; font-size:10px; color:#929292; letter-spacing:0.28px; text-transform:uppercase;">CA</div>
       </div>
 
@@ -492,12 +539,27 @@
   // Section rhythm within a row (matches the original design's spacing):
   // header group -> 16px gap -> description -> 16px gap -> tags -> 16px gap -> divider.
   // Rows without a description (or without tags) simply skip that block and its
-  // gap, instead of leaving a description-sized hole.
-  // Each row ends with a quiet full-width "vs S&P" footer line (VS_H),
-  // mirroring the benchmark section's Difference row.
-  const HEADER_H = 36.45, SECTION_GAP = 16, DESC_H = 17, TAGS_H = 16.64, VS_H = 14;
+  // gap. In the after-hours state the header grows by one extra right-aligned
+  // line (moon icon + post-market move).
+  const HEADER_H = 36.45, SECTION_GAP = 16, DESC_H = 17, TAGS_H = 16.64, AH_H = 20.45;
 
   const listEl = document.getElementById('positions-list');
+  const frameEl = document.querySelector('.frame');
+  // Extra breathing room above "Total Value" (between it and the alert feed)
+  const TOP_SPACING_EXTRA = 32;
+  // 'market' | 'pre' | 'after' — pre/after freeze daily moves, show the
+  // extended-session line (sunrise / moon) and turn the market dots red.
+  let MARKET_STATE = 'market';
+  let fullMinHeight = 0;
+  let positionLive = [];
+
+  function buildPositions() {
+  const extended = MARKET_STATE !== 'market';
+  const headerH = HEADER_H + (extended ? AH_H : 0);
+  // outlined session icons — sunrise for pre-market, moon for after hours
+  const extIcon = MARKET_STATE === 'pre'
+    ? '<svg width="12" height="11" viewBox="0 0 14 12" fill="none" stroke="#c7c7c7" stroke-width="1.1" stroke-linecap="round" style="vertical-align:-1px; margin-right:5px;"><path d="M3.6 9.2a3.4 3.4 0 0 1 6.8 0"/><path d="M1 9.2h12"/><path d="M7 1.2v1.7"/><path d="M2.9 3.1l1.2 1.2"/><path d="M11.1 3.1l-1.2 1.2"/></svg>'
+    : '<svg width="11" height="11" viewBox="0 0 13 13" fill="none" style="vertical-align:-1px; margin-right:5px;"><path d="M11.2 8.3A5 5 0 0 1 4.7 1.8a5.4 5.4 0 1 0 6.5 6.5Z" stroke="#c7c7c7" stroke-width="1.1" stroke-linejoin="round"/></svg>';
   let html = '';
   let cursorTop = LIST_TOP;
   positions.forEach((r, i) => {
@@ -506,36 +568,34 @@
     const hasDesc = r.desc.length > 0;
     const hasTags = r.tags.length > 0;
 
-    // per-position S&P comparison: same capital, same holding period, indexed.
-    // spRet is a stable per-position S&P return for the holding window.
+    // vs S&P as percentage points beside the ticker — green when the position
+    // beats the index over its holding window, red when it lags.
     const spRet = 6 + ((i * 37) % 25);
     r._spRet = spRet;
-    const _v = parseMoney(r.value).num, _p = parsePct(r.pct);
-    const _cost = _v / (1 + _p / 100);
-    const _diff = _v - _cost * (1 + spRet / 100);
-    const _diffPct = _p - spRet;
-    const vsTxt = fmtSignedMoney(_diff) + ' CAD (' + fmtPct(_diffPct) + ')';
-    const vsColor = _diff >= 0 ? '#c7c7c7' : '#929292';
+    const pp = parsePct(r.pct) - spRet;
+    const ppTxt = (pp >= 0 ? '+' : '−') + Math.abs(pp).toFixed(1) + ' pp vs S&P';
+    const ppCol = pp >= 0 ? '#30d158' : '#ff3533';
 
-    let localCursor = HEADER_H;
+    // extended-session move — stable per position
+    const ah = (((i * 13) % 30) - 12) / 10;
+    r._ext = ah;
+    const ahTxt = fmtPct(ah, 2);
+
+    let localCursor = headerH;
     let descTop = null, tagsTop = null;
     if (hasDesc) { localCursor += SECTION_GAP; descTop = localCursor; localCursor += DESC_H; }
     if (hasTags) { localCursor += SECTION_GAP; tagsTop = localCursor; localCursor += TAGS_H; }
     localCursor += SECTION_GAP;
-    const vsTop = localCursor;
-    localCursor += VS_H;
-    localCursor += SECTION_GAP;
     const rowHeight = localCursor;
 
     html += `
-      <div id="pos-ticker-${i}" class="abs" style="left:16px; top:${top + 0.93}px; font-size:13px; font-weight:500; text-transform:uppercase;">${r.ticker}</div>
-      <div id="pos-weight-${i}" class="abs" style="left:16px; top:${top + 0.93}px; font-size:13px; color:#929292; letter-spacing:-0.24px; text-transform:uppercase; visibility:hidden;">${r.weight}</div>
-      <div class="abs" style="left:16px; top:${top + 21.95}px; font-size:10px; color:#929292;">${r.category}</div>
+      <div class="abs" style="left:16px; top:${top + 0.93}px; font-size:13px;"><span style="font-weight:500; text-transform:uppercase;">${r.ticker}</span><span id="pos-pp-${i}" style="font-size:11.5px; color:${ppCol}; margin-left:7px; letter-spacing:-0.1px; font-variant-numeric:tabular-nums;">${ppTxt}</span></div>
+      <div class="abs" style="left:16px; top:${top + 21.95}px; font-size:10px; color:#929292;">${r.category}<span style="color:#565b5e; margin-left:6px; text-transform:uppercase;">${r.weight}</span></div>
       <div id="pos-value-${i}" class="abs" style="left:167px; top:${top}px; font-size:13px; font-weight:300; letter-spacing:-0.28px; text-align:right; width:150px;">${r.value}</div>
       <div id="pos-pct-${i}" class="abs" style="left:327px; top:${top}px; font-size:13px; color:#929292; letter-spacing:-0.24px; text-align:right; width:50px;">${r.pct}</div>
       <div id="pos-price-${i}" class="abs" style="left:167px; top:${top + 20.45}px; font-size:13px; font-weight:300; letter-spacing:-0.28px; text-align:right; width:150px;">${r.price}</div>
       <div id="pos-change-${i}" class="abs" style="left:327px; top:${top + 20.45}px; font-size:13px; font-weight:${changePositive ? 700 : 400}; color:${changePositive ? '#ffffff' : '#929292'}; letter-spacing:-0.24px; text-align:right; width:50px;">${r.change}</div>
-      <div class="abs" style="left:16px; top:${top + vsTop}px; width:361px; text-align:right; font-size:11.5px; letter-spacing:-0.22px; font-variant-numeric:tabular-nums;"><span style="color:#929292;">vs S&amp;P&nbsp;&nbsp;</span><span id="pos-vs-${i}" style="color:${vsColor};">${vsTxt}</span></div>
+      ${extended ? `<div class="abs" style="left:167px; top:${top + 41.9}px; width:210px; text-align:right; font-size:12px; color:#ffffff; letter-spacing:-0.24px; font-variant-numeric:tabular-nums;">${extIcon}<span id="pos-ext-${i}">${ahTxt}</span></div>` : ''}
       ${hasDesc ? `<div class="abs" style="left:16px; top:${top + descTop}px; font-size:12px; color:#c7c7c7; letter-spacing:-0.19px; max-width:361px; overflow:hidden; text-overflow:ellipsis;">${r.desc}</div>` : ''}
       ${hasTags ? `<div class="tags-row" style="left:16px; top:${top + tagsTop}px;">${r.tags.map(label => `<span class="tag"><span class="tag-dot" style="background:${TAG_COLORS[label]};"></span>${label}</span>`).join('')}</div>` : ''}
       <div class="row-divider" style="top:${top + rowHeight}px;"></div>
@@ -544,25 +604,33 @@
   });
   listEl.innerHTML = html;
   const lastRowBottom = cursorTop - ROW_GAP;
-
-  // Measure each ticker's actual rendered width so the weight label sits
-  // a fixed 8px after it, instead of guessing width from character count.
-  positions.forEach((r, i) => {
-    const tickerEl = document.getElementById(`pos-ticker-${i}`);
-    const weightEl = document.getElementById(`pos-weight-${i}`);
-    const w = tickerEl.getBoundingClientRect().width;
-    weightEl.style.left = (16 + w + 8) + 'px';
-    weightEl.style.visibility = 'visible';
-  });
-
-  // Extra breathing room above "Total Value" (between it and the alert feed),
-  // applied once via the #shifted-content wrapper transform below.
-  const TOP_SPACING_EXTRA = 32;
-
-  const frameEl = document.querySelector('.frame');
-  const fullMinHeight = lastRowBottom + 40 + TOP_SPACING_EXTRA;
+  fullMinHeight = lastRowBottom + 40 + TOP_SPACING_EXTRA;
   frameEl.style.minHeight = fullMinHeight + 'px';
+
+  // live-sim bindings for the freshly built rows
+  positionLive = positions.map((r, i) => {
+    const value = parseMoney(r.value);
+    const price = parseMoney(r.price);
+    return {
+      valueEl: document.getElementById(`pos-value-${i}`),
+      pctEl: document.getElementById(`pos-pct-${i}`),
+      priceEl: document.getElementById(`pos-price-${i}`),
+      changeEl: document.getElementById(`pos-change-${i}`),
+      ppEl: document.getElementById(`pos-pp-${i}`),
+      extEl: document.getElementById(`pos-ext-${i}`),
+      ext: r._ext,
+      spRet: r._spRet,
+      valueBase: value.num, value: value.num, valueCcy: value.ccy,
+      priceBase: price.num, price: price.num, priceCcy: price.ccy,
+      pctBase: parsePct(r.pct), pct: parsePct(r.pct),
+      changeBase: parsePct(r.change), change: parsePct(r.change),
+    };
+  });
+  if (window.__applyCore) window.__applyCore();
+  }
+
   document.getElementById('shifted-content').style.transform = `translateY(${TOP_SPACING_EXTRA}px)`;
+  buildPositions();
 
   // ---- Core section: collapsible ----
   (function () {
@@ -590,6 +658,8 @@
       collapsed = !collapsed;
       apply();
     });
+    // let buildPositions() re-apply the collapse offset after a rebuild
+    window.__applyCore = apply;
   })();
 
   // ================= LIVE "REAL-TIME" DATA SIMULATION =================
@@ -641,20 +711,26 @@
 
   const liveStats = [
     makeLiveStat('stat-total-value', 173249.00, { volatility: 0.0006, reversion: 0.06, mirrorId: 'stat-total-value-inline' }),
-    makeLiveStat('stat-core-value', 126471.77, { volatility: 0.0012, reversion: 0.05 }),
-    makeLiveStat('stat-core-allchg', 6365.65, { kind: 'signedMoney', volatility: 0.012, reversion: 0.06 }),
-    makeLiveStat('stat-core-allpct', 5.3, { kind: 'pct', volatility: 0.02, reversion: 0.08, wrap: t => `(${t})` }),
+    // Core is managed index funds — nothing trades outside market hours
+    makeLiveStat('stat-core-value', 126471.77, { volatility: 0.0012, reversion: 0.05, frozenExtended: true }),
+    makeLiveStat('stat-core-allchg', 6365.65, { kind: 'signedMoney', volatility: 0.012, reversion: 0.06, frozenExtended: true }),
+    makeLiveStat('stat-core-allpct', 5.3, { kind: 'pct', volatility: 0.02, reversion: 0.08, wrap: t => `(${t})`, frozenExtended: true }),
     makeLiveStat('stat-active-value', 46777.23, { volatility: 0.0012, reversion: 0.05 }),
     makeLiveStat('stat-active-allchg', 2353.46, { kind: 'signedMoney', volatility: 0.012, reversion: 0.06 }),
     makeLiveStat('stat-active-allpct', 5.3, { kind: 'pct', volatility: 0.02, reversion: 0.08, wrap: t => `(${t})` }),
     makeLiveStat('stat-bench-portfolio', 46777.23, { volatility: 0.0012, reversion: 0.05 }),
-    makeLiveStat('stat-bench-sp500', 44593.05, { volatility: 0.0008, reversion: 0.05 }),
+    // the S&P index itself stops moving when the market closes
+    makeLiveStat('stat-bench-sp500', 44593.05, { volatility: 0.0008, reversion: 0.05, frozenExtended: true }),
     makeLiveStat('stat-diff-value', 2184.18, { kind: 'signedMoney', volatility: 0.02, reversion: 0.06 }),
     makeLiveStat('stat-diff-pct', 4.90, { kind: 'pct', decimals: 2, volatility: 0.02, reversion: 0.08 }),
   ].filter(Boolean);
 
   setInterval(() => {
-    liveStats.forEach(s => { if (Math.random() < 0.55) tickLiveStat(s); });
+    const extended = MARKET_STATE !== 'market';
+    liveStats.forEach(s => {
+      if (extended && s.frozenExtended) return;
+      if (Math.random() < 0.55) tickLiveStat(s);
+    });
   }, 1200);
 
   // ---- Header clock (drives both the in-page clock and the sticky-nav mirror) ----
@@ -663,6 +739,7 @@
     const elInline = document.getElementById('stat-clock-inline');
     if (!el) return;
     let h = 13, m = 14, sec = 26;
+    window.__setClock = (hh, mm, ss) => { h = hh; m = mm; sec = ss; };
     setInterval(() => {
       sec++; if (sec >= 60) { sec = 0; m++; }
       if (m >= 60) { m = 0; h++; }
@@ -705,54 +782,46 @@
   })();
 
   // ---- Position rows: price / value / all-time % / today's change ----
-  const positionLive = positions.map((r, i) => {
-    const value = parseMoney(r.value);
-    const price = parseMoney(r.price);
-    return {
-      valueEl: document.getElementById(`pos-value-${i}`),
-      pctEl: document.getElementById(`pos-pct-${i}`),
-      priceEl: document.getElementById(`pos-price-${i}`),
-      changeEl: document.getElementById(`pos-change-${i}`),
-      vsEl: document.getElementById(`pos-vs-${i}`),
-      spRet: r._spRet,
-      valueBase: value.num, value: value.num, valueCcy: value.ccy,
-      priceBase: price.num, price: price.num, priceCcy: price.ccy,
-      pctBase: parsePct(r.pct), pct: parsePct(r.pct),
-      changeBase: parsePct(r.change), change: parsePct(r.change),
-    };
-  });
-
+  // (positionLive is built inside buildPositions so the after-hours toggle
+  // can rebuild the list and re-bind in one place)
   function tickPosition(row) {
-    const deltaFrac = (Math.random() * 2 - 1) * 0.003;
+    const extended = MARKET_STATE !== 'market';
+    // extended sessions trade thin — quotes drift at a fraction of RTH pace
+    const deltaFrac = (Math.random() * 2 - 1) * 0.003 * (extended ? 0.35 : 1);
     row.price += row.price * deltaFrac;
     row.value += row.value * deltaFrac;
-    row.change += deltaFrac * 100;
     row.pct += deltaFrac * 100 * 0.4;
     row.price += (row.priceBase - row.price) * 0.03;
     row.value += (row.valueBase - row.value) * 0.03;
-    row.change += (row.changeBase - row.change) * 0.05;
     row.pct += (row.pctBase - row.pct) * 0.05;
 
     const up = deltaFrac >= 0;
     row.valueEl.textContent = `${fmtMoney(row.value)} ${row.valueCcy}`;
     row.priceEl.textContent = `${fmtMoney(row.price)} ${row.priceCcy}`;
     row.pctEl.textContent = fmtPct(row.pct);
-    const changePositive = row.change >= 0;
-    row.changeEl.textContent = fmtPct(row.change);
-    row.changeEl.style.fontWeight = changePositive ? '700' : '400';
-
     flash(row.valueEl, up, '#ffffff');
     flash(row.priceEl, up, '#ffffff');
     flash(row.pctEl, up, '#929292');
-    flash(row.changeEl, up, changePositive ? '#ffffff' : '#929292');
 
-    // vs S&P — same capital indexed over the same window, live like the rest
-    if (row.vsEl) {
-      const cost = row.value / (1 + row.pct / 100);
-      const diff = row.value - cost * (1 + row.spRet / 100);
-      const diffPct = row.pct - row.spRet;
-      row.vsEl.textContent = fmtSignedMoney(diff) + ' CAD (' + fmtPct(diffPct) + ')';
-      row.vsEl.style.color = diff >= 0 ? '#c7c7c7' : '#929292';
+    if (!extended) {
+      // today's move only exists while the market is open
+      row.change += deltaFrac * 100;
+      row.change += (row.changeBase - row.change) * 0.05;
+      const changePositive = row.change >= 0;
+      row.changeEl.textContent = fmtPct(row.change);
+      row.changeEl.style.fontWeight = changePositive ? '700' : '400';
+      flash(row.changeEl, up, changePositive ? '#ffffff' : '#929292');
+    } else if (row.extEl) {
+      // ...while pre/post market, the session line is the live number
+      row.ext += (Math.random() - 0.5) * 0.05;
+      row.extEl.textContent = fmtPct(row.ext, 2);
+    }
+
+    // vs S&P in percentage points, beside the ticker — live like the rest
+    if (row.ppEl) {
+      const pp = row.pct - row.spRet;
+      row.ppEl.textContent = (pp >= 0 ? '+' : '−') + Math.abs(pp).toFixed(1) + ' pp vs S&P';
+      row.ppEl.style.color = pp >= 0 ? '#30d158' : '#ff3533';
     }
   }
 
@@ -873,6 +942,33 @@
         '<div class="e2-right">' + right + '</div>' +
       '</div>';
     }).join('');
+  }
+
+  // ---- Market-state switcher (burger menu outside the phone) ----
+  function toggleStateMenu(e) {
+    if (e) e.stopPropagation();
+    document.getElementById('stateMenuPanel').classList.toggle('open');
+  }
+  document.addEventListener('click', e => {
+    const p = document.getElementById('stateMenuPanel');
+    if (p && p.classList.contains('open') && !e.target.closest('.iter-wrap')) p.classList.remove('open');
+  });
+  function setMarketState(s) {
+    MARKET_STATE = s;
+    document.getElementById('stateMenuPanel').classList.remove('open');
+    document.getElementById('state-item-market').classList.toggle('on', s === 'market');
+    document.getElementById('state-item-pre').classList.toggle('on', s === 'pre');
+    document.getElementById('state-item-after').classList.toggle('on', s === 'after');
+    // market dots (in-page row + top bar): green while open, red while closed
+    const dotCol = s === 'market' ? '#30d158' : '#ff3533';
+    document.querySelectorAll('.mkt-dot').forEach(d => { d.style.background = dotCol; });
+    // clock jumps to a time that matches the session, then keeps ticking
+    if (window.__setClock) {
+      if (s === 'pre') window.__setClock(7, 46, 12);
+      else if (s === 'after') window.__setClock(17, 32, 5);
+      else window.__setClock(13, 14, 26);
+    }
+    buildPositions();
   }
 
   function openRecords() {
