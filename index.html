@@ -258,7 +258,7 @@
              right — nothing renders under the dynamic island (bottom y≈40) -->
         <div id="topbar-inline" style="position:absolute; left:62px; right:112px; top:0; height:71px; padding-top:14px; display:flex; align-items:center; opacity:0; transition:opacity .3s ease; pointer-events:none;">
           <div style="display:flex; flex-direction:column; gap:6px;">
-            <span style="font-size:11.5px; color:#fff; letter-spacing:-0.19px; font-variant-numeric:tabular-nums; line-height:1;"><span id="stat-clock-inline">13:14:26</span> ET</span>
+            <span style="font-size:11.5px; color:#fff; letter-spacing:-0.19px; font-variant-numeric:tabular-nums; line-height:1; white-space:nowrap;"><span id="stat-clock-inline">13:14:26</span> ET</span>
             <span style="display:flex; align-items:center; gap:5px; line-height:1;">
               <span class="mkt-dot" style="width:4.65px; height:4.65px; border-radius:50%; background:#30d158; flex:none;"></span>
               <span style="font-size:10px; color:#929292; letter-spacing:0.28px;">US</span>
@@ -266,8 +266,13 @@
               <span style="font-size:10px; color:#929292; letter-spacing:0.28px;">CA</span>
             </span>
           </div>
-          <span style="width:33px; flex:none;"></span>
-          <span id="inline-total" style="font-size:12.5px; letter-spacing:-0.3px; color:#fff; opacity:0; transition:opacity .3s ease; font-variant-numeric:tabular-nums;"><span id="stat-total-value-inline">173,249.00</span> <span style="color:#565b5e;">CAD</span></span>
+          <span style="width:14px; flex:none;"></span>
+          <!-- two-row stack, mirroring the left one: total value over the
+               benchmark difference -->
+          <div id="inline-total" style="display:flex; flex-direction:column; gap:6px; opacity:0; transition:opacity .3s ease;">
+            <span style="font-size:12.5px; letter-spacing:-0.3px; color:#fff; font-variant-numeric:tabular-nums; line-height:1; white-space:nowrap;"><span id="stat-total-value-inline">173,249.00</span> <span style="color:#565b5e;">CAD</span></span>
+            <span id="inline-diff" style="font-size:10px; letter-spacing:-0.1px; color:#30d158; font-variant-numeric:tabular-nums; line-height:1; white-space:nowrap;"><span id="stat-diff-value-inline">+2,184.18</span> (<span id="stat-diff-pct-inline">+4.90%</span>) <span style="color:#929292;">vs S&amp;P</span></span>
+          </div>
         </div>
         <svg style="position:absolute; left:298px; top:31px;" width="17" height="17" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M7 13C10.3137 13 13 10.3137 13 7C13 3.68629 10.3137 1 7 1C3.68629 1 1 3.68629 1 7C1 10.3137 3.68629 13 7 13Z" stroke="white" stroke-width="1.3"/>
@@ -414,8 +419,8 @@
       <div class="divider" style="left:16px; top:1550.92px; width:361px;"></div>
       <div class="divider" style="left:16px; top:1600.92px; width:361px;"></div>
       <div class="abs" style="left:16px; top:1567.58px; font-size:13px; color:#929292; letter-spacing:-0.26px;">Difference</div>
-      <div id="stat-diff-value" class="abs" style="right:76px; top:1566.51px; font-size:15px; letter-spacing:-0.3px;">+2,184.18</div>
-      <div id="stat-diff-pct" class="abs" style="right:16px; top:1568.51px; font-size:13px; color:#929292; letter-spacing:-0.26px;">+4.90%</div>
+      <div id="stat-diff-value" class="abs" style="right:76px; top:1566.51px; font-size:15px; letter-spacing:-0.3px; color:#30d158;">+2,184.18</div>
+      <div id="stat-diff-pct" class="abs" style="right:16px; top:1568.51px; font-size:13px; color:#30d158; letter-spacing:-0.26px;">+4.90%</div>
 
       <!-- ============ CALIBRATION ============ -->
       <div class="abs" style="left:300.3px; top:1647.92px; font-size:15px; color:#c7c7c7; letter-spacing:-0.3px;">Calibration</div>
@@ -558,8 +563,8 @@
   const headerH = HEADER_H + (extended ? AH_H : 0);
   // outlined session icons — sunrise for pre-market, moon for after hours
   const extIcon = MARKET_STATE === 'pre'
-    ? '<svg width="12" height="11" viewBox="0 0 14 12" fill="none" stroke="#c7c7c7" stroke-width="1.1" stroke-linecap="round" style="vertical-align:-1px; margin-right:5px;"><path d="M3.6 9.2a3.4 3.4 0 0 1 6.8 0"/><path d="M1 9.2h12"/><path d="M7 1.2v1.7"/><path d="M2.9 3.1l1.2 1.2"/><path d="M11.1 3.1l-1.2 1.2"/></svg>'
-    : '<svg width="11" height="11" viewBox="0 0 13 13" fill="none" style="vertical-align:-1px; margin-right:5px;"><path d="M11.2 8.3A5 5 0 0 1 4.7 1.8a5.4 5.4 0 1 0 6.5 6.5Z" stroke="#c7c7c7" stroke-width="1.1" stroke-linejoin="round"/></svg>';
+    ? '<svg width="12" height="11" viewBox="0 0 14 12" fill="none" stroke="#fbc308" stroke-width="1.1" stroke-linecap="round" style="vertical-align:-1px; margin-right:5px;"><path d="M3.6 9.2a3.4 3.4 0 0 1 6.8 0"/><path d="M1 9.2h12"/><path d="M7 1.2v1.7"/><path d="M2.9 3.1l1.2 1.2"/><path d="M11.1 3.1l-1.2 1.2"/></svg>'
+    : '<svg width="11" height="11" viewBox="0 0 13 13" fill="none" style="vertical-align:-1px; margin-right:5px;"><path d="M11.2 8.3A5 5 0 0 1 4.7 1.8a5.4 5.4 0 1 0 6.5 6.5Z" stroke="#4a7dff" stroke-width="1.1" stroke-linejoin="round"/></svg>';
   let html = '';
   let cursorTop = LIST_TOP;
   positions.forEach((r, i) => {
@@ -707,6 +712,14 @@
     flash(s.el, delta >= 0, s.settleColor);
     if (s.mirrorEl) s.mirrorEl.textContent = text;
     if (s.mirrorEl2) s.mirrorEl2.textContent = text;
+    // sign-colored stats (benchmark difference): green ahead of the index,
+    // red behind — applied to the stat, its mirror, and an optional container
+    if (s.colorBySign) {
+      const c = s.value >= 0 ? '#30d158' : '#ff3533';
+      s.el.style.color = c;
+      if (s.mirrorEl) s.mirrorEl.style.color = c;
+      if (s.colorAlsoId) { const x = document.getElementById(s.colorAlsoId); if (x) x.style.color = c; }
+    }
   }
 
   const liveStats = [
@@ -721,8 +734,8 @@
     makeLiveStat('stat-bench-portfolio', 46777.23, { volatility: 0.0012, reversion: 0.05 }),
     // the S&P index itself stops moving when the market closes
     makeLiveStat('stat-bench-sp500', 44593.05, { volatility: 0.0008, reversion: 0.05, frozenExtended: true }),
-    makeLiveStat('stat-diff-value', 2184.18, { kind: 'signedMoney', volatility: 0.02, reversion: 0.06 }),
-    makeLiveStat('stat-diff-pct', 4.90, { kind: 'pct', decimals: 2, volatility: 0.02, reversion: 0.08 }),
+    makeLiveStat('stat-diff-value', 2184.18, { kind: 'signedMoney', volatility: 0.02, reversion: 0.06, colorBySign: true, mirrorId: 'stat-diff-value-inline', colorAlsoId: 'inline-diff' }),
+    makeLiveStat('stat-diff-pct', 4.90, { kind: 'pct', decimals: 2, volatility: 0.02, reversion: 0.08, colorBySign: true, mirrorId: 'stat-diff-pct-inline' }),
   ].filter(Boolean);
 
   setInterval(() => {
