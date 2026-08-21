@@ -1,1008 +1,3142 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Portfolio + The Record — Mobile Frame</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KSTL · Kestrel Systems</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600&display=swap');
 
-  * { margin: 0; padding: 0; box-sizing: border-box; }
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
+}
 
-  body {
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: #0a0a0a;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    padding: 40px 20px;
-  }
+html, body {
+  background: #1c1c1e;
+  color: #ffffff;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  min-height: 100vh;
+  overflow: hidden;
+}
+html { scrollbar-width: none; }
+html::-webkit-scrollbar, body::-webkit-scrollbar { display: none; width: 0; height: 0; }
 
-  /* ---------- Phone chrome ---------- */
-  .phone {
-    position: relative;
-    width: 421px;
-    padding: 12px;
-    background: #060606;
-    border-radius: 58px;
-    box-shadow: 0 0 0 2px #1f1f1f, 0 0 0 8px #0d0d0d, 0 40px 80px rgba(0,0,0,.7);
-  }
-  .phone .side-btn { position: absolute; background: #1a1a1a; border-radius: 3px; }
-  .phone .side-btn.mute { left: -3px; top: 118px; width: 3px; height: 28px; }
-  .phone .side-btn.vol-up { left: -3px; top: 165px; width: 3px; height: 48px; }
-  .phone .side-btn.vol-down { left: -3px; top: 222px; width: 3px; height: 48px; }
-  .phone .side-btn.power { right: -3px; top: 190px; width: 3px; height: 70px; }
+body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
-  .screen {
-    position: relative;
-    width: 397px;
-    height: 852px;
-    background: #000;
-    border-radius: 46px;
-    overflow-y: auto;
-    overflow-x: hidden;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-  }
-  .screen::-webkit-scrollbar { width: 0; height: 0; }
+p { margin: 0; }
 
-  .dynamic-island {
-    position: absolute;
-    top: 14px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 100px;
-    height: 26px;
-    background: #000;
-    border-radius: 16px;
-    z-index: 50;
-  }
+/* ---------- Device frame mockup ---------- */
+.device {
+  width: 426px;
+  height: 900px;
+  background: #050505;
+  border-radius: 44px;
+  padding: 14px;
+  box-shadow: 0 50px 100px rgba(0,0,0,0.55), inset 0 0 0 1px rgba(255,255,255,0.08);
+  position: relative;
+}
+.screen {
+  width: 100%;
+  height: 100%;
+  border-radius: 30px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background: #000000;
+  position: relative;
+  scrollbar-width: none;
+}
+.screen::-webkit-scrollbar { display: none; width: 0; height: 0; }
 
-  .home-indicator {
-    position: absolute;
-    bottom: 6px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 110px;
-    height: 4px;
-    background: #3a3a3a;
-    border-radius: 3px;
-    z-index: 50;
-  }
+/* ---------- Burger menu (outside the device frame) ---------- */
+.burger-btn {
+  position: fixed;
+  top: 28px;
+  left: 28px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.15);
+  background: #0d0d0d;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  cursor: pointer;
+  z-index: 500;
+}
+.burger-btn span {
+  display: block;
+  width: 18px;
+  height: 1.5px;
+  background: #ffffff;
+}
+.burger-menu {
+  position: fixed;
+  top: 82px;
+  left: 28px;
+  width: 190px;
+  background: #0d0d0d;
+  border: 1px solid #2a2a2a;
+  border-radius: 12px;
+  padding: 8px;
+  z-index: 500;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.burger-menu[hidden] { display: none; }
+.burger-menu__title {
+  font-size: 11px;
+  color: #6b6b6b;
+  letter-spacing: 0.2px;
+  padding: 8px 10px 4px;
+  text-transform: uppercase;
+}
+.burger-menu__item {
+  font-family: inherit;
+  font-size: 13px;
+  letter-spacing: -0.1px;
+  color: #929292;
+  background: transparent;
+  border: none;
+  border-radius: 7px;
+  padding: 10px;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.burger-menu__item.active { background: #2a2a2a; color: #ffffff; }
+.burger-menu__item:hover { color: #ffffff; }
+.burger-menu__divider {
+  height: 1px;
+  background: #2a2a2a;
+  margin: 6px 4px;
+}
+.burger-menu__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 10px;
+  gap: 8px;
+}
+.burger-menu__row-label {
+  font-family: inherit;
+  font-size: 13px;
+  letter-spacing: -0.1px;
+  color: #929292;
+  white-space: nowrap;
+}
+.burger-menu__segmented {
+  display: flex;
+  background: #1a1a1a;
+  border-radius: 6px;
+  padding: 2px;
+  gap: 2px;
+}
+.burger-menu__segment {
+  font-family: inherit;
+  font-size: 11px;
+  letter-spacing: -0.1px;
+  color: #929292;
+  background: transparent;
+  border: none;
+  border-radius: 5px;
+  padding: 5px 9px;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.burger-menu__segment.active { background: #2a2a2a; color: #ffffff; }
+.burger-menu__segment:hover { color: #ffffff; }
 
-  /* ---------- Design frame (393px, matches Figma root) ---------- */
-  .frame {
-    position: relative;
-    width: 393px;
-    min-height: 2592px;
-    background: #000;
-    border: none;
-    box-sizing: border-box;
-    color: #ffffff;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    overflow: hidden;
-    transition: min-height .35s ease;
-  }
 
-  .abs { position: absolute; white-space: nowrap; line-height: normal; }
-  .divider { position: absolute; background: #1c1c1c; height: 1px; }
-  .dot { position: absolute; border-radius: 50%; }
+.frame {
+  width: 394px;
+  margin: 0 auto;
+  background: #000000;
+  position: relative;
+}
 
-  .tags-row {
-    position: absolute;
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    row-gap: 8px;
-    column-gap: 14px;
-    max-width: 361px;
-  }
-  .tag {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 10px;
-    font-weight: 500;
-    color: #ffffff;
-    white-space: nowrap;
-  }
-  .tag .tag-dot {
-    width: 4.65px;
-    height: 4.65px;
-    border-radius: 50%;
-    flex: none;
-  }
+/* ---------- Status bar ---------- */
+.statusbar {
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px 0 21px;
+}
+.statusbar__time {
+  font-family: 'SF Pro Text', 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 15px;
+  letter-spacing: -0.165px;
+  color: #ffffff;
+}
+.statusbar__icons {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.statusbar__icons img { display: block; }
+.icon-wifi, .icon-battery {
+  display: block;
+}
 
-  .row-divider {
-    position: absolute;
-    left: 16px;
-    width: 360.79px;
-    height: 1px;
-    background: #1c1c1c;
-  }
+/* ---------- App bar ---------- */
+.sticky-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: #000000;
+}
+.appbar {
+  min-height: 87px;
+  border-bottom: 1px solid #2b2b2b;
+  position: relative;
+  padding: 0 20px;
+}
+.appbar__thesis-line {
+  display: none;
+  font-size: 12px;
+  color: #929292;
+  letter-spacing: -0.24px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 16px 0 22px;
+}
+.appbar__thesis-line.visible {
+  display: block;
+}
+.price-reveal {
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+.price-reveal.visible {
+  opacity: 1;
+}
+.appbar__market {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding-top: 14px;
+}
+.appbar__nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 21px;
+}
+.appbar__left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.appbar__back img { display: block; width: 16px; height: 16px; }
+.appbar__ticker {
+  font-size: 13px;
+  color: #ffffff;
+  letter-spacing: -0.28px;
+  line-height: 1.25;
+  white-space: nowrap;
+}
+.appbar__ticker .chg {
+  font-size: 10px;
+  color: #929292;
+  letter-spacing: -0.26px;
+  margin-left: 4px;
+}
+.appbar__actions img { display: block; height: 13.2442px; width: 51px; }
+.dot {
+  width: 4.65px;
+  height: 4.65px;
+  border-radius: 2.33px;
+  flex-shrink: 0;
+}
+.dot--green { background: #02cb45; }
+.dot--green-b { background: #30d158; }
+.dot--amber { background: #fbc308; }
+.dot--amber2 { background: #fdad00; }
+.dot--red { background: #ff3533; }
+.dot--white { background: #ffffff; }
+.appbar__market span {
+  font-size: 10px;
+  color: #929292;
+  letter-spacing: -0.1859px;
+  line-height: 11.154px;
+}
 
-  @keyframes pulse-dot {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.35; }
-  }
-  .pulse-dot { animation: pulse-dot 2s ease-in-out infinite; }
+/* ---------- Generic section header ---------- */
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 15px;
+  color: #ffffff;
+  letter-spacing: -0.14px;
+  line-height: normal;
+}
+.section-header .chev {
+  font-weight: 300;
+  font-size: 16px;
+  color: #ffffff;
+  line-height: 16px;
+  position: relative;
+  top: -1px;
+}
+.section-header--row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+.section-header--row .date {
+  font-size: 14px;
+  color: #929292;
+}
 
-  /* ================= STATE SWITCHER (outside the phone) ================= */
-  .iter-wrap { position: fixed; top: 20px; left: 20px; z-index: 600; }
-  .iter-burger {
-    width: 42px; height: 42px; border: 1px solid #262626; border-radius: 9px;
-    background: rgba(17,17,17,0.85); backdrop-filter: blur(8px);
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    gap: 4.5px; cursor: pointer;
-  }
-  .iter-burger:hover { border-color: #3a3a3a; }
-  .iter-burger span { display: block; width: 16px; height: 1.5px; background: #c7c7c7; border-radius: 1px; }
-  .iter-menu {
-    position: absolute; top: 50px; left: 0; min-width: 258px;
-    background: #111; border: 1px solid #262626; border-radius: 10px; padding: 6px;
-    opacity: 0; transform: translateY(-6px); pointer-events: none;
-    transition: opacity .16s ease, transform .16s ease;
-    box-shadow: 0 20px 50px rgba(0,0,0,.6);
-  }
-  .iter-menu.open { opacity: 1; transform: translateY(0); pointer-events: all; }
-  .iter-head { padding: 9px 12px 7px; font-size: 10px; letter-spacing: .14em; color: #565b5e; font-weight: 500; }
-  .iter-item { padding: 10px 12px; border-radius: 7px; cursor: pointer; display: flex; flex-direction: column; gap: 3px; }
-  .iter-item:hover { background: rgba(255,255,255,.05); }
-  .iter-item.on { background: rgba(255,255,255,.04); }
-  .iter-item .ttl { font-size: 13px; color: #929292; letter-spacing: -0.01em; }
-  .iter-item.on .ttl { color: #fff; }
-  .iter-item .sub { font-size: 11px; color: #565b5e; letter-spacing: -0.01em; }
+/* ---------- After-hours indicators (amber dot + white text) ---------- */
+.ah-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 500;
+  color: #ffffff;
+  letter-spacing: 0.1px;
+  white-space: nowrap;
+}
+.ah-badge[hidden] { display: none; }
+.ah-badge .dot { position: relative; top: -0.5px; }
+.ah-badge--inline {
+  margin-left: 10px;
+}
+.ah-moon {
+  color: #ffffff;
+  flex-shrink: 0;
+  position: relative;
+  top: -0.5px;
+}
+.ah-moon[hidden] { display: none; }
+.ah-moon--badge.ah-moon--ah { color: #4a7dff; }
+.ah-moon--badge.ah-moon--pm { color: #fbc308; }
+.ah-header-moon {
+  width: 11px;
+  height: 11px;
+  margin-left: 4px;
+  margin-right: 4px;
+  top: -1px;
+}
+.price-block__price-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.price-block__ah-change {
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.price-block__ah-change[hidden] { display: none; }
+.price-block__ah-price {
+  font-size: 15px;
+  font-weight: 300;
+  color: #ffffff;
+  letter-spacing: -0.3px;
+}
+.price-block__ah-delta {
+  font-size: 14px;
+  color: #929292;
+  letter-spacing: -0.24px;
+}
+.price-block__close-label {
+  font-size: 14px;
+  color: #929292;
+  letter-spacing: -0.28px;
+  margin-right: 1px;
+}
+.price-block__close-label[hidden] { display: none; }
 
-  /* ================= THE RECORD (V2 · elevated list) ================= */
-  /* Second in-phone page — slides in over the dashboard when the user taps
-     the Calibration section. Same design tokens as the dashboard greys. */
-  #records-screen {
-    position: absolute;
-    top: 12px; left: 12px;
-    width: 397px; height: 852px;
-    background: #000;
-    border-radius: 46px;
-    /* above the dashboard's sticky nav (z 40), below the phone chrome
-       (dynamic island / home indicator at z 50) */
-    z-index: 45;
-    overflow: hidden;
-    display: flex; flex-direction: column;
-    transform: translateX(104%);
-    visibility: hidden;
-    transition: transform 340ms cubic-bezier(0.32, 0.72, 0, 1), visibility 0s linear 340ms;
-  }
-  #records-screen.open {
-    transform: translateX(0);
-    visibility: visible;
-    transition: transform 340ms cubic-bezier(0.32, 0.72, 0, 1), visibility 0s linear 0s;
-  }
+/* ---------- Thesis banner ---------- */
+.thesis-banner {
+  margin: 25px 20px 0;
+  min-height: 55px;
+  background: #0a0a0a;
+  border: 1px solid rgba(255,255,255,0.11);
+  cursor: pointer;
+}
+.thesis-display {
+  height: 55px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 0 18px;
+}
+.thesis-display[hidden] { display: none; }
+.thesis-display__left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.thesis-display span {
+  font-size: 11px;
+  color: #929292;
+  letter-spacing: -0.22px;
+  text-transform: capitalize;
+  line-height: 12px;
+}
+.thesis-banner.has-version .thesis-display {
+  justify-content: space-between;
+}
 
-  /* top nav — same spec as the dashboard's fixed bar (71px, hairline bottom) */
-  .rec-head {
-    flex: none; position: relative; height: 71px;
-    display: flex; align-items: center; gap: 15px;
-    padding: 20px 16px 0 24px;
-    border-bottom: 1px solid #1c1c1c;
-    background: #000;
-  }
-  .rec-back {
-    background: none; border: none; padding: 4px 8px 4px 0;
-    display: flex; align-items: center;
-    cursor: pointer;
-  }
-  .rec-back:active svg path { stroke: #565b5e; }
-  .rec-title { font-size: 17px; font-weight: 600; letter-spacing: -0.4px; color: #fff; flex: 1; }
-  .rec-count { font-size: 11px; color: #565b5e; }
-  .rec-body { flex: 1; overflow-y: auto; overflow-x: hidden; padding: 0 26px; scrollbar-width: none; }
-  .rec-body::-webkit-scrollbar { display: none; }
-  .rec-intro { padding: 17px 0 6px; font-size: 11px; line-height: 1.6; color: #565b5e; }
+/* ---------- Version chip ---------- */
+.version-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font-size: 11px;
+  color: #929292;
+  letter-spacing: -0.2px;
+  text-transform: none;
+  flex-shrink: 0;
+}
+.version-chip .chev {
+  font-size: 13px;
+  font-weight: 300;
+  color: #929292;
+}
 
-  .e2-row {
-    display: flex; justify-content: space-between; align-items: center; gap: 18px;
-    padding: 27px 0; border-bottom: 1px solid #1c1c1c;
-  }
-  .e2-row:last-child { border-bottom: none; }
-  .e2-left { display: flex; flex-direction: column; gap: 9px; min-width: 0; }
-  .e2-nm { font-size: 15px; font-weight: 500; color: #fff; letter-spacing: -0.01em; display: flex; align-items: center; gap: 9px; }
-  .e2-dot { width: 6px; height: 6px; border-radius: 50%; flex: none; animation: pulse-dot 2.6s ease-in-out infinite; }
-  .e2-meta { font-size: 11px; color: #565b5e; letter-spacing: -0.01em; }
-  .e2-right { text-align: right; flex-shrink: 0; display: flex; flex-direction: column; gap: 8px; }
-  .e2-val { font-size: 15px; font-weight: 300; font-variant-numeric: tabular-nums; letter-spacing: -0.01em; line-height: 1; }
-  .e2-val .u { font-size: 9.5px; color: #565b5e; font-weight: 400; margin-left: 4px; letter-spacing: 0; }
-  .e2-sub { font-size: 10px; letter-spacing: 0.05em; }
+/* ---------- Rich cards (Thesis / Kill Criteria) ---------- */
+.rich-card { margin-top: 40px; }
+.rich-card .warning-card { margin-top: 0; }
+.rich-card__full[hidden] { display: none; }
+.rich-card__box {
+  background: #0a0a0a;
+  border: 1px solid rgba(255,255,255,0.11);
+  padding: 17px 18px;
+}
+.rich-card__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.rich-card__body {
+  margin-top: 12px;
+  font-size: 14px;
+  color: #ffffff;
+  letter-spacing: -0.15px;
+  line-height: 1.5;
+}
+.kill-title {
+  font-size: 11px;
+  color: #ff3533;
+  letter-spacing: -0.22px;
+  text-transform: uppercase;
+}
+.kill-list {
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  list-style: none;
+}
+.kill-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+.kill-item .dot { margin-top: 5px; flex-shrink: 0; }
+.kill-item__text {
+  font-size: 13px;
+  color: #c7c7c7;
+  line-height: 1.5;
+  min-width: 0;
+  flex: 1;
+}
+.kill-item__title {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.kill-item__sub {
+  margin-top: 3px;
+  font-size: 11px;
+  color: #929292;
+  letter-spacing: -0.2px;
+  line-height: 1.4;
+}
+.dot--muted { background: #565b5e; }
+.thesis-edit {
+  display: flex;
+  flex-direction: column;
+  padding: 15px 18px 12px;
+  cursor: auto;
+}
+.thesis-edit[hidden] { display: none; }
 
-  /* invisible tap target over the Calibration section on the dashboard */
-  #cal-link { position: absolute; cursor: pointer; }
-  #cal-link:active { background: rgba(255,255,255,0.03); border-radius: 8px; }
+/* ---------- Shared inline-edit controls (thesis / notes) ---------- */
+.edit-textarea {
+  width: 100%;
+  background: transparent;
+  border: none;
+  outline: none;
+  resize: none;
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 13px;
+  letter-spacing: -0.26px;
+  line-height: 21.45px;
+  padding: 0;
+}
+.edit-textarea::placeholder {
+  color: #6b6b6b;
+}
+.edit-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 8px;
+}
+.edit-counter {
+  font-size: 10.5px;
+  color: #929292;
+  letter-spacing: 0.2px;
+}
+.arrow-btn {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  color: #565b5e;
+  font-size: 15px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: color 0.15s ease;
+  padding: 0;
+}
+.arrow-btn:not(:disabled) {
+  color: #ffffff;
+}
+.arrow-btn:disabled {
+  cursor: default;
+}
+
+/* ---------- Activity feed ---------- */
+.activity-feed {
+  margin: 30px 20px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 282.65px;
+}
+.activity-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.activity-row.wrap {
+  align-items: flex-start;
+}
+.activity-row p {
+  font-size: 10px;
+  font-weight: 500;
+  color: #ffffff;
+  line-height: 10.876px;
+  letter-spacing: normal;
+}
+.activity-row .muted { color: #929292; font-weight: 400; }
+.activity-row .reg { font-weight: 400; }
+
+/* ---------- Price block ---------- */
+.price-block {
+  margin: 40px 20px 0;
+  position: relative;
+}
+.price-block__name,
+.price-block__price-row,
+.price-block__ah-change,
+.price-block__change {
+  transition: opacity 0.15s ease;
+}
+.price-block.popup-active .price-block__name,
+.price-block.popup-active .price-block__price-row,
+.price-block.popup-active .price-block__ah-change,
+.price-block.popup-active .price-block__change {
+  opacity: 0;
+}
+.price-block__name {
+  font-size: 18px;
+  color: #ffffff;
+  letter-spacing: -0.36px;
+  line-height: 20.7px;
+  font-weight: 400;
+}
+.price-block__price {
+  font-size: 22px;
+  font-weight: 500;
+  color: #ffffff;
+  letter-spacing: -0.44px;
+  line-height: 1;
+  margin-top: 15px;
+}
+.price-block__change {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 15px;
+}
+.price-block__change .abs {
+  font-size: 14px;
+  color: #929292;
+  letter-spacing: -0.28px;
+  line-height: 1;
+}
+.price-block__change .pct {
+  font-size: 13px;
+  color: #929292;
+  letter-spacing: -0.26px;
+  line-height: 14.95px;
+}
+
+/* ---------- Notes card ---------- */
+.notes-card {
+  margin: 30px 20px 0;
+  min-height: 58px;
+  background: #0a0a0a;
+  border: 1px solid rgba(255,255,255,0.11);
+  cursor: pointer;
+}
+.notes-idle {
+  height: 58px;
+  display: flex;
+  align-items: center;
+  padding: 0 18px;
+}
+.notes-idle[hidden] { display: none; }
+.notes-idle span {
+  font-size: 11px;
+  color: #929292;
+  letter-spacing: -0.22px;
+  text-transform: capitalize;
+  line-height: 12px;
+}
+.notes-edit {
+  display: flex;
+  flex-direction: column;
+  padding: 18px;
+  cursor: auto;
+}
+.notes-edit[hidden] { display: none; }
+.notes-display {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 17px 18px;
+  cursor: pointer;
+}
+.notes-display[hidden] { display: none; }
+.notes-display__text {
+  font-size: 13px;
+  color: #c7c7c7;
+  line-height: 1.5;
+}
+.notes-textarea {
+  min-height: 42px;
+}
+
+/* ---------- Memo section ---------- */
+.memo-section { margin: 0 20px; }
+.memo-section .section-header--row { margin-top: 44px; }
+
+.class-role-row {
+  display: flex;
+  margin-top: 40px;
+  gap: 70px;
+}
+.class-role-row .col {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+.class-role-row .col--classification {
+  flex: 0 0 91px;
+}
+.class-role-row .col--role {
+  flex: 1;
+  min-width: 0;
+}
+.role-value-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: flex-start;
+  gap: 6px;
+}
+.label-11 {
+  font-size: 11px;
+  color: #929292;
+  letter-spacing: -0.22px;
+  line-height: 12px;
+  text-transform: capitalize;
+}
+.value-14 {
+  font-size: 14px;
+  color: #ffffff;
+  letter-spacing: -0.15px;
+  line-height: 20px;
+}
+.value-14 .muted { color: #929292; font-weight: 400; }
+.wt-label {
+  font-size: 11px;
+  color: #929292;
+  letter-spacing: -0.15px;
+  line-height: 20px;
+  flex-shrink: 0;
+}
+
+.warning-card {
+  margin-top: 35px;
+  height: 61px;
+  background: #0a0a0a;
+  border: 1px solid rgba(255,255,255,0.11);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 16px;
+  position: relative;
+}
+.warning-card .dot { position: relative; top: -0.5px; }
+.warning-card span {
+  font-size: 10.5px;
+  color: #929292;
+  letter-spacing: 0.4px;
+  line-height: 14.7px;
+}
+
+.prediction-card {
+  margin-top: 40px;
+  background: rgba(48,209,88,0.1);
+  border: 1px solid rgba(255,255,255,0.11);
+  padding: 17px 18px 16px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.prediction-card .label-11 { text-transform: capitalize; }
+.prediction-card .pred-value {
+  font-size: 14px;
+  color: #ffffff;
+  letter-spacing: -0.15px;
+  line-height: 20px;
+}
+.pred-track-row {
+  display: flex;
+  gap: 24px;
+}
+.pred-track-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+  min-width: 0;
+}
+.pred-track-label {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10.5px;
+  color: #929292;
+  letter-spacing: -0.2px;
+}
+.pred-track-val {
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: -0.24px;
+  color: #30d158;
+}
+.pred-track-val.is-behind { color: #ff3533; }
+.pred-timeline {
+  margin-top: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.pred-timeline__row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+.pred-timeline__row .label-11 { text-transform: capitalize; }
+.pred-timeline__left {
+  font-size: 11px;
+  color: #929292;
+  letter-spacing: -0.22px;
+}
+.pred-timeline__bar {
+  height: 4px;
+  border-radius: 0;
+  background: rgba(255,255,255,0.12);
+  overflow: hidden;
+}
+.pred-timeline__fill {
+  height: 100%;
+  border-radius: 0;
+  background: #ffffff;
+}
+.pred-timeline__range {
+  font-size: 11px;
+  color: #929292;
+  letter-spacing: -0.2px;
+}
+
+.link-row {
+  margin-top: 40px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: #929292;
+  font-size: 11px;
+  letter-spacing: -0.22px;
+  text-transform: capitalize;
+  text-decoration: none;
+  padding-bottom: 40px;
+}
+.research-prompt-link {
+  margin: 20px 20px 0;
+  padding-bottom: 0;
+}
+.section-cta {
+  margin-top: 20px;
+  padding-bottom: 0;
+}
+.link-row .chev {
+  font-weight: 300;
+  font-size: 12px;
+  color: #929292;
+}
+
+/* ---------- Full-bleed divider ---------- */
+.divider {
+  height: 1px;
+  background: rgba(255,255,255,0.1);
+  width: 100%;
+}
+
+/* ---------- Generic 2-col stat rows ---------- */
+.stat-section { margin: 0 20px; }
+.stat-section .section-header { margin-top: 40px; }
+.stat-grid-2 {
+  display: flex;
+  gap: 30px;
+  margin-top: 25px;
+}
+.stat-grid-2 + .stat-grid-2 { margin-top: 30px; }
+.stat-grid-2 .stat {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+.stat .label-11 { white-space: nowrap; }
+.stat-value-15 {
+  font-size: 15px;
+  color: #ffffff;
+  letter-spacing: -0.3px;
+  line-height: 15px;
+}
+.stat-sub-line {
+  font-size: 12px;
+  color: #929292;
+  letter-spacing: -0.24px;
+  margin-top: 2px;
+}
+.stat-ah-line {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #ffffff;
+  letter-spacing: -0.24px;
+  margin-top: 6px;
+}
+.stat-ah-line[hidden] { display: none; }
+.stat-ah-line .dot { flex-shrink: 0; }
+.stat-value--positive,
+.stat-value--positive .sub {
+  color: #30d158;
+}
+.stat-value-15 .sub {
+  font-size: 12px;
+  color: #929292;
+  letter-spacing: -0.3px;
+}
+.pb-content { padding-bottom: 44px; }
+
+/* ---------- Profile section ---------- */
+.profile-section { margin: 0 20px; padding-bottom: 40px; }
+.profile-section .section-header { margin-top: 40px; }
+.company-block {
+  margin-top: 33px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.company-block .label-11 { text-align: left; }
+.company-block .desc {
+  font-size: 13px;
+  color: #c7c7c7;
+  line-height: 21.45px;
+}
+.profile-grid {
+  margin-top: 23px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: repeat(3, auto);
+  gap: 30px;
+  position: relative;
+}
+.profile-grid .cell {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: opacity 0.15s ease;
+}
+.profile-grid .val {
+  font-size: 13px;
+  color: #c7c7c7;
+  letter-spacing: -0.28px;
+}
+.chart-popup {
+  position: absolute;
+  inset: 0;
+  background: #0a0a0a;
+  border: 1px solid rgba(255,255,255,0.11);
+  border-radius: 2px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 10px;
+  padding: 12px 22px 14px;
+  z-index: 2;
+}
+.chart-popup[hidden] { display: none; }
+.chart-popup__timestamp {
+  font-size: 10px;
+  letter-spacing: -0.2px;
+  line-height: 1.3;
+}
+.chart-popup__timestamp .date { color: #929292; }
+.chart-popup__timestamp .time { color: #ffffff; margin-left: 5px; }
+.chart-popup__row {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+}
+.chart-popup__stat {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  flex: 1;
+}
+.chart-popup__val {
+  font-size: 14px;
+  color: #ffffff;
+  letter-spacing: -0.15px;
+}
+
+/* ---------- Chart section ---------- */
+.chart-section {
+  margin: 0 20px;
+  padding-top: 50px;
+  position: relative;
+}
+.chart-tooltip {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  position: relative;
+  min-height: 16px;
+}
+.chart-tooltip__time {
+  font-size: 13px;
+  color: #c7c7c7;
+  letter-spacing: -0.28px;
+  white-space: nowrap;
+}
+.chart-tooltip.is-active .chart-tooltip__time {
+  visibility: hidden;
+}
+.chart-tooltip__right {
+  margin-left: auto;
+}
+.chart-time-float {
+  position: absolute;
+  top: -34px;
+  font-size: 13px;
+  color: #c7c7c7;
+  letter-spacing: -0.28px;
+  white-space: nowrap;
+  pointer-events: none;
+}
+.chart-time-float[hidden] { display: none; }
+.chart-tooltip__right {
+  text-align: right;
+}
+.chart-tooltip__price {
+  font-weight: 300;
+  font-size: 24px;
+  color: #ffffff;
+  letter-spacing: -0.9px;
+  line-height: 1;
+  display: block;
+}
+.chart-tooltip__change {
+  font-size: 14px;
+  color: #929292;
+  letter-spacing: -0.22px;
+  line-height: 15px;
+}
+.chart-tooltip__session-row {
+  margin-top: 10px;
+  display: flex;
+  align-items: baseline;
+  justify-content: flex-end;
+  gap: 6px;
+  font-size: 14px;
+  color: #929292;
+  letter-spacing: -0.22px;
+}
+.chart-tooltip__session-row[hidden] { display: none; }
+.chart-tooltip__close-row {
+  margin-top: 10px;
+  display: flex;
+  align-items: baseline;
+  justify-content: flex-end;
+  gap: 6px;
+}
+.chart-tooltip__label {
+  font-size: 14px;
+  color: #929292;
+  letter-spacing: -0.22px;
+}
+.chart-tooltip__label[hidden] { display: none; }
+.chart-canvas-wrap {
+  position: relative;
+  width: 100%;
+  margin-top: 56px;
+  cursor: crosshair;
+  touch-action: none;
+}
+.chart-canvas {
+  position: relative;
+  width: 100%;
+  height: 179px;
+}
+.chart-canvas svg { position: absolute; top: 0; left: 0; }
+.chart-volume {
+  position: relative;
+  width: 100%;
+  height: 40px;
+  margin-top: 10px;
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+}
+.chart-volume .bar {
+  flex: 1;
+  min-width: 0;
+  border-radius: 1px;
+}
+.chart-volume .bar.up { background: rgba(48,209,88,0.55); }
+.chart-volume .bar.down { background: rgba(255,53,51,0.55); }
+.chart-hairline {
+  position: absolute;
+  top: -19px;
+  height: 248px;
+  width: 0.5px;
+  background: rgba(255,255,255,0.5);
+}
+.chart-dot {
+  position: absolute;
+  width: 4.36px;
+  height: 4.36px;
+  border-radius: 50%;
+  background: #ffffff;
+}
+.chart-tabline {
+  height: 1px;
+  background: #929292;
+  width: 100%;
+  margin-top: 16px;
+}
+.chart-tabs {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+  padding-bottom: 38px;
+}
+.chart-tabs span {
+  font-size: 12px;
+  font-weight: 500;
+  color: #929292;
+  letter-spacing: -0.24px;
+  text-transform: uppercase;
+  line-height: 1.5;
+  cursor: pointer;
+  transition: color 0.15s ease;
+  padding: 4px 2px;
+}
+.chart-tabs span.active { color: #ffffff; }
+
+/* ---------- Order Book - Level 1 ---------- */
+.l1-section { margin: 0 20px; padding-bottom: 40px; position: relative; }
+.l1-title {
+  font-size: 14px;
+  font-weight: 500;
+  color: #ffffff;
+  letter-spacing: -0.28px;
+  padding: 16px 0 14px;
+}
+.l1-ratio-track {
+  height: 4px;
+  border-radius: 0;
+  overflow: hidden;
+  display: flex;
+  background: rgba(255,255,255,0.08);
+}
+.l1-ratio-fill--bid { background: rgba(48,209,88,0.55); transition: width 0.25s ease; }
+.l1-ratio-fill--ask { background: rgba(255,53,51,0.55); transition: width 0.25s ease; }
+.l1-bidask-row {
+  margin-top: 10px;
+  display: flex;
+  border: 1px solid rgba(255,255,255,0.11);
+}
+.l1-bidask-cell {
+  flex: 1;
+  padding: 12px 16px;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+.l1-bidask-cell--bid { background: rgba(48,209,88,0.12); }
+.l1-bidask-cell--ask { background: rgba(255,53,51,0.12); }
+.l1-bidask-label {
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: -0.26px;
+}
+.l1-bidask-label--bid { color: #30d158; }
+.l1-bidask-label--ask { color: #ff3533; }
+.l1-bidask-size {
+  font-size: 13px;
+  color: #ffffff;
+  letter-spacing: -0.26px;
+}
+.l1-bidask-price {
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: -0.3px;
+}
+.l1-bidask-price--bid { color: #30d158; }
+.l1-bidask-price--ask { color: #ff3533; }
+
+.l1-tns-header {
+  margin-top: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.l1-tns-title {
+  font-size: 14px;
+  font-weight: 500;
+  color: #ffffff;
+  letter-spacing: -0.28px;
+}
+.l1-row-picker { position: relative; }
+.l1-row-picker__btn {
+  font-family: inherit;
+  font-size: 12px;
+  color: #929292;
+  background: transparent;
+  border: none;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  cursor: pointer;
+  padding: 4px;
+}
+.l1-row-picker__btn .chev {
+  font-weight: 300;
+  font-size: 13px;
+  transform: rotate(90deg);
+  display: inline-block;
+}
+.l1-row-picker__menu {
+  position: absolute;
+  top: 26px;
+  right: 0;
+  background: #111111;
+  border: 1px solid #2a2a2a;
+  border-radius: 8px;
+  padding: 4px;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  min-width: 70px;
+}
+.l1-row-picker__menu[hidden] { display: none; }
+.l1-row-picker__item {
+  font-family: inherit;
+  font-size: 12px;
+  color: #929292;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 10px;
+  text-align: left;
+  cursor: pointer;
+}
+.l1-row-picker__item.active { background: #2a2a2a; color: #ffffff; }
+.l1-row-picker__item:hover { color: #ffffff; }
+
+.l1-tns-tabs {
+  margin-top: 14px;
+  display: flex;
+  gap: 8px;
+}
+.l1-tns-tab {
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 500;
+  color: #929292;
+  background: rgba(255,255,255,0.06);
+  border: none;
+  border-radius: 0;
+  padding: 6px 14px;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.l1-tns-tab.active { background: rgba(255,255,255,0.14); color: #ffffff; }
+
+.l1-tns-cols {
+  margin-top: 16px;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 0.6fr;
+  font-size: 11px;
+  color: #565b5e;
+  letter-spacing: -0.2px;
+}
+.l1-tns-cols[hidden] { display: none; }
+.l1-tns-col-side { text-align: right; }
+
+.l1-tns-list {
+  margin-top: 6px;
+  display: flex;
+  flex-direction: column;
+}
+.l1-tns-list[hidden] { display: none; }
+.l1-tick-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 0.6fr;
+  align-items: center;
+  padding: 7px 0;
+  font-size: 12px;
+}
+.l1-tick-time { color: #929292; letter-spacing: -0.24px; }
+.l1-tick-row.up .l1-tick-time { color: #30d158; }
+.l1-tick-row.down .l1-tick-time { color: #ff3533; }
+.l1-tick-price { font-weight: 500; color: #ffffff; letter-spacing: -0.24px; }
+.l1-tick-row.up .l1-tick-price { color: #30d158; }
+.l1-tick-row.down .l1-tick-price { color: #ff3533; }
+.l1-tick-volume { color: #c7c7c7; letter-spacing: -0.24px; }
+.l1-tick-side { text-align: right; font-weight: 500; }
+.l1-tick-row.up .l1-tick-side { color: #30d158; }
+.l1-tick-row.down .l1-tick-side { color: #ff3533; }
+.l1-tick-row.flat .l1-tick-side { color: #565b5e; }
+
+.l1-volume-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 0;
+  font-size: 12px;
+}
+.l1-volume-price { width: 60px; color: #ffffff; font-weight: 500; letter-spacing: -0.24px; flex-shrink: 0; }
+.l1-volume-bar-track { flex: 1; height: 6px; display: flex; background: rgba(255,255,255,0.06); }
+.l1-volume-bar--buy { background: rgba(48,209,88,0.55); }
+.l1-volume-bar--sell { background: rgba(255,53,51,0.55); }
+.l1-volume-total { width: 46px; text-align: right; color: #929292; letter-spacing: -0.24px; flex-shrink: 0; }
+
+/* ---------- Key stats grid ---------- */
+.keystats-section { margin: 0 20px; }
+.keystats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  row-gap: 26px;
+  column-gap: 20px;
+}
+.keystats-grid .cell {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.keystats-grid .val {
+  font-size: 13px;
+  color: #ffffff;
+  letter-spacing: -0.28px;
+}
+.keystats-grid { padding-bottom: 15px; }
+
+/* ---------- Financials / Investor Relations / Ownership ---------- */
+.finrel-section { margin: 0 20px; }
+.finrel-block {
+  padding: 20px 0;
+}
+.finrel-block:first-child { padding-top: 24px; }
+.finrel-block--link { cursor: pointer; }
+.finrel-grid {
+  margin-top: 20px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  row-gap: 20px;
+  column-gap: 20px;
+}
+.finrel-grid .val {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+.finrel-grid .delta {
+  font-size: 12px;
+  letter-spacing: -0.24px;
+}
+.finrel-grid .delta.up { color: #30d158; }
+.finrel-grid .delta.down { color: #ff3533; }
+.finrel-footnote {
+  margin-top: 16px;
+  font-size: 11px;
+  color: #929292;
+  letter-spacing: -0.22px;
+  line-height: 1.6;
+}
+
+/* ---------- Investor Relations detail overlay ---------- */
+.ir-overlay {
+  position: absolute;
+  inset: 14px;
+  border-radius: 30px;
+  background: #000000;
+  z-index: 200;
+  overflow-y: auto;
+  scrollbar-width: none;
+  padding: 24px 20px 40px;
+}
+.ir-overlay::-webkit-scrollbar { display: none; width: 0; height: 0; }
+.ir-overlay__header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.ir-back-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 0;
+  border: none;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  padding: 0;
+}
+.ir-back-btn img { width: 16px; height: 16px; display: block; }
+.ir-overlay__title {
+  font-size: 18px;
+  color: #ffffff;
+  letter-spacing: -0.36px;
+}
+.ir-overlay__subtitle {
+  margin: 20px 0 20px;
+  font-size: 12px;
+  color: #929292;
+  letter-spacing: -0.24px;
+  line-height: 1.6;
+}
+.ir-filing-list {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+}
+.ir-filing-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 16px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+.ir-filing-row:last-child { border-bottom: none; }
+.ir-filing-period {
+  font-size: 14px;
+  font-weight: 500;
+  color: #ffffff;
+  letter-spacing: -0.28px;
+}
+.ir-filing-reported {
+  margin-top: 5px;
+  font-size: 13px;
+  color: #929292;
+  letter-spacing: -0.26px;
+}
+.ir-filing-links {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+.ir-filing-link {
+  font-size: 13px;
+  color: #ffffff;
+  letter-spacing: -0.26px;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+}
+.ir-filing-link .chev { font-size: 14px; color: #929292; font-weight: 300; }
+
+/* ---------- Links section ---------- */
+.links-section {
+  margin: 20px 20px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.link-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.link-item__name {
+  font-size: 13px;
+  color: #ffffff;
+  letter-spacing: -0.14px;
+}
+.link-item__right {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.link-item__url {
+  font-size: 11px;
+  color: #929292;
+  letter-spacing: -0.22px;
+}
+.link-item__right .chev {
+  font-weight: 300;
+  font-size: 16px;
+  color: #c7c7c7;
+}
+
+/* ---------- Research prompt card ---------- */
+.research-prompt-card {
+  margin: 30px 20px 0;
+  background: #0a0a0a;
+  border: 1px solid rgba(255,255,255,0.11);
+  padding: 20px 21px;
+}
+.research-prompt-card__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.research-prompt-card__head span {
+  font-size: 10.5px;
+  color: #929292;
+  letter-spacing: 0.4px;
+  line-height: 14.7px;
+}
+.research-prompt-card__head img { width: 7.5px; height: 8px; display: block; }
+.research-prompt-card__body {
+  margin-top: 20px;
+  font-size: 13px;
+  color: #c7c7c7;
+  line-height: 21.45px;
+}
+
+/* ---------- News section ---------- */
+.news-section { margin: 40px 20px 0; padding-bottom: 40px; }
+.news-list {
+  margin-top: 25px;
+  display: flex;
+  flex-direction: column;
+}
+.news-item {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-bottom: 15px;
+  margin-bottom: 15px;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+.news-item:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+  margin-bottom: 0;
+}
+.news-item__headline {
+  font-size: 13px;
+  color: #c7c7c7;
+  line-height: 21.45px;
+}
+.news-item__meta {
+  font-size: 11px;
+  color: #929292;
+  letter-spacing: -0.22px;
+  text-transform: capitalize;
+  line-height: 12px;
+}
+
+/* ---------- History section ---------- */
+.history-section { margin: 40px 20px 0; padding-bottom: 40px; }
+.history-list {
+  margin-top: 25px;
+  display: flex;
+  flex-direction: column;
+}
+.history-item {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 13px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+.history-item:last-child { border-bottom: none; }
+.history-item .col { display: flex; flex-direction: column; gap: 5px; }
+.history-item .col--right { align-items: flex-end; text-align: right; }
+.history-date {
+  font-size: 10px;
+  font-weight: 500;
+  color: #565b5e;
+  letter-spacing: -0.2px;
+}
+.history-type {
+  font-size: 14px;
+  font-weight: 500;
+  color: #ffffff;
+  letter-spacing: -0.28px;
+}
+.history-type .suffix { color: #c7c7c7; font-weight: 500; }
+.history-type.all-muted { color: #929292; }
+.history-account {
+  font-size: 13px;
+  color: #929292;
+  letter-spacing: -0.26px;
+}
+.history-price {
+  font-size: 14px;
+  color: #ffffff;
+  letter-spacing: -0.28px;
+}
+.history-price.muted { color: #929292; }
+.history-shares {
+  font-size: 13px;
+  color: #929292;
+  letter-spacing: -0.26px;
+}
+
+/* ---------- Capital Decision footer ---------- */
+.capital-decision {
+  text-align: right;
+  padding: 60px 20px 60px;
+  font-size: 15px;
+  color: #ffffff;
+  letter-spacing: -0.3px;
+}
 </style>
 </head>
 <body>
 
-<div class="iter-wrap">
-  <button class="iter-burger" onclick="toggleStateMenu(event)" aria-label="States">
-    <span></span><span></span><span></span>
-  </button>
-  <div class="iter-menu" id="stateMenuPanel">
-    <div class="iter-head">MARKET · STATES</div>
-    <div class="iter-item on" id="state-item-market" onclick="setMarketState('market')">
-      <span class="ttl">Market hours</span>
-      <span class="sub">Everything live · green market dots</span>
-    </div>
-    <div class="iter-item" id="state-item-pre" onclick="setMarketState('pre')">
-      <span class="ttl">Pre-market</span>
-      <span class="sub">Sunrise line per position · red dots · daily moves frozen</span>
-    </div>
-    <div class="iter-item" id="state-item-after" onclick="setMarketState('after')">
-      <span class="ttl">After hours</span>
-      <span class="sub">Moon line per position · red dots · daily moves frozen</span>
-    </div>
-  </div>
+<!-- Burger menu (outside the device frame) -->
+<button type="button" class="burger-btn" id="burgerBtn" aria-label="Open menu">
+  <span></span><span></span><span></span>
+</button>
+<div class="burger-menu" id="burgerMenu" hidden>
+  <div class="burger-menu__title">Preview state</div>
+  <button type="button" class="burger-menu__item active" data-page-state="full">Full</button>
+  <button type="button" class="burger-menu__item" data-page-state="market-close">Market Close</button>
+  <button type="button" class="burger-menu__item" data-page-state="after-hours">Market After Hours</button>
+  <button type="button" class="burger-menu__item" data-page-state="pre-market">Market Pre-Market</button>
 </div>
 
-<div class="phone">
-  <div class="side-btn mute"></div>
-  <div class="side-btn vol-up"></div>
-  <div class="side-btn vol-down"></div>
-  <div class="side-btn power"></div>
-
+<div class="device">
   <div class="screen" id="screen">
-    <div class="dynamic-island"></div>
+<div class="frame">
 
-    <div id="sticky-header" style="position:sticky; top:0; left:0; width:100%; height:0; z-index:40;">
-      <div id="sticky-topbar" style="position:absolute; top:0; left:0; width:100%; height:71px; background:#000; box-sizing:border-box;">
-        <div id="topbar-hairline" style="position:absolute; left:0; bottom:0; width:100%; height:1px; background:#1c1c1c; transition:opacity .3s ease;"></div>
-        <div style="position:absolute; left:31px; top:25px; font-size:23px; font-weight:700; letter-spacing:-1px; color:#fff;">//</div>
-        <!-- Iteration 2: market status folds into the bar itself, no added height -->
-        <!-- two-line stack on the left (timer over markets), total value on the
-             right — nothing renders under the dynamic island (bottom y≈40) -->
-        <div id="topbar-inline" style="position:absolute; left:62px; right:112px; top:0; height:71px; padding-top:14px; display:flex; align-items:center; opacity:0; transition:opacity .3s ease; pointer-events:none;">
-          <div style="display:flex; flex-direction:column; gap:6px;">
-            <span style="font-size:11.5px; color:#fff; letter-spacing:-0.19px; font-variant-numeric:tabular-nums; line-height:1; white-space:nowrap;"><span id="stat-clock-inline">13:14:26</span> ET<span id="clock-session-icon" style="margin-left:6px;"></span></span>
-            <span style="display:flex; align-items:center; gap:5px; line-height:1;">
-              <span class="mkt-dot" style="width:4.65px; height:4.65px; border-radius:50%; background:#30d158; flex:none;"></span>
-              <span style="font-size:10px; color:#929292; letter-spacing:0.28px;">US</span>
-              <span class="mkt-dot" style="width:4.65px; height:4.65px; border-radius:50%; background:#30d158; flex:none; margin-left:5px;"></span>
-              <span style="font-size:10px; color:#929292; letter-spacing:0.28px;">CA</span>
-            </span>
-          </div>
-          <span style="width:14px; flex:none;"></span>
-          <!-- two-row stack, mirroring the left one: total value over the
-               benchmark difference -->
-          <div id="inline-total" style="display:flex; flex-direction:column; gap:6px; opacity:0; transition:opacity .3s ease;">
-            <span style="font-size:12.5px; letter-spacing:-0.3px; color:#fff; font-variant-numeric:tabular-nums; line-height:1; white-space:nowrap;"><span id="stat-total-value-inline">173,249.00</span> <span style="color:#565b5e;">CAD</span></span>
-            <span id="inline-diff" style="font-size:10px; letter-spacing:-0.1px; color:#30d158; font-variant-numeric:tabular-nums; line-height:1; white-space:nowrap;"><span id="stat-diff-value-inline">+2,184.18</span> (<span id="stat-diff-pct-inline">+4.90%</span>) <span style="color:#929292;">vs S&amp;P</span></span>
-          </div>
+  <!-- Sticky header (status bar + app bar) -->
+  <div class="sticky-header" id="stickyHeader">
+    <!-- Status bar -->
+    <div class="statusbar">
+      <div class="statusbar__time">9:41</div>
+      <div class="statusbar__icons">
+        <svg width="18" height="12" viewBox="0 0 18 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="0" y="7" width="3" height="5" rx="0.5" fill="white"/>
+          <rect x="4.5" y="5" width="3" height="7" rx="0.5" fill="white"/>
+          <rect x="9" y="3" width="3" height="9" rx="0.5" fill="white"/>
+          <rect x="13.5" y="0" width="3" height="12" rx="0.5" fill="white"/>
+        </svg>
+        <svg width="16" height="12" viewBox="0 0 16 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M8 10.2C8.6 10.2 9.1 9.7 9.1 9.1C9.1 8.5 8.6 8 8 8C7.4 8 6.9 8.5 6.9 9.1C6.9 9.7 7.4 10.2 8 10.2Z" fill="white"/>
+          <path d="M4.8 6.8C5.7 5.9 6.8 5.5 8 5.5C9.2 5.5 10.3 5.9 11.2 6.8" stroke="white" stroke-width="1.2" stroke-linecap="round" fill="none"/>
+          <path d="M2 4.1C3.5 2.6 5.6 1.7 8 1.7C10.4 1.7 12.5 2.6 14 4.1" stroke="white" stroke-width="1.2" stroke-linecap="round" fill="none"/>
+        </svg>
+        <svg width="25" height="12" viewBox="0 0 25 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="0.5" y="0.5" width="21" height="11" rx="2.5" stroke="white" stroke-opacity="0.4"/>
+          <rect x="2" y="2" width="18" height="8" rx="1.5" fill="white"/>
+          <rect x="22.5" y="4" width="1.5" height="4" rx="0.7" fill="white" fill-opacity="0.4"/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- App bar -->
+    <div class="appbar">
+      <div class="appbar__market">
+        <div class="dot dot--green" id="marketStatusDot"></div>
+        <span id="marketClock">09:14:26 ET</span>
+      </div>
+      <div class="appbar__nav">
+        <div class="appbar__left">
+          <div class="appbar__back"><img src="data:image/svg+xml;base64,PHN2ZyBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJub25lIiBvdmVyZmxvdz0idmlzaWJsZSIgc3R5bGU9ImRpc3BsYXk6IGJsb2NrOyIgd2lkdGg9IjE2IiBoZWlnaHQ9IjE2IiB2aWV3Qm94PSIwIDAgMTYgMTYiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxnIGlkPSJTVkciPgo8cGF0aCBpZD0iVmVjdG9yIiBkPSJNMTAuNSAzTDUuNSA4TDEwLjUgMTMiIHN0cm9rZT0iI0M3QzdDNyIgc3Ryb2tlLXdpZHRoPSIxLjQiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPgo8L2c+Cjwvc3ZnPgo=" alt=""></div>
+          <div class="appbar__ticker">KSTL<span class="price-reveal" id="headerPriceGroup"><span id="headerDotSep"> · </span><svg class="ah-moon ah-moon--badge ah-header-moon" id="headerAhDot" hidden width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 1020.354 15.354z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span id="headerPrice">87.00</span> USD<span class="chg" id="headerChg">+1.45%</span></span></div>
         </div>
-        <svg style="position:absolute; left:298px; top:31px;" width="17" height="17" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M7 13C10.3137 13 13 10.3137 13 7C13 3.68629 10.3137 1 7 1C3.68629 1 1 3.68629 1 7C1 10.3137 3.68629 13 7 13Z" stroke="white" stroke-width="1.3"/>
-          <path d="M11.2 11.2L16 16" stroke="white" stroke-width="1.3"/>
-        </svg>
-        <svg style="position:absolute; left:347px; top:34px;" width="17" height="13" viewBox="0 0 17 13" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M0 1H17" stroke="white" stroke-width="1.3"/>
-          <path d="M0 6.5H17" stroke="white" stroke-width="1.3"/>
-          <path d="M0 12H17" stroke="white" stroke-width="1.3"/>
-        </svg>
+        <div class="appbar__actions"><img src="data:image/svg+xml;base64,PHN2ZyBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJub25lIiBvdmVyZmxvdz0idmlzaWJsZSIgc3R5bGU9ImRpc3BsYXk6IGJsb2NrOyIgd2lkdGg9IjUxIiBoZWlnaHQ9IjEzLjI0NDIiIHZpZXdCb3g9IjAgMCA1MSAxMy4yNDQyIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8ZyBpZD0iRnJhbWUgMjA4NTY2NjM5OCI+CjxnIGlkPSJTVkciIGNsaXAtcGF0aD0idXJsKCNjbGlwMF8wXzQpIj4KPHBhdGggaWQ9IlZlY3RvciIgZD0iTTUuMzUzODYgMTAuMDY0MkM3Ljg4Nzg3IDEwLjA2NDIgOS45NDIxIDguMDA5OTcgOS45NDIxIDUuNDc1OTVDOS45NDIxIDIuOTQxOTQgNy44ODc4NyAwLjg4NzcxOCA1LjM1Mzg2IDAuODg3NzE4QzIuODE5ODUgMC44ODc3MTggMC43NjU2MjUgMi45NDE5NCAwLjc2NTYyNSA1LjQ3NTk1QzAuNzY1NjI1IDguMDA5OTcgMi44MTk4NSAxMC4wNjQyIDUuMzUzODYgMTAuMDY0MloiIHN0cm9rZT0id2hpdGUiLz4KPHBhdGggaWQ9IlZlY3Rvcl8yIiBkPSJNOC41NjI1IDguNjkyNDFMMTIuMjMzMSAxMi4zNjMiIHN0cm9rZT0id2hpdGUiLz4KPC9nPgo8ZyBpZD0iU1ZHXzIiIGNsaXAtcGF0aD0idXJsKCNjbGlwMV8wXzQpIiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgtMzgsIDApIj4KPHBhdGggaWQ9IlZlY3Rvcl80IiBkPSJNODIuNDk5MyAxMi4zNzg2Qzg1LjY3ODkgMTIuMzc4NiA4OC4yNTY1IDkuODAxMDEgODguMjU2NSA2LjYyMTQyQzg4LjI1NjUgMy40NDE4NCA4NS42Nzg5IDAuODY0MjgxIDgyLjQ5OTMgMC44NjQyODFDNzkuMzE5NyAwLjg2NDI4MSA3Ni43NDIyIDMuNDQxODQgNzYuNzQyMiA2LjYyMTQyQzc2Ljc0MjIgOS44MDEwMSA3OS4zMTk3IDEyLjM3ODYgODIuNDk5MyAxMi4zNzg2WiIgc3Ryb2tlPSJ3aGl0ZSIvPgo8cGF0aCBpZD0iVmVjdG9yXzUiIGQ9Ik04Mi41IDUuOTczNjZWOS40MDkzNyIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSIxLjEiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgo8cGF0aCBpZD0iVmVjdG9yXzYiIGQ9Ik04Mi41MDE2IDQuNTc4MzRDODIuODYwNSA0LjU3ODM0IDgzLjE1MTYgNC4yODczMyA4My4xNTE2IDMuOTI4MzRDODMuMTUxNiAzLjU2OTM2IDgyLjg2MDUgMy4yNzgzNCA4Mi41MDE2IDMuMjc4MzRDODIuMTQyNiAzLjI3ODM0IDgxLjg1MTYgMy41NjkzNiA4MS44NTE2IDMuOTI4MzRDODEuODUxNiA0LjI4NzMzIDgyLjE0MjYgNC41NzgzNCA4Mi41MDE2IDQuNTc4MzRaIiBmaWxsPSJ3aGl0ZSIvPgo8L2c+CjwvZz4KPGRlZnM+CjxjbGlwUGF0aCBpZD0iY2xpcDBfMF80Ij4KPHJlY3Qgd2lkdGg9IjEzIiBoZWlnaHQ9IjEzIiBmaWxsPSJ3aGl0ZSIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMCAwLjEyMjA5MykiLz4KPC9jbGlwUGF0aD4KPGNsaXBQYXRoIGlkPSJjbGlwMV8wXzQiPgo8cmVjdCB3aWR0aD0iMTMiIGhlaWdodD0iMTMiIGZpbGw9IndoaXRlIiB0cmFuc2Zvcm09InRyYW5zbGF0ZSg3NiAwLjEyMjA5MykiLz4KPC9jbGlwUGF0aD4KPC9kZWZzPgo8L3N2Zz4K" alt=""></div>
       </div>
-    </div>
-
-    <div class="frame">
-
-      <!-- ============ HEADER ============ -->
-      <div class="abs" style="left:31px; top:26px; font-size:23px; font-weight:700; letter-spacing:-1px;">//</div>
-
-      <svg class="abs" style="left:298px; top:31px;" width="17" height="17" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M7 13C10.3137 13 13 10.3137 13 7C13 3.68629 10.3137 1 7 1C3.68629 1 1 3.68629 1 7C1 10.3137 3.68629 13 7 13Z" stroke="white" stroke-width="1.3"/>
-        <path d="M11.2 11.2L16 16" stroke="white" stroke-width="1.3"/>
-      </svg>
-
-      <svg class="abs" style="left:347px; top:34px;" width="17" height="13" viewBox="0 0 17 13" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M0 1H17" stroke="white" stroke-width="1.3"/>
-        <path d="M0 6.5H17" stroke="white" stroke-width="1.3"/>
-        <path d="M0 12H17" stroke="white" stroke-width="1.3"/>
-      </svg>
-
-      <div class="divider" style="left:1px; top:71px; width:391px;"></div>
-
-      <!-- ============ MARKET STATUS ============ -->
-      <div id="orig-market-status" class="abs" style="left:15.6px; top:87.4px; width:200px; height:11px;">
-        <div class="abs" style="left:0px; top:0px; font-size:12px; color:#ffffff; letter-spacing:-0.19px;"><span id="stat-clock">13:14:26</span> ET</div>
-        <div class="abs" style="left:73.5px; top:0px; font-size:11.2px; color:#565b5e;">|</div>
-        <div class="dot mkt-dot" style="left:86.6px; top:5.1px; width:4.65px; height:4.65px; background:#30d158;"></div>
-        <div class="abs" style="left:95.9px; top:2.8px; font-size:10px; color:#929292; letter-spacing:0.28px; text-transform:uppercase;">US</div>
-        <div class="dot mkt-dot" style="left:120.4px; top:5.1px; width:4.65px; height:4.65px; background:#30d158;"></div>
-        <div class="abs" style="left:129.7px; top:2.8px; font-size:10px; color:#929292; letter-spacing:0.28px; text-transform:uppercase;">CA</div>
-      </div>
-
-      <!-- ============ ACTIVITY TICKER 1 (severity order: red > orange > yellow > green) ============ -->
-      <div class="dot" style="left:16.1px; top:138.2px; width:4.65px; height:4.65px; background:#ff3533;"></div>
-      <div class="abs" style="left:26.8px; top:135px; font-size:10px; font-weight:500;">
-        Kill criteria 2 triggered: margin below 68%
-      </div>
-
-      <div class="dot" style="left:16.1px; top:169.2px; width:4.65px; height:4.65px; background:#fbc308;"></div>
-      <div class="abs" style="left:26.8px; top:166px; font-size:10px; font-weight:500;">
-        Earnings <span style="color:#929292;">(3)</span>
-      </div>
-      <svg class="abs" style="left:88.8px; top:170px;" width="6" height="3" viewBox="0 0 6.70711 4.06066" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M0.353553 0.353553L3.35355 3.35355L6.35355 0.353553" stroke="#C7C7C7"/>
-      </svg>
-      <div class="abs" style="left:16.1px; top:182px; font-size:10px; font-weight:500; color:#929292;">BWEN</div>
-      <div class="abs" style="left:16.1px; top:198px; font-size:10px; font-weight:500; color:#929292;">MSFT</div>
-      <div class="abs" style="left:16.1px; top:214px; font-size:10px; font-weight:500; color:#929292;">TSLA</div>
-
-      <div class="dot" style="left:16.1px; top:248.2px; width:4.65px; height:4.65px; background:#fbc308;"></div>
-      <div class="abs" style="left:26.8px; top:245px; font-size:10px; font-weight:500;">
-        Contribution missed: no deposit this cycle <span style="color:#929292;">04.28.26</span>
-      </div>
-
-      <div class="dot" style="left:16.1px; top:279.2px; width:4.65px; height:4.65px; background:#30d158;"></div>
-      <div class="abs" style="left:26.8px; top:276px; font-size:10px; font-weight:500;">
-        BWEN Filled <span style="font-weight:500;">1000 @ 87.00</span> <span style="color:#929292;">05.06.26</span>
-      </div>
-
-      <div class="dot" style="left:16.1px; top:310.2px; width:4.65px; height:4.65px; background:#30d158;"></div>
-      <div class="abs" style="left:26.8px; top:307px; font-size:10px; font-weight:500;">
-        Contribution processed: $500 <span style="color:#929292;">05.06.26</span>
-      </div>
-
-      <div id="shifted-content" style="position:absolute; top:0; left:0; width:100%;">
-
-      <!-- ============ TOTAL VALUE ============ -->
-      <div class="abs" style="right:16px; top:332.4px; font-size:13px; color:#929292; letter-spacing:-0.22px;">Total Value</div>
-      <div class="abs" style="right:16px; top:356.3px; font-size:28px; letter-spacing:-0.56px;">
-        <span id="stat-total-value">173,249.00</span> <span style="color:#565b5e;">CAD</span>
-      </div>
-
-      <!-- ============ CORE SECTION (collapsible) ============ -->
-      <div class="divider" style="left:14.5px; top:461px; width:366px;"></div>
-      <div class="abs" style="left:14.5px; top:492px; font-size:18px; color:#c7c7c7; letter-spacing:-0.36px;">Core</div>
-      <div class="abs" style="left:14.5px; top:522.7px; font-size:15px; color:#565b5e; letter-spacing:-0.3px;">Managed</div>
-      <div id="core-toggle" class="abs" style="right:6px; top:489px; width:24px; height:24px; display:flex; align-items:center; justify-content:center; cursor:pointer;">
-        <svg id="core-chevron-svg" style="transition:transform .3s ease;" width="6" height="3" viewBox="0 0 6.70711 4.06066" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M0.353553 0.353553L3.35355 3.35355L6.35355 0.353553" stroke="#C7C7C7"/>
-        </svg>
-      </div>
-
-      <div id="core-value-label" class="abs" style="right:16px; top:736px; font-size:13px; color:#929292; letter-spacing:-0.22px; transition:top .35s ease, right .35s ease;">Value</div>
-      <div id="stat-core-value" class="abs" style="right:16px; top:758.3px; font-size:22px; letter-spacing:-0.44px; transition:top .35s ease, right .35s ease;">126,471.77</div>
-      <div class="abs core-detail" style="left:205.8px; top:790.3px; font-size:13px; letter-spacing:-0.26px; color:#929292;">
-        All Time <span id="stat-core-allchg" style="color:#c7c7c7;">+6,365.65</span> <span id="stat-core-allpct" style="color:#c7c7c7;">(+5.3%)</span>
-      </div>
-
-      <div class="abs core-detail" style="left:321.6px; top:856.3px; font-size:13px; color:#929292; letter-spacing:-0.22px;">Projection</div>
-      <div class="abs core-detail" style="left:336px; top:878.5px; font-size:15px; color:#c7c7c7; letter-spacing:-0.3px;">1.68M</div>
-
-      <!-- ============ ALLOCATION ============ -->
-      <div class="abs core-detail" style="left:244px; top:929.2px; font-size:13px; color:#929292; letter-spacing:-0.24px;">Equity (S&amp;P 500)</div>
-      <div class="abs core-detail" style="left:352.8px; top:929.2px; font-size:13px; color:#c7c7c7; letter-spacing:-0.24px;">50%</div>
-      <div class="abs core-detail" style="left:265.2px; top:949.7px; font-size:13px; color:#929292; letter-spacing:-0.24px;">Fixed Income</div>
-      <div class="abs core-detail" style="left:352.8px; top:949.7px; font-size:13px; color:#c7c7c7; letter-spacing:-0.24px;">25%</div>
-      <div class="abs core-detail" style="left:259.5px; top:970.1px; font-size:13px; color:#929292; letter-spacing:-0.24px;">Money Market</div>
-      <div class="abs core-detail" style="left:352.8px; top:970.1px; font-size:13px; color:#c7c7c7; letter-spacing:-0.24px;">25%</div>
-
-      <div id="below-core" style="position:absolute; top:0; left:0; width:100%; transition:transform .35s ease;">
-
-      <!-- ============ ACTIVE SECTION ============ -->
-      <div class="divider" style="left:14.5px; top:1078.97px; width:366px;"></div>
-      <div class="abs" style="left:14.5px; top:1109.97px; font-size:18px; color:#c7c7c7; letter-spacing:-0.36px;">Active</div>
-      <div class="abs" style="left:14.5px; top:1140.67px; font-size:15px; color:#565b5e; letter-spacing:-0.3px;">Self-Directed</div>
-      <div class="abs" style="left:331.2px; top:1109.97px; font-size:15px; color:#c7c7c7; letter-spacing:-0.3px;">RRSP</div>
-      <svg class="abs" style="left:374px; top:1118.6px;" width="6" height="3" viewBox="0 0 6.70711 4.06066" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M0.353553 0.353553L3.35355 3.35355L6.35355 0.353553" stroke="#C7C7C7"/>
-      </svg>
-
-      <div class="abs" style="right:16px; top:1208.67px; font-size:13px; color:#929292; letter-spacing:-0.22px;">Value</div>
-      <div id="stat-active-value" class="abs" style="right:16px; top:1230.92px; font-size:22px; letter-spacing:-0.44px;">46,777.23</div>
-      <div class="abs" style="left:205.8px; top:1262.92px; font-size:13px; letter-spacing:-0.26px; color:#929292;">
-        All Time <span id="stat-active-allchg" style="color:#c7c7c7;">+2,353.46</span> <span id="stat-active-allpct" style="color:#c7c7c7;">(+5.3%)</span>
-      </div>
-
-      <!-- ============ CASH ============ -->
-      <div class="abs" style="left:309.6px; top:1331.92px; font-size:13px; color:#929292; letter-spacing:-0.26px;">Cash (10%)</div>
-      <div class="abs" style="left:317.6px; top:1353.92px; font-size:15px; color:#c7c7c7; letter-spacing:-0.3px;">4,677.72</div>
-
-      <!-- ============ BENCHMARK ============ -->
-      <div class="abs" style="left:14.5px; top:1442.92px; font-size:15px; letter-spacing:-0.3px;">
-        S&amp;P 500 Benchmark <span style="color:#929292;">·</span> <span style="color:#565b5e;">All Accounts · 3y 2m</span>
-      </div>
-      <svg class="abs" style="left:374.5px; top:1447.4px;" width="6" height="10" viewBox="0 0 6 10" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M1 1L5 5L1 9" stroke="#565B5E" stroke-width="1.2"/>
-      </svg>
-
-      <div class="abs" style="left:14.5px; top:1486.92px; font-size:13px; color:#929292; letter-spacing:-0.26px;">Portfolio Value</div>
-      <div class="abs" style="left:14.5px; top:1519.92px; font-size:13px; color:#929292; letter-spacing:-0.26px;">S&amp;P 500 Equivalent Value</div>
-      <div id="stat-bench-portfolio" class="abs" style="right:16px; top:1484.92px; font-size:13px; color:#c7c7c7; letter-spacing:-0.3px;">46,777.23</div>
-      <div id="stat-bench-sp500" class="abs" style="right:16px; top:1517.92px; font-size:13px; color:#c7c7c7; letter-spacing:-0.3px;">44,593.05</div>
-
-      <!-- ============ DIFFERENCE ============ -->
-      <div class="divider" style="left:16px; top:1550.92px; width:361px;"></div>
-      <div class="divider" style="left:16px; top:1600.92px; width:361px;"></div>
-      <div class="abs" style="left:16px; top:1567.58px; font-size:13px; color:#929292; letter-spacing:-0.26px;">Difference</div>
-      <div id="stat-diff-value" class="abs" style="right:76px; top:1566.51px; font-size:15px; letter-spacing:-0.3px; color:#30d158;">+2,184.18</div>
-      <div id="stat-diff-pct" class="abs" style="right:16px; top:1568.51px; font-size:13px; color:#30d158; letter-spacing:-0.26px;">+4.90%</div>
-
-      <!-- ============ CALIBRATION ============ -->
-      <div class="abs" style="left:300.3px; top:1647.92px; font-size:15px; color:#c7c7c7; letter-spacing:-0.3px;">Calibration</div>
-      <div class="abs" style="left:283px; top:1674.88px; font-size:13px; color:#929292; letter-spacing:-0.24px;">Accuracy</div>
-      <div class="abs" style="left:348.7px; top:1674.88px; font-size:13px; color:#c7c7c7; letter-spacing:-0.24px;">54%</div>
-      <div class="abs" style="left:278.5px; top:1695.75px; font-size:13px; color:#929292; letter-spacing:-0.24px;">Predictions</div>
-      <div class="abs" style="left:360.3px; top:1696.26px; font-size:13px; color:#c7c7c7; letter-spacing:-0.24px;">17</div>
-      <div class="abs" style="left:205.3px; top:1717.64px; font-size:13px; color:#929292; letter-spacing:-0.24px;">Next Judgment</div>
-      <div class="abs" style="left:309px; top:1717.64px; font-size:13px; color:#c7c7c7; letter-spacing:-0.24px;">Apr 1, 2027</div>
-      <div id="cal-link" style="left:180px; top:1638px; width:210px; height:102px;" onclick="openRecords()"></div>
-
-      <!-- ============ ACTIVE POSITIONS HEADER ============ -->
-      <div class="abs" style="left:14.5px; top:1814.4px; font-size:15px; letter-spacing:-0.3px;">Active Positions</div>
-      <div class="abs" style="left:133px; top:1813.5px; font-size:15px; letter-spacing:-0.3px;">24</div>
-      <svg class="abs" style="left:162.2px; top:1819.5px;" width="11" height="7" viewBox="0 0 11 7" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M1 1.5L5.5 6L10 1.5" stroke="#929292" stroke-width="1.2"/>
-      </svg>
-      <div class="abs" style="left:273.4px; top:1813.5px; font-size:15px; color:#929292; letter-spacing:-0.3px;">Open Orders</div>
-      <div class="abs" style="left:367.1px; top:1813.5px; font-size:15px; color:#929292; letter-spacing:-0.3px;">2</div>
-
-      <!-- ============ POSITIONS LIST ============ -->
-      <div id="positions-list"></div>
-
-      </div><!-- /below-core -->
-
-      </div><!-- /shifted-content -->
-
+      <div class="appbar__thesis-line" id="appbarThesisLine"></div>
     </div>
   </div>
 
-  <!-- ============ THE RECORD (slides in over the dashboard) ============ -->
-  <div id="records-screen">
-    <div class="dynamic-island"></div>
-    <div class="rec-head">
-      <button class="rec-back" onclick="closeRecords()" aria-label="Back">
-        <svg width="11" height="19" viewBox="0 0 11 19" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M9.5 1.5L2 9.5L9.5 17.5" stroke="#C7C7C7" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
+  <!-- Thesis banner -->
+  <div class="thesis-banner" id="thesisBanner">
+    <div class="thesis-display" id="thesisDisplay">
+      <span class="thesis-display__left">
+        <span class="dot dot--amber" id="thesisDot"></span>
+        <span id="thesisText">No One line thesis Recorded</span>
+      </span>
+      <span class="version-chip" id="thesisVersionChip" hidden>v4 <span class="chev">›</span></span>
+    </div>
+    <div class="thesis-edit" id="thesisEdit" hidden>
+      <textarea id="thesisInput" class="edit-textarea" maxlength="40" rows="1" placeholder="This is an example one line thesis"></textarea>
+      <div class="edit-footer">
+        <span class="edit-counter" id="thesisCounter">0/40</span>
+        <button type="button" class="arrow-btn" id="thesisSend" disabled aria-label="Save thesis">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M3 12H21M21 12L14 5M21 12L14 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Activity feed -->
+  <div class="activity-feed">
+    <div class="activity-row">
+      <div class="dot dot--white"></div>
+      <p>New 52-Week High <span class="muted">· 93.81</span></p>
+    </div>
+    <div class="activity-row">
+      <div class="dot dot--green-b"></div>
+      <p>Limit Order Filled <span class="reg" style="font-weight:500">1000 @ 87.00</span> <span class="muted">05.06.26</span></p>
+    </div>
+    <div class="activity-row">
+      <div class="dot dot--amber"></div>
+      <p>Open Orders <span class="muted">(1)</span></p>
+    </div>
+    <div class="activity-row">
+      <div class="dot dot--amber"></div>
+      <p>No thesis recorded</p>
+    </div>
+    <div class="activity-row wrap">
+      <div class="dot dot--red" style="margin-top:3px"></div>
+      <p>Kill criteria 2 triggered: <span style="font-weight:500">margin below 68%</span></p>
+    </div>
+  </div>
+
+  <!-- Price block -->
+  <div class="price-block" id="priceBlock">
+    <div class="price-block__name">KSTL · Kestrel Systems</div>
+    <div class="price-block__price-row">
+      <div class="price-block__price" id="pbPrice">87.60</div>
+    </div>
+    <div class="price-block__change" id="pbChangeRow">
+      <span class="price-block__close-label" id="pbCloseLabel" hidden>Close</span>
+      <span class="abs" id="pbChangeAbs">+0.94</span>
+      <span class="pct" id="pbChangePct">+1.45%</span>
+    </div>
+    <div class="price-block__ah-change" id="pbAhChangeRow" hidden>
+      <svg class="ah-moon ah-moon--badge" width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 1020.354 15.354z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span class="price-block__ah-price" id="pbAhPriceInline">87.43</span>
+      <span class="price-block__ah-delta" id="pbAhChange">+0.12 (+0.1%)</span>
+    </div>
+
+    <div class="chart-popup" id="chartPopup" hidden>
+      <div class="chart-popup__timestamp"><span class="date">June 22, 2026</span><span class="time" id="popTime">10:30 AM</span></div>
+      <div class="chart-popup__row">
+        <div class="chart-popup__stat">
+          <div class="label-11">Price</div>
+          <div class="chart-popup__val" id="popPrice">87.60</div>
+        </div>
+        <div class="chart-popup__stat">
+          <div class="label-11">Chg</div>
+          <div class="chart-popup__val" id="popChg">+0.94</div>
+        </div>
+        <div class="chart-popup__stat">
+          <div class="label-11">Turnover</div>
+          <div class="chart-popup__val" id="popTurnover">14.85M</div>
+        </div>
+      </div>
+      <div class="chart-popup__row">
+        <div class="chart-popup__stat">
+          <div class="label-11">Avg Prc</div>
+          <div class="chart-popup__val" id="popAvgPrc">45.22</div>
+        </div>
+        <div class="chart-popup__stat">
+          <div class="label-11">% Chg</div>
+          <div class="chart-popup__val" id="popPctChg">+2.85%</div>
+        </div>
+        <div class="chart-popup__stat">
+          <div class="label-11">Volume</div>
+          <div class="chart-popup__val" id="popVolume">47.34K</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Notes card -->
+  <div class="notes-card" id="notesCard">
+    <div class="notes-idle" id="notesIdle"><span>Notes</span></div>
+    <div class="notes-display" id="notesDisplay" hidden>
+      <div class="label-11">Notes</div>
+      <div class="notes-display__text" id="notesDisplayText"></div>
+    </div>
+    <div class="notes-edit" id="notesEdit" hidden>
+      <textarea id="notesInput" class="edit-textarea notes-textarea" rows="2" placeholder="Record a thought, a thesis, a question."></textarea>
+      <div class="edit-footer">
+        <span class="label-11">Notes</span>
+        <button type="button" class="arrow-btn" id="notesSend" disabled aria-label="Save note">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M3 12H21M21 12L14 5M21 12L14 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Memo section -->
+  <div class="memo-section">
+    <div class="section-header--row">
+      <div class="section-header">Memo <span class="chev">›</span></div>
+      <div class="date">06.22.26</div>
+    </div>
+
+    <div class="class-role-row">
+      <div class="col col--classification">
+        <div class="label-11">Classification</div>
+        <div class="value-14">Compounder</div>
+      </div>
+      <div class="col col--role">
+        <div class="label-11">Role</div>
+        <div class="role-value-row">
+          <div class="value-14">Core Position <span class="muted">· 42.20%</span></div>
+          <div class="wt-label">WT</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Thesis card -->
+    <div class="rich-card" data-state-target="thesis">
+      <div class="rich-card__empty">
+        <div class="warning-card">
+          <div class="dot dot--amber2"></div>
+          <span>No thesis recorded</span>
+        </div>
+      </div>
+      <div class="rich-card__full" hidden>
+        <div class="rich-card__box">
+          <div class="rich-card__head">
+            <span class="label-11">Thesis</span>
+            <span class="version-chip">v4 <span class="chev">›</span></span>
+          </div>
+          <div class="rich-card__body">Data Center is the load-bearing segment: hyperscaler capex keeps compounding, and Kestrel's platform lock-in lets software margins expand faster than unit costs.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Kill Criteria card -->
+    <div class="rich-card" data-state-target="kill">
+      <div class="rich-card__empty">
+        <div class="warning-card">
+          <div class="dot dot--amber2"></div>
+          <span>No kill criteria</span>
+        </div>
+      </div>
+      <div class="rich-card__full" hidden>
+        <div class="rich-card__box rich-card__box--kill">
+          <div class="rich-card__head">
+            <span class="kill-title">Kill Criteria — 1 Triggered</span>
+            <span class="version-chip">v4 <span class="chev">›</span></span>
+          </div>
+          <ul class="kill-list">
+            <li class="kill-item">
+              <span class="dot dot--muted"></span>
+              <div class="kill-item__text">
+                <div class="kill-item__title">Data Center revenue growth falls below 25% YoY ...</div>
+              </div>
+            </li>
+            <li class="kill-item">
+              <span class="dot dot--red"></span>
+              <div class="kill-item__text">
+                <div class="kill-item__title">Gross margin compresses below 68%</div>
+                <div class="kill-item__sub">Triggered — margin fell to 68%, at your threshold.</div>
+              </div>
+            </li>
+            <li class="kill-item">
+              <span class="dot dot--muted"></span>
+              <div class="kill-item__text">
+                <div class="kill-item__title">Loses a top-3 hyperscaler customer</div>
+              </div>
+            </li>
+            <li class="kill-item">
+              <span class="dot dot--amber2"></span>
+              <div class="kill-item__text">
+                <div class="kill-item__title">A credible second-source competitor ships at scale</div>
+                <div class="kill-item__sub">Needs attention — qualification announced last week.</div>
+              </div>
+            </li>
+            <li class="kill-item">
+              <span class="dot dot--muted"></span>
+              <div class="kill-item__text">
+                <div class="kill-item__title">Capex intensity guided higher without revenue ac...</div>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="prediction-card">
+      <div class="rich-card__head">
+        <span class="label-11">Prediction</span>
+        <span class="version-chip">v2 <span class="chev">›</span></span>
+      </div>
+      <div class="pred-value">60% probability of 20%/yr over 3 years</div>
+      <div class="pred-track-row">
+        <div class="pred-track-stat">
+          <span class="pred-track-label">vs S&amp;P · since purchase</span>
+          <span class="pred-track-val" id="predSincePurchaseVal">+6.9 pp</span>
+        </div>
+        <div class="pred-track-stat">
+          <span class="pred-track-label">vs S&amp;P · since last prediction</span>
+          <span class="pred-track-val" id="predTrackingVal">+7.0 pp</span>
+        </div>
+      </div>
+
+      <div class="pred-timeline">
+        <div class="pred-timeline__row">
+          <span class="label-11">Time</span>
+          <span class="pred-timeline__left" id="predTimeLeft">2y 4mo left</span>
+        </div>
+        <div class="pred-timeline__bar">
+          <div class="pred-timeline__fill" id="predTimeFill" style="width: 22%"></div>
+        </div>
+        <div class="pred-timeline__range" id="predTimeRange">Oct 2025 → Oct 2028</div>
+      </div>
+    </div>
+
+    <a class="link-row" href="#">Research Note <span class="chev">›</span></a>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- Position section -->
+  <div class="stat-section" id="positionSection">
+    <div class="section-header">Position <span class="chev">›</span></div>
+
+    <div class="rich-card__empty" id="positionEmpty" hidden>
+      <div class="warning-card">
+        <div class="dot dot--amber2"></div>
+        <span>No position held</span>
+      </div>
+    </div>
+
+    <div id="positionFull">
+      <div class="stat-grid-2">
+        <div class="stat">
+          <div class="label-11">Market Value</div>
+          <div class="stat-value-15"><span id="posMarketValueUSD">18,943.49</span> <span class="sub">USD</span> <span class="sub" id="posMarketValuePct">+1.0%</span></div>
+          <div class="stat-sub-line"><span id="posMarketValueCAD">25,949.99</span> CAD <span id="posMarketValuePctCAD">+1.0%</span></div>
+          <div class="stat-ah-line" id="posMarketValueAhLine" hidden><svg class="ah-moon ah-moon--badge" width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 1020.354 15.354z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span id="posMarketValueAh">18,970.24</span> USD <span id="posMarketValueAhPct">+1.2%</span></div>
+        </div>
+        <div class="stat">
+          <div class="label-11">Unrealized P/L</div>
+          <div class="stat-value-15"><span id="posUnrealizedUSD">+5,645.49</span> <span class="sub">USD</span> <span class="sub" id="posUnrealizedPct">+42.5%</span></div>
+          <div class="stat-sub-line"><span id="posUnrealizedCAD">+7,733.55</span> CAD <span id="posUnrealizedPctCAD">+42.5%</span></div>
+          <div class="stat-ah-line" id="posUnrealizedAhLine" hidden><svg class="ah-moon ah-moon--badge" width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 1020.354 15.354z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span id="posUnrealizedAh">+5,671.16</span> USD <span id="posUnrealizedAhPct">+42.6%</span></div>
+        </div>
+      </div>
+
+      <div class="stat-grid-2">
+        <div class="stat">
+          <div class="label-11">S&amp;P 500 Return</div>
+          <div class="stat-value-15"><span id="posSPReturnUSD">+4,733.51</span> <span class="sub">USD</span> <span class="sub" id="posSPReturnPct">+35.6%</span></div>
+          <div class="stat-sub-line"><span id="posSPReturnCAD">+6,484.36</span> CAD <span id="posSPReturnPctCAD">+35.6%</span></div>
+          <div class="stat-ah-line" id="posSPReturnAhLine" hidden><svg class="ah-moon ah-moon--badge" width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 1020.354 15.354z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span id="posSPReturnAh">+4,733.51</span> USD <span id="posSPReturnAhPct">+35.6%</span></div>
+        </div>
+        <div class="stat">
+          <div class="label-11">Portfolio Weight</div>
+          <div class="stat-value-15" id="posWeight">42.2%</div>
+          <div class="stat-ah-line" id="posWeightAhLine" hidden><svg class="ah-moon ah-moon--badge" width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 1020.354 15.354z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span id="posWeightAh">42.3%</span></div>
+        </div>
+      </div>
+
+      <div class="stat-grid-2">
+        <div class="stat">
+          <div class="label-11">Alpha</div>
+          <div class="stat-value-15 stat-value--positive" id="posAlpha">+6.9 <span class="sub">pp</span></div>
+          <div class="stat-ah-line" id="posAlphaAhLine" hidden><svg class="ah-moon ah-moon--badge" width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 1020.354 15.354z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span id="posAlphaAh">+7.0 pp</span></div>
+        </div>
+        <div class="stat">
+          <div class="label-11">Alpha (CAD)</div>
+          <div class="stat-value-15 stat-value--positive"><span id="posAlphaCAD">+911.98</span> <span class="sub">CAD</span></div>
+          <div class="stat-ah-line" id="posAlphaCADAhLine" hidden><svg class="ah-moon ah-moon--badge" width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 1020.354 15.354z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span id="posAlphaCADAh">+924.35</span> CAD <span id="posAlphaCADAhPct">+7.0%</span></div>
+        </div>
+      </div>
+
+      <div class="stat-grid-2 pb-content">
+        <div class="stat">
+          <div class="label-11">Held Since</div>
+          <div class="stat-value-15">Oct 14, 2025</div>
+        </div>
+        <div class="stat">
+          <div class="label-11">Holding Period</div>
+          <div class="stat-value-15">8 months</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- Profile section -->
+  <div class="profile-section">
+    <div class="section-header">Profile</div>
+
+    <div class="company-block">
+      <div class="label-11">Company</div>
+      <div class="desc">Designs accelerated-computing platforms — processors, networking and systems software — sold to cloud providers, enterprises and consumer manufacturers. Data Center is the load-bearing segment; the rest is optional to the thesis.</div>
+    </div>
+
+    <div class="profile-grid" id="profileGrid">
+      <div class="cell"><div class="label-11">Sector</div><div class="val">Information Technology</div></div>
+      <div class="cell"><div class="label-11">Headquarters</div><div class="val">Santa Clara, CA</div></div>
+      <div class="cell"><div class="label-11">Employees</div><div class="val">36,000</div></div>
+      <div class="cell"><div class="label-11">Fiscal year end</div><div class="val">January</div></div>
+      <div class="cell"><div class="label-11">Free float</div><div class="val">96.1%</div></div>
+    </div>
+  </div>
+
+  <!-- Chart section -->
+  <div class="chart-section">
+    <div class="chart-tooltip" id="chartTooltip">
+      <span class="chart-tooltip__right">
+        <span class="chart-tooltip__price" id="chartPrice">87.60</span>
+        <div class="chart-tooltip__session-row" id="chartSessionRow" hidden>
+          <span class="chart-tooltip__label" id="chartSessionLabel">After Hours</span>
+          <span id="chartSessionChange">-1.50 (-1.18%)</span>
+        </div>
+        <div class="chart-tooltip__close-row">
+          <span class="chart-tooltip__label" id="chartCloseLabel" hidden>Close</span>
+          <span class="chart-tooltip__change" id="chartChange">+1.54 (+1.2%)</span>
+        </div>
+      </span>
+    </div>
+
+    <div class="chart-canvas-wrap" id="chartCanvasWrap">
+      <span class="chart-time-float" id="chartTimeFloat" style="left: 73px;">10:30 AM</span>
+      <div class="chart-hairline" id="chartHairline" style="left: 101px;"></div>
+      <div class="chart-dot" id="chartDot" style="left: 99px; top: 142px;"></div>
+
+      <div class="chart-canvas" id="chartCanvas">
+        <div class="chart-seg" style="position:absolute; left:0.6px; top:0; width:158.5px; height:179px;">
+          <svg width="158.5" height="179" viewBox="0 0 158.5 179" preserveAspectRatio="none" fill="none">
+            <path id="chartPathA" d="M0.75 122.227C0.75 121.136 4.41667 84.8216 6.25 66.8005L11.25 63.6203L16.25 77.2497L20.25 14.5543L25.75 2.74209L30.25 43.1761L34.75 45.4477L40.75 52.2624L44.25 39.5416L59.25 119.955L63.75 91.7878L74.25 156.755L78.75 176.29L83.75 150.849L87.75 167.204L92.25 174.473L98.25 147.214L103.25 136.765L107.75 122.227L112.25 155.392L115.25 156.755L126.25 138.582L130.75 143.58L136.75 149.031L139.75 179.016L145.75 174.473L149.25 181.742L155.25 167.204L159.25 181.742" stroke="white" stroke-width="1.5" stroke-linecap="square" transform="scale(0.994,1)"/>
+          </svg>
+        </div>
+
+        <div class="chart-seg" style="position:absolute; left:159.3px; top:79.05px; width:158px; height:99.949px; transform:scaleX(-1);">
+          <svg width="158" height="99.949" viewBox="0 0 159.754 102.842" preserveAspectRatio="none" fill="none">
+            <path id="chartPathB" d="M0.75 68.4068C0.75 67.7979 4.4051 47.5206 6.23265 37.458L11.2169 35.6823L16.2011 43.2926L20.1885 8.285L25.6711 1.68936L30.1569 24.2667L34.6427 25.5351L40.6238 29.3403L44.1128 22.2373L59.0655 67.1384L63.5513 51.4103L74.0181 87.6863L78.5039 98.5945L83.4882 84.3885L87.4756 93.5209L91.9614 97.5798L97.9424 82.3591L102.927 76.5245L107.412 68.4068L111.898 86.9253L114.889 87.6863L125.854 77.5392L130.34 80.3296L136.321 83.3738L139.312 100.117L145.293 97.5798L148.782 101.639L154.763 93.5209L158.75 101.639" stroke="white" stroke-width="1.5" stroke-linecap="square"/>
+          </svg>
+        </div>
+
+        <div class="chart-seg" style="position:absolute; left:318.3px; top:130.74px; width:28.41px; height:16.466px; transform:scaleX(-1);">
+          <svg width="28.41" height="16.466" viewBox="0 0 30.4178 18.4831" preserveAspectRatio="none" fill="none">
+            <path id="chartPathC" d="M0.972461 0.972461L6.95354 3.32475L9.94406 16.2623L15.9251 14.3021L19.4141 17.4385L25.3952 11.1657L29.3826 17.4385" stroke="white" stroke-width="1.5" stroke-linecap="square"/>
+          </svg>
+        </div>
+      </div>
+
+      <div class="chart-volume" id="chartVolume"></div>
+    </div>
+
+    <div class="chart-tabline"></div>
+    <div class="chart-tabs" id="chartTabs">
+      <span class="active" data-range="1D">1D</span>
+      <span data-range="1w">1w</span>
+      <span data-range="1M">1M</span>
+      <span data-range="6M">6M</span>
+      <span data-range="YTD">YTD</span>
+      <span data-range="1Y">1Y</span>
+      <span data-range="5Y">5Y</span>
+      <span data-range="max">max</span>
+    </div>
+  </div>
+
+  <!-- Order Book - Level 1 -->
+  <div class="l1-section">
+    <div class="l1-title">Order Book - Level 1</div>
+
+    <div class="l1-ratio-track">
+      <div class="l1-ratio-fill l1-ratio-fill--bid" id="l1BidRatioFill" style="width:50%"></div>
+      <div class="l1-ratio-fill l1-ratio-fill--ask" id="l1AskRatioFill" style="width:50%"></div>
+    </div>
+
+    <div class="l1-bidask-row">
+      <div class="l1-bidask-cell l1-bidask-cell--bid">
+        <span class="l1-bidask-label l1-bidask-label--bid">Bid</span>
+        <span class="l1-bidask-size" id="l1BidSize">512</span>
+        <span class="l1-bidask-price l1-bidask-price--bid" id="l1Bid">87.52</span>
+      </div>
+      <div class="l1-bidask-cell l1-bidask-cell--ask">
+        <span class="l1-bidask-price l1-bidask-price--ask" id="l1Ask">87.58</span>
+        <span class="l1-bidask-size" id="l1AskSize">140</span>
+        <span class="l1-bidask-label l1-bidask-label--ask">Ask</span>
+      </div>
+    </div>
+
+    <div class="l1-tns-header">
+      <span class="l1-tns-title">Time &amp; Sales</span>
+      <div class="l1-row-picker">
+        <button type="button" class="l1-row-picker__btn" id="l1RowPickerBtn">10 <span class="chev">›</span></button>
+        <div class="l1-row-picker__menu" id="l1RowPickerMenu" hidden>
+          <button type="button" class="l1-row-picker__item active" data-rows="10">10</button>
+          <button type="button" class="l1-row-picker__item" data-rows="20">20</button>
+          <button type="button" class="l1-row-picker__item" data-rows="40">40</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="l1-tns-tabs">
+      <button type="button" class="l1-tns-tab active" id="l1TabTick">Tick by Tick</button>
+      <button type="button" class="l1-tns-tab" id="l1TabVolume">Volume Analysis</button>
+    </div>
+
+    <div class="l1-tns-cols" id="l1TickCols">
+      <span>Time</span><span>Price</span><span>Volume</span><span class="l1-tns-col-side">Side</span>
+    </div>
+    <div class="l1-tns-cols" id="l1VolumeCols" hidden>
+      <span>Price</span><span></span><span></span><span class="l1-tns-col-side">Volume</span>
+    </div>
+
+    <div class="l1-tns-list" id="l1TickList"></div>
+    <div class="l1-tns-list" id="l1VolumeList" hidden></div>
+  </div>
+
+  <!-- Key stats grid -->
+  <div class="keystats-section">
+    <div class="keystats-grid">
+      <div class="cell"><div class="label-11">Day Range</div><div class="val">36.82 - 92.12</div></div>
+      <div class="cell"><div class="label-11">52-Week Range</div><div class="val">29.50 - 93.81</div></div>
+      <div class="cell"><div class="label-11">Volume (Today / Avg)</div><div class="val">180K / 205K</div></div>
+      <div class="cell"><div class="label-11">Last Sale</div><div class="val">39.60</div></div>
+      <div class="cell"><div class="label-11">Exchange</div><div class="val">TSX</div></div>
+      <div class="cell"><div class="label-11">Market Cap</div><div class="val">4.15B</div></div>
+      <div class="cell"><div class="label-11">Enterprise Value (EV)</div><div class="val">903.3M</div></div>
+      <div class="cell"><div class="label-11">Shares Outstanding</div><div class="val">115.3M</div></div>
+      <div class="cell"><div class="label-11">Dividend Yield</div><div class="val">-</div></div>
+      <div class="cell"><div class="label-11">P/E</div><div class="val">40.6</div></div>
+      <div class="cell"><div class="label-11">EV/EBITDA</div><div class="val">18.9</div></div>
+      <div class="cell"><div class="label-11">EV/Sales</div><div class="val">3.4</div></div>
+      <div class="cell"><div class="label-11">P/FCF</div><div class="val">32.3</div></div>
+      <div class="cell"><div class="label-11">EV / Gross Profit</div><div class="val">32.3</div></div>
+      <div class="cell"><div class="label-11">P/B</div><div class="val">8.2</div></div>
+    </div>
+  </div>
+
+  <!-- Financials / Investor Relations / Ownership -->
+  <div class="finrel-section">
+    <div class="finrel-block">
+      <div class="section-header">Financials <span class="chev">›</span></div>
+      <div class="finrel-grid">
+        <div class="cell"><div class="label-11">Revenue (Q1 FY26)</div><div class="val">612.4M <span class="delta up">+18.2%</span></div></div>
+        <div class="cell"><div class="label-11">Net Income</div><div class="val">102.1M <span class="delta up">+24.6%</span></div></div>
+        <div class="cell"><div class="label-11">Free Cash Flow</div><div class="val">88.7M <span class="delta down">-4.1%</span></div></div>
+        <div class="cell"><div class="label-11">Gross Margin</div><div class="val">67.8% <span class="delta up">+1.7pp</span></div></div>
+      </div>
+      <div class="finrel-footnote">Quarterly · tap for full statements, ratios, and prior periods.<br>Powered by Fiscal.ai</div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="finrel-block finrel-block--link" id="investorRelationsTrigger" role="button" tabindex="0">
+      <div class="section-header">Investor Relations <span class="chev">›</span></div>
+      <div class="finrel-footnote">Next earnings: Q2 FY26 · Aug 6, 2026 · Quarterly calls, transcripts &amp; filings</div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="finrel-block">
+      <div class="section-header">Ownership <span class="chev">›</span></div>
+      <div class="finrel-grid">
+        <div class="cell"><div class="label-11">Insider Ownership</div><div class="val">8.4%</div></div>
+        <div class="cell"><div class="label-11">Institutional Ownership</div><div class="val">71.2%</div></div>
+      </div>
+      <div class="finrel-footnote">3 insider transactions in the last 90 days</div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- Links section -->
+  <div class="links-section">
+    <div class="link-item">
+      <span class="link-item__name">Fiscal.ai</span>
+      <span class="link-item__right"><span class="link-item__url" style="text-transform:capitalize">Financials. ratios. filings</span><span class="chev">›</span></span>
+    </div>
+    <div class="link-item">
+      <span class="link-item__name">Claude</span>
+      <span class="link-item__right"><span class="link-item__url">Claude.ai</span><span class="chev">›</span></span>
+    </div>
+    <div class="link-item">
+      <span class="link-item__name">ChatGPT</span>
+      <span class="link-item__right"><span class="link-item__url">ChatGPT.com</span><span class="chev">›</span></span>
+    </div>
+    <div class="link-item">
+      <span class="link-item__name">Gemini</span>
+      <span class="link-item__right"><span class="link-item__url">Gemini.google.com</span><span class="chev">›</span></span>
+    </div>
+  </div>
+
+  <a class="link-row research-prompt-link" href="#">Research Prompt <span class="chev">›</span></a>
+
+  <div class="divider" style="margin-top:40px;"></div>
+
+  <!-- News section -->
+  <div class="news-section">
+    <div class="section-header">News</div>
+    <div class="news-list">
+      <div class="news-item">
+        <div class="news-item__headline">Uber Invests in Drone Delivery With Flytrex Partnership</div>
+        <div class="news-item__meta">PYMNTS · 1h</div>
+      </div>
+      <div class="news-item">
+        <div class="news-item__headline">Uber Technologies ($UBER) | IonQ ($IONQ) | Lyft ($LYFT) | Ballard Power Systems ($BLD...)</div>
+        <div class="news-item__meta">Green Stock News · 2h</div>
+      </div>
+      <div class="news-item">
+        <div class="news-item__headline">Not Too Late To Buy Uber Stock Despite 50% Rally</div>
+        <div class="news-item__meta">Forbes · 3h</div>
+      </div>
+      <div class="news-item">
+        <div class="news-item__headline">Second-source packaging qualification slips to Q4</div>
+        <div class="news-item__meta">Forbes · 3h</div>
+      </div>
+    </div>
+    <a class="link-row section-cta" href="#">View More <span class="chev">›</span></a>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- History section -->
+  <div class="history-section">
+    <div class="section-header">History</div>
+    <div class="history-list">
+      <div class="history-item">
+        <div class="col">
+          <div class="history-date">06.27.26</div>
+          <div class="history-type">Buy <span class="suffix">· Market</span></div>
+          <div class="history-account">TFSA</div>
+        </div>
+        <div class="col col--right">
+          <div class="history-price">230.00</div>
+          <div class="history-shares">23 shares x 10.00</div>
+        </div>
+      </div>
+      <div class="history-item">
+        <div class="col">
+          <div class="history-date">06.27.26</div>
+          <div class="history-type all-muted">Buy · Market</div>
+          <div class="history-account">Non-Registered</div>
+        </div>
+        <div class="col col--right">
+          <div class="history-price muted">Expired</div>
+          <div class="history-shares">23 shares</div>
+        </div>
+      </div>
+      <div class="history-item">
+        <div class="col">
+          <div class="history-date">06.24.26</div>
+          <div class="history-type">Buy <span class="suffix">· Market</span></div>
+          <div class="history-account">RRSP</div>
+        </div>
+        <div class="col col--right">
+          <div class="history-price">230.00</div>
+          <div class="history-shares">23 shares x 10.00</div>
+        </div>
+      </div>
+      <div class="history-item">
+        <div class="col">
+          <div class="history-date">06.23.26</div>
+          <div class="history-type">Buy <span class="suffix">· Limit</span></div>
+          <div class="history-account">TFSA</div>
+        </div>
+        <div class="col col--right">
+          <div class="history-price">350.00</div>
+          <div class="history-shares">35 shares x 10.00</div>
+        </div>
+      </div>
+      <div class="history-item">
+        <div class="col">
+          <div class="history-date">06.22.26</div>
+          <div class="history-type">Buy <span class="suffix">· Limit</span></div>
+          <div class="history-account">TFSA</div>
+        </div>
+        <div class="col col--right">
+          <div class="history-price">230.00</div>
+          <div class="history-shares">23 shares x 10.00</div>
+        </div>
+      </div>
+      <div class="history-item">
+        <div class="col">
+          <div class="history-date">06.20.26</div>
+          <div class="history-type">Buy <span class="suffix">· Limit</span></div>
+          <div class="history-account">TFSA</div>
+        </div>
+        <div class="col col--right">
+          <div class="history-price">230.00</div>
+          <div class="history-shares">23 shares x 10.00</div>
+        </div>
+      </div>
+    </div>
+    <a class="link-row section-cta" href="#">View More <span class="chev">›</span></a>
+  </div>
+
+  <div class="capital-decision">Capital Decision</div>
+
+
+</div>
+  </div>
+
+  <!-- Investor Relations detail overlay -->
+  <div class="ir-overlay" id="irOverlay" hidden>
+    <div class="ir-overlay__header">
+      <button type="button" class="ir-back-btn" id="irBackBtn" aria-label="Back">
+        <img src="data:image/svg+xml;base64,PHN2ZyBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJub25lIiBvdmVyZmxvdz0idmlzaWJsZSIgc3R5bGU9ImRpc3BsYXk6IGJsb2NrOyIgd2lkdGg9IjE2IiBoZWlnaHQ9IjE2IiB2aWV3Qm94PSIwIDAgMTYgMTYiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxnIGlkPSJTVkciPgo8cGF0aCBpZD0iVmVjdG9yIiBkPSJNMTAuNSAzTDUuNSA4TDEwLjUgMTMiIHN0cm9rZT0iI0M3QzdDNyIgc3Ryb2tlLXdpZHRoPSIxLjQiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPgo8L2c+Cjwvc3ZnPgo=" alt="">
       </button>
-      <span class="rec-title">The record</span>
-      <span class="rec-count" id="rec-count">—</span>
+      <span class="ir-overlay__title">Investor Relations</span>
     </div>
-    <div class="rec-body">
-      <div class="rec-intro">Every sealed forecast — the append-only ledger. A sale, a re-underwrite, or a killed thesis each gets its own status; nothing is ever overwritten.</div>
-      <div id="rec-list" style="padding-bottom:56px"></div>
+    <div class="ir-overlay__subtitle">Next earnings call: Q2 FY26 · Thursday, Aug 6, 2026 · 8:00 AM ET</div>
+    <div class="divider"></div>
+    <div class="ir-filing-list">
+      <div class="ir-filing-row">
+        <div class="col">
+          <div class="ir-filing-period">Q1 FY26</div>
+          <div class="ir-filing-reported">Reported May 2, 2026</div>
+        </div>
+        <div class="ir-filing-links">
+          <a href="#" class="ir-filing-link">Transcript <span class="chev">›</span></a>
+          <a href="#" class="ir-filing-link">10-Q <span class="chev">›</span></a>
+        </div>
+      </div>
+      <div class="ir-filing-row">
+        <div class="col">
+          <div class="ir-filing-period">Q4 FY25</div>
+          <div class="ir-filing-reported">Reported Feb 10, 2026</div>
+        </div>
+        <div class="ir-filing-links">
+          <a href="#" class="ir-filing-link">Transcript <span class="chev">›</span></a>
+          <a href="#" class="ir-filing-link">10-K <span class="chev">›</span></a>
+        </div>
+      </div>
+      <div class="ir-filing-row">
+        <div class="col">
+          <div class="ir-filing-period">Q3 FY25</div>
+          <div class="ir-filing-reported">Reported Nov 4, 2025</div>
+        </div>
+        <div class="ir-filing-links">
+          <a href="#" class="ir-filing-link">Transcript <span class="chev">›</span></a>
+          <a href="#" class="ir-filing-link">10-Q <span class="chev">›</span></a>
+        </div>
+      </div>
+      <div class="ir-filing-row">
+        <div class="col">
+          <div class="ir-filing-period">Q2 FY25</div>
+          <div class="ir-filing-reported">Reported Aug 5, 2025</div>
+        </div>
+        <div class="ir-filing-links">
+          <a href="#" class="ir-filing-link">Transcript <span class="chev">›</span></a>
+          <a href="#" class="ir-filing-link">10-Q <span class="chev">›</span></a>
+        </div>
+      </div>
+      <div class="ir-filing-row">
+        <div class="col">
+          <div class="ir-filing-period">Q1 FY25</div>
+          <div class="ir-filing-reported">Reported May 6, 2025</div>
+        </div>
+        <div class="ir-filing-links">
+          <a href="#" class="ir-filing-link">Transcript <span class="chev">›</span></a>
+          <a href="#" class="ir-filing-link">10-Q <span class="chev">›</span></a>
+        </div>
+      </div>
     </div>
   </div>
-
-  <div class="home-indicator"></div>
 </div>
 
 <script>
-  const TAG_COLORS = {
-    "Earnings": "#fdad00",
-    "Open Order": "#fdad00",
-    "Reverse Split": "#fd6900",
-    "Stock Split": "#fd6900",
-    "Investment Case": "#fd6900",
-    "52 Week High": "#ffffff",
-    "52 Week Low": "#ffffff",
-    "Delisted": "#fd0200",
-    "Stock Halted": "#fd0200",
-    "Order Complete": "#02cb45",
-    "No Thesis/Kill Criteria": "#fbc308"
-  };
+(function () {
+  /* ---------- Thesis inline edit ---------- */
+  var thesisBanner = document.getElementById('thesisBanner');
+  var thesisDisplay = document.getElementById('thesisDisplay');
+  var thesisEdit = document.getElementById('thesisEdit');
+  var thesisInput = document.getElementById('thesisInput');
+  var thesisCounter = document.getElementById('thesisCounter');
+  var thesisSend = document.getElementById('thesisSend');
+  var thesisText = document.getElementById('thesisText');
+  var thesisDot = document.getElementById('thesisDot');
+  var thesisVersionChip = document.getElementById('thesisVersionChip');
+  var appbarThesisLine = document.getElementById('appbarThesisLine');
+  var stickyHeaderEl = document.getElementById('stickyHeader');
+  var savedThesis = null;
+  var isStuck = false;
 
-  const positions = [
-    { ticker: "ORIO.TO", weight: "25% WT", category: "Emerging Compounder", value: "18,950.00 CAD", pct: "+42.6%", price: "87.60 CAD", change: "+7.8%",
-      desc: "Parent moat compounding; the NASDAQ listing re-rates it over 3–5 years.", tags: ["Earnings", "Reverse Split"] },
-    { ticker: "BWEN", weight: "25% WT", category: "Emerging Compounder", value: "12,950.00 CAD", pct: "+22.6%", price: "82.40 USD", change: "-2.8%",
-      desc: "Delisting risk — watching the appeal. No add until it clears.", tags: ["Delisted"] },
-    { ticker: "EOSCR", weight: "15% WT", category: "Emerging Compounder", value: "12,950.00 CAD", pct: "+22.6%", price: "82.40 USD", change: "-2.8%",
-      desc: "", tags: ["No Thesis/Kill Criteria"] },
-    { ticker: "BWEN", weight: "25% WT", category: "Emerging Compounder", value: "12,950.00 CAD", pct: "+22.6%", price: "82.40 USD", change: "-2.8%",
-      desc: "Delisting risk — watching the appeal. No add until it clears.", tags: ["Delisted"] },
-    { ticker: "AMD", weight: "25% WT", category: "Emerging Compounder", value: "12,950.00 CAD", pct: "+22.6%", price: "82.40 USD", change: "-2.8%",
-      desc: "Trimmed into strength — revisit after the next print.", tags: ["Order Complete"] },
-    { ticker: "MSFT", weight: "8% WT", category: "Core Compounder", value: "22,150.00 CAD", pct: "+18.4%", price: "410.20 USD", change: "+1.2%",
-      desc: "Cloud and AI capex compounding; sizing up on pullbacks.", tags: ["Earnings"] },
-    { ticker: "TSLA", weight: "6% WT", category: "Special Situation", value: "9,840.00 CAD", pct: "-8.1%", price: "245.60 USD", change: "-3.4%",
-      desc: "Delivery miss last quarter; watching margin trend.", tags: ["No Thesis/Kill Criteria", "52 Week Low"] },
-    { ticker: "NVDA", weight: "12% WT", category: "Core Compounder", value: "31,200.00 CAD", pct: "+64.2%", price: "118.30 USD", change: "+2.9%",
-      desc: "AI infrastructure buildout still early; core position.", tags: ["52 Week High"] },
-    { ticker: "GOOGL", weight: "7% WT", category: "Core Compounder", value: "15,600.00 CAD", pct: "+9.7%", price: "172.40 USD", change: "+0.6%",
-      desc: "", tags: [] },
-    { ticker: "AAPL", weight: "5% WT", category: "Index Anchor", value: "11,300.00 CAD", pct: "+4.2%", price: "228.90 USD", change: "-0.3%",
-      desc: "", tags: [] },
-    { ticker: "SHOP.TO", weight: "4% WT", category: "Emerging Compounder", value: "8,450.00 CAD", pct: "+31.5%", price: "118.75 CAD", change: "+5.1%",
-      desc: "Merchant GMV reacceleration; margin expansion story intact.", tags: ["Stock Split", "Open Order"] },
-    { ticker: "ENB.TO", weight: "3% WT", category: "Index Anchor", value: "6,200.00 CAD", pct: "+6.8%", price: "58.30 CAD", change: "+0.4%",
-      desc: "", tags: [] },
-    { ticker: "CNQ.TO", weight: "3% WT", category: "Cyclical Value", value: "5,980.00 CAD", pct: "-2.4%", price: "47.15 CAD", change: "-1.1%",
-      desc: "Oil price weakness weighing on the name.", tags: ["No Thesis/Kill Criteria"] },
-    { ticker: "BAM", weight: "4% WT", category: "Core Compounder", value: "7,650.00 CAD", pct: "+14.9%", price: "52.80 USD", change: "+0.9%",
-      desc: "", tags: ["Open Order"] },
-    { ticker: "CP.TO", weight: "3% WT", category: "Index Anchor", value: "5,540.00 CAD", pct: "+7.3%", price: "112.60 CAD", change: "-0.2%",
-      desc: "", tags: [] },
-    { ticker: "ATD.TO", weight: "3% WT", category: "Core Compounder", value: "5,120.00 CAD", pct: "+11.2%", price: "78.40 CAD", change: "+0.5%",
-      desc: "", tags: ["Investment Case"] },
-    { ticker: "TD.TO", weight: "2% WT", category: "Index Anchor", value: "4,300.00 CAD", pct: "-3.6%", price: "82.10 CAD", change: "-0.7%",
-      desc: "Litigation overhang capping re-rating near term.", tags: ["No Thesis/Kill Criteria", "Investment Case"] },
-    { ticker: "RY.TO", weight: "2% WT", category: "Index Anchor", value: "4,150.00 CAD", pct: "+5.9%", price: "148.30 CAD", change: "+0.3%",
-      desc: "", tags: [] },
-    { ticker: "BNS.TO", weight: "2% WT", category: "Turnaround Bet", value: "3,880.00 CAD", pct: "-6.7%", price: "62.90 CAD", change: "-1.8%",
-      desc: "Latin America exposure still a drag on ROE.", tags: ["No Thesis/Kill Criteria", "52 Week Low"] },
-    { ticker: "WCN", weight: "3% WT", category: "Core Compounder", value: "6,010.00 CAD", pct: "+19.3%", price: "245.70 USD", change: "+1.0%",
-      desc: "", tags: ["52 Week High"] },
-    { ticker: "FTS.TO", weight: "2% WT", category: "Index Anchor", value: "3,600.00 CAD", pct: "+3.1%", price: "61.20 CAD", change: "+0.1%",
-      desc: "", tags: [] },
-    { ticker: "L.TO", weight: "2% WT", category: "Index Anchor", value: "3,420.00 CAD", pct: "+8.4%", price: "78.90 CAD", change: "+0.4%",
-      desc: "", tags: [] },
-    { ticker: "DOL.TO", weight: "3% WT", category: "Core Compounder", value: "5,760.00 CAD", pct: "+22.7%", price: "152.40 CAD", change: "+0.8%",
-      desc: "Discount retail resilient through the cycle.", tags: ["Earnings"] },
-    { ticker: "CSU.TO", weight: "4% WT", category: "Core Compounder", value: "8,900.00 CAD", pct: "+45.6%", price: "4,320.00 CAD", change: "+1.4%",
-      desc: "Serial acquirer compounding at a steady clip.", tags: ["Earnings", "52 Week High"] }
-  ];
-
-  const ROW_GAP = 20;
-  const LIST_TOP = 1867.67;
-
-  // Section rhythm within a row (matches the original design's spacing):
-  // header group -> 16px gap -> description -> 16px gap -> tags -> 16px gap -> divider.
-  // Rows without a description (or without tags) simply skip that block and its
-  // gap. In the after-hours state the header grows by one extra right-aligned
-  // line (moon icon + post-market move).
-  const HEADER_H = 36.45, SECTION_GAP = 16, DESC_H = 17, TAGS_H = 16.64, AH_H = 20.45;
-
-  const listEl = document.getElementById('positions-list');
-  const frameEl = document.querySelector('.frame');
-  // Extra breathing room above "Total Value" (between it and the alert feed)
-  const TOP_SPACING_EXTRA = 32;
-  // 'market' | 'pre' | 'after' — pre/after freeze daily moves, show the
-  // extended-session line (sunrise / moon) and turn the market dots red.
-  let MARKET_STATE = 'market';
-  let fullMinHeight = 0;
-  let positionLive = [];
-
-  function buildPositions() {
-  const extended = MARKET_STATE !== 'market';
-  const headerH = HEADER_H + (extended ? AH_H : 0);
-  // outlined session icons — sunrise for pre-market, moon for after hours
-  const extIcon = MARKET_STATE === 'pre'
-    ? '<svg width="12" height="11" viewBox="0 0 14 12" fill="none" stroke="#fbc308" stroke-width="1.1" stroke-linecap="round" style="vertical-align:-1px; margin-right:5px;"><path d="M3.6 9.2a3.4 3.4 0 0 1 6.8 0"/><path d="M1 9.2h12"/><path d="M7 1.2v1.7"/><path d="M2.9 3.1l1.2 1.2"/><path d="M11.1 3.1l-1.2 1.2"/></svg>'
-    : '<svg width="11" height="11" viewBox="0 0 13 13" fill="none" style="vertical-align:-1px; margin-right:5px;"><path d="M11.2 8.3A5 5 0 0 1 4.7 1.8a5.4 5.4 0 1 0 6.5 6.5Z" stroke="#4a7dff" stroke-width="1.1" stroke-linejoin="round"/></svg>';
-  let html = '';
-  let cursorTop = LIST_TOP;
-  positions.forEach((r, i) => {
-    const top = cursorTop;
-    const changePositive = r.change.trim().startsWith('+');
-    const hasDesc = r.desc.length > 0;
-    const hasTags = r.tags.length > 0;
-
-    // vs S&P as percentage points beside the ticker — green when the position
-    // beats the index over its holding window, red when it lags.
-    const spRet = 6 + ((i * 37) % 25);
-    r._spRet = spRet;
-    const pp = parsePct(r.pct) - spRet;
-    const ppTxt = (pp >= 0 ? '+' : '−') + Math.abs(pp).toFixed(1) + ' pp vs S&P';
-    const ppCol = pp >= 0 ? '#30d158' : '#ff3533';
-
-    // extended-session move — stable per position
-    const ah = (((i * 13) % 30) - 12) / 10;
-    r._ext = ah;
-    const ahTxt = fmtPct(ah, 2);
-
-    let localCursor = headerH;
-    let descTop = null, tagsTop = null;
-    if (hasDesc) { localCursor += SECTION_GAP; descTop = localCursor; localCursor += DESC_H; }
-    if (hasTags) { localCursor += SECTION_GAP; tagsTop = localCursor; localCursor += TAGS_H; }
-    localCursor += SECTION_GAP;
-    const rowHeight = localCursor;
-
-    html += `
-      <div class="abs" style="left:16px; top:${top + 0.93}px; font-size:13px;"><span style="font-weight:500; text-transform:uppercase;">${r.ticker}</span><span id="pos-pp-${i}" style="font-size:11.5px; color:${ppCol}; margin-left:7px; letter-spacing:-0.1px; font-variant-numeric:tabular-nums;">${ppTxt}</span></div>
-      <div class="abs" style="left:16px; top:${top + 21.95}px; font-size:10px; color:#929292;">${r.category}<span style="color:#565b5e; margin-left:6px; text-transform:uppercase;">${r.weight}</span></div>
-      <div id="pos-value-${i}" class="abs" style="left:167px; top:${top}px; font-size:13px; font-weight:300; letter-spacing:-0.28px; text-align:right; width:150px;">${r.value}</div>
-      <div id="pos-pct-${i}" class="abs" style="left:327px; top:${top}px; font-size:13px; color:#929292; letter-spacing:-0.24px; text-align:right; width:50px;">${r.pct}</div>
-      <div id="pos-price-${i}" class="abs" style="left:167px; top:${top + 20.45}px; font-size:13px; font-weight:300; letter-spacing:-0.28px; text-align:right; width:150px;">${r.price}</div>
-      <div id="pos-change-${i}" class="abs" style="left:327px; top:${top + 20.45}px; font-size:13px; font-weight:${changePositive ? 700 : 400}; color:${changePositive ? '#ffffff' : '#929292'}; letter-spacing:-0.24px; text-align:right; width:50px;">${r.change}</div>
-      ${extended ? `<div class="abs" style="left:167px; top:${top + 41.9}px; width:210px; text-align:right; font-size:12px; color:#ffffff; letter-spacing:-0.24px; font-variant-numeric:tabular-nums;">${extIcon}<span id="pos-ext-${i}">${ahTxt}</span></div>` : ''}
-      ${hasDesc ? `<div class="abs" style="left:16px; top:${top + descTop}px; font-size:12px; color:#c7c7c7; letter-spacing:-0.19px; max-width:361px; overflow:hidden; text-overflow:ellipsis;">${r.desc}</div>` : ''}
-      ${hasTags ? `<div class="tags-row" style="left:16px; top:${top + tagsTop}px;">${r.tags.map(label => `<span class="tag"><span class="tag-dot" style="background:${TAG_COLORS[label]};"></span>${label}</span>`).join('')}</div>` : ''}
-      <div class="row-divider" style="top:${top + rowHeight}px;"></div>
-    `;
-    cursorTop += rowHeight + ROW_GAP;
-  });
-  listEl.innerHTML = html;
-  const lastRowBottom = cursorTop - ROW_GAP;
-  fullMinHeight = lastRowBottom + 40 + TOP_SPACING_EXTRA;
-  frameEl.style.minHeight = fullMinHeight + 'px';
-
-  // live-sim bindings for the freshly built rows
-  positionLive = positions.map((r, i) => {
-    const value = parseMoney(r.value);
-    const price = parseMoney(r.price);
-    return {
-      valueEl: document.getElementById(`pos-value-${i}`),
-      pctEl: document.getElementById(`pos-pct-${i}`),
-      priceEl: document.getElementById(`pos-price-${i}`),
-      changeEl: document.getElementById(`pos-change-${i}`),
-      ppEl: document.getElementById(`pos-pp-${i}`),
-      extEl: document.getElementById(`pos-ext-${i}`),
-      ext: r._ext,
-      spRet: r._spRet,
-      valueBase: value.num, value: value.num, valueCcy: value.ccy,
-      priceBase: price.num, price: price.num, priceCcy: price.ccy,
-      pctBase: parsePct(r.pct), pct: parsePct(r.pct),
-      changeBase: parsePct(r.change), change: parsePct(r.change),
-    };
-  });
-  if (window.__applyCore) window.__applyCore();
+  function updateStickyThesisLine() {
+    var show = isStuck && !!savedThesis;
+    appbarThesisLine.textContent = savedThesis || '';
+    appbarThesisLine.classList.toggle('visible', show);
   }
-
-  document.getElementById('shifted-content').style.transform = `translateY(${TOP_SPACING_EXTRA}px)`;
-  buildPositions();
-
-  // ---- Core section: collapsible ----
-  (function () {
-    const CORE_COLLAPSE_DELTA = 507.27;
-    const belowCoreEl = document.getElementById('below-core');
-    const chevron = document.getElementById('core-chevron-svg');
-    const valueLabel = document.getElementById('core-value-label');
-    const valueNum = document.getElementById('stat-core-value');
-    let collapsed = false;
-
-    function apply() {
-      document.querySelectorAll('.core-detail').forEach(el => { el.style.display = collapsed ? 'none' : ''; });
-      belowCoreEl.style.transform = collapsed ? `translateY(-${CORE_COLLAPSE_DELTA}px)` : 'translateY(0)';
-      frameEl.style.minHeight = (fullMinHeight - (collapsed ? CORE_COLLAPSE_DELTA : 0)) + 'px';
-      chevron.style.transform = collapsed ? 'rotate(-90deg)' : 'rotate(0deg)';
-      if (collapsed) {
-        valueLabel.style.top = '493px'; valueLabel.style.right = '34px';
-        valueNum.style.top = '517px'; valueNum.style.right = '16px';
-      } else {
-        valueLabel.style.top = '736px'; valueLabel.style.right = '16px';
-        valueNum.style.top = '758.3px'; valueNum.style.right = '16px';
-      }
-    }
-    document.getElementById('core-toggle').addEventListener('click', () => {
-      collapsed = !collapsed;
-      apply();
-    });
-    // let buildPositions() re-apply the collapse offset after a rebuild
-    window.__applyCore = apply;
-  })();
-
-  // ================= LIVE "REAL-TIME" DATA SIMULATION =================
-  function fmtMoney(v, decimals = 2) {
-    return v.toLocaleString('en-US', { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
-  }
-  function fmtSignedMoney(v, decimals = 2) {
-    return (v >= 0 ? '+' : '-') + Math.abs(v).toLocaleString('en-US', { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
-  }
-  function fmtPct(v, decimals = 1) {
-    return (v >= 0 ? '+' : '-') + Math.abs(v).toFixed(decimals) + '%';
-  }
-  function parseMoney(str) {
-    const m = str.match(/^([\d,]+\.\d+)\s*(\w+)$/);
-    return m ? { num: parseFloat(m[1].replace(/,/g, '')), ccy: m[2] } : { num: 0, ccy: '' };
-  }
-  function parsePct(str) {
-    return parseFloat(str.replace('%', '').replace('+', ''));
-  }
-  function flash(el, up, settleColor) {
-    el.style.color = settleColor;
-  }
-
-  // ---- Top-level portfolio stats ----
-  function makeLiveStat(id, baseValue, opts = {}) {
-    const el = document.getElementById(id);
-    if (!el) return null;
-    const settleColor = opts.settleColor || getComputedStyle(el).color;
-    const mirrorEl = opts.mirrorId ? document.getElementById(opts.mirrorId) : null;
-    const mirrorEl2 = opts.mirrorId2 ? document.getElementById(opts.mirrorId2) : null;
-    return Object.assign({ el, mirrorEl, mirrorEl2, base: baseValue, value: baseValue, kind: 'money', decimals: 2,
-      volatility: 0.0012, reversion: 0.05, wrap: null, settleColor }, opts);
-  }
-  function tickLiveStat(s) {
-    const magnitude = Math.max(Math.abs(s.value), 1);
-    const noise = (Math.random() * 2 - 1) * s.volatility * magnitude;
-    const revert = (s.base - s.value) * s.reversion;
-    const delta = noise + revert;
-    s.value += delta;
-    let text = s.kind === 'pct' ? fmtPct(s.value, s.decimals)
-      : s.kind === 'signedMoney' ? fmtSignedMoney(s.value, s.decimals)
-      : fmtMoney(s.value, s.decimals);
-    if (s.wrap) text = s.wrap(text);
-    s.el.textContent = text;
-    flash(s.el, delta >= 0, s.settleColor);
-    if (s.mirrorEl) s.mirrorEl.textContent = text;
-    if (s.mirrorEl2) s.mirrorEl2.textContent = text;
-    // sign-colored stats (benchmark difference): green ahead of the index,
-    // red behind — applied to the stat, its mirror, and an optional container
-    if (s.colorBySign) {
-      const c = s.value >= 0 ? '#30d158' : '#ff3533';
-      s.el.style.color = c;
-      if (s.mirrorEl) s.mirrorEl.style.color = c;
-      if (s.colorAlsoId) { const x = document.getElementById(s.colorAlsoId); if (x) x.style.color = c; }
+  function checkStuck() {
+    var headerHeight = stickyHeaderEl.getBoundingClientRect().height;
+    var bannerRect = thesisBanner.getBoundingClientRect();
+    var stuck = bannerRect.bottom <= headerHeight;
+    if (stuck !== isStuck) {
+      isStuck = stuck;
+      updateStickyThesisLine();
     }
   }
+  var screenEl = document.getElementById('screen');
+  screenEl.addEventListener('scroll', checkStuck, { passive: true });
 
-  const liveStats = [
-    makeLiveStat('stat-total-value', 173249.00, { volatility: 0.0006, reversion: 0.06, mirrorId: 'stat-total-value-inline' }),
-    // Core is managed index funds — nothing trades outside market hours
-    makeLiveStat('stat-core-value', 126471.77, { volatility: 0.0012, reversion: 0.05, frozenExtended: true }),
-    makeLiveStat('stat-core-allchg', 6365.65, { kind: 'signedMoney', volatility: 0.012, reversion: 0.06, frozenExtended: true }),
-    makeLiveStat('stat-core-allpct', 5.3, { kind: 'pct', volatility: 0.02, reversion: 0.08, wrap: t => `(${t})`, frozenExtended: true }),
-    makeLiveStat('stat-active-value', 46777.23, { volatility: 0.0012, reversion: 0.05 }),
-    makeLiveStat('stat-active-allchg', 2353.46, { kind: 'signedMoney', volatility: 0.012, reversion: 0.06 }),
-    makeLiveStat('stat-active-allpct', 5.3, { kind: 'pct', volatility: 0.02, reversion: 0.08, wrap: t => `(${t})` }),
-    makeLiveStat('stat-bench-portfolio', 46777.23, { volatility: 0.0012, reversion: 0.05 }),
-    // the S&P index itself stops moving when the market closes
-    makeLiveStat('stat-bench-sp500', 44593.05, { volatility: 0.0008, reversion: 0.05, frozenExtended: true }),
-    makeLiveStat('stat-diff-value', 2184.18, { kind: 'signedMoney', volatility: 0.02, reversion: 0.06, colorBySign: true, mirrorId: 'stat-diff-value-inline', colorAlsoId: 'inline-diff' }),
-    makeLiveStat('stat-diff-pct', 4.90, { kind: 'pct', decimals: 2, volatility: 0.02, reversion: 0.08, colorBySign: true, mirrorId: 'stat-diff-pct-inline' }),
-  ].filter(Boolean);
+  /* ---------- Reveal header price only after scrolling past the price block ---------- */
+  var priceBlockEl = document.getElementById('priceBlock');
+  var headerPriceGroup = document.getElementById('headerPriceGroup');
+  var priceRevealed = false;
+  function checkPriceReveal() {
+    var headerHeight = stickyHeaderEl.getBoundingClientRect().height;
+    var rect = priceBlockEl.getBoundingClientRect();
+    var revealed = rect.bottom <= headerHeight;
+    if (revealed !== priceRevealed) {
+      priceRevealed = revealed;
+      headerPriceGroup.classList.toggle('visible', revealed);
+    }
+  }
+  screenEl.addEventListener('scroll', checkPriceReveal, { passive: true });
+  checkPriceReveal();
 
-  setInterval(() => {
-    const extended = MARKET_STATE !== 'market';
-    liveStats.forEach(s => {
-      if (extended && s.frozenExtended) return;
-      if (Math.random() < 0.55) tickLiveStat(s);
-    });
-  }, 1200);
+  function openThesisEdit() {
+    thesisDisplay.hidden = true;
+    thesisEdit.hidden = false;
+    thesisInput.focus();
+  }
+  function closeThesisEdit() {
+    thesisEdit.hidden = true;
+    thesisDisplay.hidden = false;
+  }
+  thesisDisplay.addEventListener('click', openThesisEdit);
+  thesisInput.addEventListener('input', function () {
+    thesisCounter.textContent = thesisInput.value.length + '/40';
+    thesisSend.disabled = thesisInput.value.trim().length === 0;
+  });
+  thesisSend.addEventListener('click', function () {
+    var val = thesisInput.value.trim();
+    if (!val) return;
+    thesisText.textContent = val;
+    thesisDot.hidden = true;
+    closeThesisEdit();
+    savedThesis = val;
+    updateStickyThesisLine();
+  });
+  thesisInput.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') closeThesisEdit();
+  });
+  document.addEventListener('click', function (e) {
+    if (!thesisEdit.hidden && !thesisBanner.contains(e.target)) {
+      if (thesisInput.value.trim().length === 0) closeThesisEdit();
+    }
+  });
 
-  // ---- Header clock (drives both the in-page clock and the sticky-nav mirror) ----
-  (function () {
-    const el = document.getElementById('stat-clock');
-    const elInline = document.getElementById('stat-clock-inline');
+  /* ---------- Notes inline edit (idle / display / edit) ---------- */
+  var notesCard = document.getElementById('notesCard');
+  var notesIdle = document.getElementById('notesIdle');
+  var notesDisplay = document.getElementById('notesDisplay');
+  var notesDisplayText = document.getElementById('notesDisplayText');
+  var notesEdit = document.getElementById('notesEdit');
+  var notesInput = document.getElementById('notesInput');
+  var notesSend = document.getElementById('notesSend');
+  var savedNote = null;
+
+  function openNotesEdit() {
+    notesIdle.hidden = true;
+    notesDisplay.hidden = true;
+    notesEdit.hidden = false;
+    notesInput.value = savedNote || '';
+    notesSend.disabled = !savedNote;
+    notesInput.style.height = 'auto';
+    notesInput.style.height = notesInput.scrollHeight + 'px';
+    notesInput.focus();
+  }
+  function closeNotesEdit() {
+    notesEdit.hidden = true;
+    if (savedNote) {
+      notesDisplayText.textContent = savedNote;
+      notesDisplay.hidden = false;
+      notesIdle.hidden = true;
+    } else {
+      notesIdle.hidden = false;
+      notesDisplay.hidden = true;
+    }
+  }
+  notesIdle.addEventListener('click', openNotesEdit);
+  notesDisplay.addEventListener('click', openNotesEdit);
+  notesInput.addEventListener('input', function () {
+    notesSend.disabled = notesInput.value.trim().length === 0;
+    notesInput.style.height = 'auto';
+    notesInput.style.height = notesInput.scrollHeight + 'px';
+  });
+  notesSend.addEventListener('click', function () {
+    var val = notesInput.value.trim();
+    if (!val) return;
+    savedNote = val;
+    notesInput.blur();
+    closeNotesEdit();
+  });
+  document.addEventListener('click', function (e) {
+    if (!notesEdit.hidden && !notesCard.contains(e.target)) closeNotesEdit();
+  });
+
+  /* ---------- Chart tabs ---------- */
+  var chartTabs = document.getElementById('chartTabs');
+  chartTabs.addEventListener('click', function (e) {
+    var el = e.target.closest('span');
     if (!el) return;
-    let h = 13, m = 14, sec = 26;
-    window.__setClock = (hh, mm, ss) => { h = hh; m = mm; sec = ss; };
-    setInterval(() => {
-      sec++; if (sec >= 60) { sec = 0; m++; }
-      if (m >= 60) { m = 0; h++; }
-      if (h >= 24) h = 0;
-      const text = `${h}:${String(m).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
-      el.textContent = text;
-      if (elInline) elInline.textContent = text;
-    }, 1000);
-  })();
-
-  // ---- Sticky nav: once the in-page market status scrolls up behind the
-  // pinned 71px bar, its compact copy fades into the bar itself (no added
-  // height). The total value joins it only after the big number is passed. ----
-  (function () {
-    const target = document.getElementById('orig-market-status');
-    const screenEl = document.getElementById('screen');
-    const inlineBar = document.getElementById('topbar-inline');
-    const inlineTotal = document.getElementById('inline-total');
-    const totalValueEl = document.getElementById('stat-total-value');
-    if (!target || !screenEl || !inlineBar) return;
-    const STICKY_HEADER_H = 71;
-    let ticking = false;
-    function update() {
-      ticking = false;
-      const screenTop = screenEl.getBoundingClientRect().top;
-      const targetBottom = target.getBoundingClientRect().bottom - screenTop;
-      const show = targetBottom < STICKY_HEADER_H;
-      let totalPast = false;
-      if (totalValueEl) {
-        const totalBottom = totalValueEl.parentElement.getBoundingClientRect().bottom - screenTop;
-        totalPast = totalBottom < STICKY_HEADER_H;
-      }
-      inlineBar.style.opacity = show ? '1' : '0';
-      if (inlineTotal) inlineTotal.style.opacity = (show && totalPast) ? '1' : '0';
-    }
-    screenEl.addEventListener('scroll', () => {
-      if (!ticking) { ticking = true; requestAnimationFrame(update); }
-    });
-    update();
-  })();
-
-  // ---- Position rows: price / value / all-time % / today's change ----
-  // (positionLive is built inside buildPositions so the after-hours toggle
-  // can rebuild the list and re-bind in one place)
-  function tickPosition(row) {
-    const extended = MARKET_STATE !== 'market';
-    // extended sessions trade thin — quotes drift at a fraction of RTH pace
-    const deltaFrac = (Math.random() * 2 - 1) * 0.003 * (extended ? 0.35 : 1);
-    row.price += row.price * deltaFrac;
-    row.value += row.value * deltaFrac;
-    row.pct += deltaFrac * 100 * 0.4;
-    row.price += (row.priceBase - row.price) * 0.03;
-    row.value += (row.valueBase - row.value) * 0.03;
-    row.pct += (row.pctBase - row.pct) * 0.05;
-
-    const up = deltaFrac >= 0;
-    row.valueEl.textContent = `${fmtMoney(row.value)} ${row.valueCcy}`;
-    row.priceEl.textContent = `${fmtMoney(row.price)} ${row.priceCcy}`;
-    row.pctEl.textContent = fmtPct(row.pct);
-    flash(row.valueEl, up, '#ffffff');
-    flash(row.priceEl, up, '#ffffff');
-    flash(row.pctEl, up, '#929292');
-
-    if (!extended) {
-      // today's move only exists while the market is open
-      row.change += deltaFrac * 100;
-      row.change += (row.changeBase - row.change) * 0.05;
-      const changePositive = row.change >= 0;
-      row.changeEl.textContent = fmtPct(row.change);
-      row.changeEl.style.fontWeight = changePositive ? '700' : '400';
-      flash(row.changeEl, up, changePositive ? '#ffffff' : '#929292');
-    } else if (row.extEl) {
-      // ...while pre/post market, the session line is the live number
-      row.ext += (Math.random() - 0.5) * 0.05;
-      row.extEl.textContent = fmtPct(row.ext, 2);
-    }
-
-    // vs S&P in percentage points, beside the ticker — live like the rest
-    if (row.ppEl) {
-      const pp = row.pct - row.spRet;
-      row.ppEl.textContent = (pp >= 0 ? '+' : '−') + Math.abs(pp).toFixed(1) + ' pp vs S&P';
-      row.ppEl.style.color = pp >= 0 ? '#30d158' : '#ff3533';
-    }
-  }
-
-  setInterval(() => {
-    positionLive.forEach(row => { if (Math.random() < 0.18) tickPosition(row); });
-  }, 900);
-
-  // ================= THE RECORD — data engine + navigation =================
-  // Ported from the calibration prototype (V2 · elevated list).
-  // Semantics: the hurdle IS the excess-over-S&P target; hit ⟺ vs S&P ≥ hurdle.
-  // Open calls tick like a quote feed and resolve at their horizon
-  // (demo-scaled: 1y ≈ 2 min, 3y ≈ 4 min, 5y ≈ 6 min), then shift down
-  // into the judged section of the ledger. Sold-early keeps shadow-tracking.
-  const REC_COLORS = { hit: '#6E9179', miss: '#AE574F', seal: '#C99AD0', gold: '#C9A24B', t: '#929292', d: '#565b5e', p: '#ffffff' };
-  const REC_STATUS = {
-    open:       ['Open',       REC_COLORS.p],
-    hit:        ['Hit',        REC_COLORS.hit],
-    miss:       ['Miss',       REC_COLORS.miss],
-    superseded: ['Superseded', REC_COLORS.seal],
-    sold:       ['Sold-early', REC_COLORS.gold],
-    void:       ['Void',       REC_COLORS.t]
-  };
-  const REC_DUR = { 1: 120, 3: 240, 5: 360 }; // seconds per horizon (demo)
-  const REC_NAMES = ['NVDA','POWL','CELH','V','SHOP','ODD','COST','AEHR','MSFT','IESC','HRMY','SMCI','ANET','VRT'];
-  const recStep = (v, lo, hi) => Math.max(lo, Math.min(hi, Math.round(v / 5) * 5));
-  const recRnd = a => a[Math.floor(Math.random() * a.length)];
-
-  function recMkClosed() {
-    const hz = recRnd([1, 3, 5]);
-    const conf = recStep(35 + Math.random() * 55, 0, 100);
-    const ret = recStep(15 + Math.random() * 35, 15, 100);
-    const clear = Math.random() < (conf / 100) * 0.76;
-    let ex = clear ? ret + Math.random() * 14 : ret - (3 + Math.random() * 45);
-    ex = Math.max(-42, Math.min(58, ex));
-    return { name: recRnd(REC_NAMES), hz, conf, ret, ex, status: ex >= ret ? 'hit' : 'miss' };
-  }
-  function recMkOpen() {
-    const hz = recRnd([1, 3, 5]);
-    const conf = recStep(45 + Math.random() * 40, 0, 100);
-    const ret = recStep(20 + Math.random() * 25, 15, 100);
-    const clear = Math.random() < (conf / 100) * 0.8;
-    let fin = clear ? ret + Math.random() * 14 : ret - (3 + Math.random() * 45);
-    fin = Math.max(-40, Math.min(56, fin));
-    const dur = REC_DUR[hz];
-    const born = Date.now() - (0.25 + Math.random() * 0.4) * dur * 1000;
-    return { name: recRnd(REC_NAMES), hz, conf, ret, fin, perf: 0, born, status: 'open' };
-  }
-  // 17 entries — matches "Predictions 17" on the dashboard's Calibration block
-  const REC = {
-    open: [recMkOpen(), recMkOpen(), recMkOpen(), recMkOpen()],
-    closed: [
-      { name: 'SHOP', hz: 3, conf: 65, ret: 30, status: 'superseded' },
-      { name: 'AEHR', hz: 1, conf: 60, ret: 25, status: 'sold',
-        perf: 6.4, fin: 14, born: Date.now() - 0.17 * REC_DUR[1] * 1000, settled: false },
-      { name: 'SMCI', hz: 3, conf: 70, ret: 35, status: 'void' },
-      ...Array.from({ length: 10 }, recMkClosed)
-    ]
-  };
-
-  const recEntries = () => [...REC.open, ...REC.closed];
-  const recIsLive = p => p.status === 'open' || (p.status === 'sold' && !p.settled);
-  const recValOf = p => p.perf != null && (p.status === 'open' || p.status === 'sold') ? p.perf : p.ex;
-  const recExTxt = v => v == null ? '—' : (v >= 0 ? '+' : '−') + Math.abs(v).toFixed(1) + '%';
-  const recExCol = v => v == null ? REC_COLORS.d : (v >= 0 ? REC_COLORS.hit : REC_COLORS.miss);
-  const recDescOf = p =>
-    p.status === 'superseded' ? 're-underwritten' :
-    p.status === 'void' ? 'thesis killed' :
-    p.status === 'sold' ? 'exited early · tracked to horizon' : 'scored at horizon';
-
-  let recordsOpen = false;
-  setInterval(() => {
-    const nowMs = Date.now();
-    for (let i = REC.open.length - 1; i >= 0; i--) {
-      const d = REC.open[i];
-      const dur = REC_DUR[d.hz];
-      const age = (nowMs - d.born) / 1000;
-      if (age >= dur) {
-        d.status = d.fin >= d.ret ? 'hit' : 'miss';
-        d.ex = d.fin;
-        REC.open.splice(i, 1); REC.closed.unshift(d);
-        continue;
-      }
-      const settle = Math.pow(age / dur, 1.2);
-      d.perf += ((d.fin * settle) - d.perf) * 0.12 + (Math.random() - 0.5) * 1.6 * (1 - settle * 0.7);
-    }
-    for (const d of REC.closed) {
-      if (d.status !== 'sold' || d.settled) continue;
-      const dur = REC_DUR[d.hz];
-      const age = (nowMs - d.born) / 1000;
-      if (age >= dur) { d.settled = true; d.perf = d.fin; d.ex = d.fin; continue; }
-      const settle = Math.pow(age / dur, 1.2);
-      d.perf += ((d.fin * settle) - d.perf) * 0.12 + (Math.random() - 0.5) * 1.6 * (1 - settle * 0.7);
-      d.ex = d.perf;
-    }
-    if (recordsOpen) renderRecords();
-  }, 1200);
-
-  function renderRecords() {
-    const all = recEntries();
-    document.getElementById('rec-count').textContent = all.length + ' entries';
-    document.getElementById('rec-list').innerHTML = all.map(p => {
-      const v = recValOf(p), st = REC_STATUS[p.status];
-      const live = recIsLive(p);
-      const col = recExCol(v);
-      const dot = live ? '<span class="e2-dot" style="background:' + col + '"></span>' : '';
-      const right = live
-        ? '<span class="e2-val" style="color:' + col + '">' + recExTxt(v) + '<span class="u">vs S&P</span></span>' +
-          (p.status === 'sold'
-            ? '<span class="e2-sub" style="color:' + REC_COLORS.gold + '">Sold-early</span>'
-            : '<span class="e2-sub" style="color:' + col + '">Tracking</span>')
-        : '<span class="e2-val" style="color:' + st[1] + '">' + st[0] + '</span>' +
-          '<span class="e2-sub" style="color:' + REC_COLORS.d + '">' + recDescOf(p) + '</span>';
-      return '<div class="e2-row">' +
-        '<div class="e2-left">' +
-          '<span class="e2-nm">' + dot + p.name + '</span>' +
-          '<span class="e2-meta">' + p.conf + '% conf · +' + p.ret + '% hurdle · ' + p.hz + '-year</span>' +
-        '</div>' +
-        '<div class="e2-right">' + right + '</div>' +
-      '</div>';
-    }).join('');
-  }
-
-  // ---- Market-state switcher (burger menu outside the phone) ----
-  function toggleStateMenu(e) {
-    if (e) e.stopPropagation();
-    document.getElementById('stateMenuPanel').classList.toggle('open');
-  }
-  document.addEventListener('click', e => {
-    const p = document.getElementById('stateMenuPanel');
-    if (p && p.classList.contains('open') && !e.target.closest('.iter-wrap')) p.classList.remove('open');
+    var current = chartTabs.querySelectorAll('span');
+    for (var i = 0; i < current.length; i++) current[i].classList.remove('active');
+    el.classList.add('active');
   });
-  function setMarketState(s) {
-    MARKET_STATE = s;
-    document.getElementById('stateMenuPanel').classList.remove('open');
-    document.getElementById('state-item-market').classList.toggle('on', s === 'market');
-    document.getElementById('state-item-pre').classList.toggle('on', s === 'pre');
-    document.getElementById('state-item-after').classList.toggle('on', s === 'after');
-    // market dots (in-page row + top bar): green while open, red while closed
-    const dotCol = s === 'market' ? '#30d158' : '#ff3533';
-    document.querySelectorAll('.mkt-dot').forEach(d => { d.style.background = dotCol; });
-    // clock jumps to a time that matches the session, then keeps ticking
-    if (window.__setClock) {
-      if (s === 'pre') window.__setClock(7, 46, 12);
-      else if (s === 'after') window.__setClock(17, 32, 5);
-      else window.__setClock(13, 14, 26);
+
+  /* ---------- Chart hover / drag interactivity ---------- */
+  var chartCanvasWrap = document.getElementById('chartCanvasWrap');
+  var chartHairline = document.getElementById('chartHairline');
+  var chartDot = document.getElementById('chartDot');
+  var chartTime = document.getElementById('chartTime');
+  var chartTimeFloat = document.getElementById('chartTimeFloat');
+  var chartTooltip = document.getElementById('chartTooltip');
+  var chartPrice = document.getElementById('chartPrice');
+  var chartChange = document.getElementById('chartChange');
+  var chartSessionRow = document.getElementById('chartSessionRow');
+  var chartSessionLabel = document.getElementById('chartSessionLabel');
+  var chartSessionChange = document.getElementById('chartSessionChange');
+  var chartCloseLabel = document.getElementById('chartCloseLabel');
+  var chartPopup = document.getElementById('chartPopup');
+  var popPrice = document.getElementById('popPrice');
+  var popChg = document.getElementById('popChg');
+  var popTurnover = document.getElementById('popTurnover');
+  var popAvgPrc = document.getElementById('popAvgPrc');
+  var popPctChg = document.getElementById('popPctChg');
+  var popVolume = document.getElementById('popVolume');
+  var popTime = document.getElementById('popTime');
+
+  /* Vertices lifted directly from the exported chart vector paths, mapped into canvas pixel space */
+  var rawA = [[0.75,122.227],[6.25,66.8005],[11.25,63.6203],[16.25,77.2497],[20.25,14.5543],[25.75,2.74209],[30.25,43.1761],[34.75,45.4477],[40.75,52.2624],[44.25,39.5416],[59.25,119.955],[63.75,91.7878],[74.25,156.755],[78.75,176.29],[83.75,150.849],[87.75,167.204],[92.25,174.473],[98.25,147.214],[103.25,136.765],[107.75,122.227],[112.25,155.392],[115.25,156.755],[126.25,138.582],[130.75,143.58],[136.75,149.031],[139.75,179.016],[145.75,174.473],[149.25,181.742],[155.25,167.204],[159.25,181.742]];
+  var rawB = [[0.75,68.4068],[6.23265,37.458],[11.2169,35.6823],[16.2011,43.2926],[20.1885,8.285],[25.6711,1.68936],[30.1569,24.2667],[34.6427,25.5351],[40.6238,29.3403],[44.1128,22.2373],[59.0655,67.1384],[63.5513,51.4103],[74.0181,87.6863],[78.5039,98.5945],[83.4882,84.3885],[87.4756,93.5209],[91.9614,97.5798],[97.9424,82.3591],[102.927,76.5245],[107.412,68.4068],[111.898,86.9253],[114.889,87.6863],[125.854,77.5392],[130.34,80.3296],[136.321,83.3738],[139.312,100.117],[145.293,97.5798],[148.782,101.639],[154.763,93.5209],[158.75,101.639]];
+  var rawC = [[0.972461,0.972461],[6.95354,3.32475],[9.94406,16.2623],[15.9251,14.3021],[19.4141,17.4385],[25.3952,11.1657],[29.3826,17.4385]];
+
+  var SEG_A = { left: 0.6, top: 0 };
+  var SEG_B = { left: 159.3, top: 79.05, width: 158 };
+  var SEG_C = { left: 318.3, top: 130.74, width: 28.41 };
+
+  var points = [];
+  rawA.forEach(function (p) { points.push({ x: SEG_A.left + p[0], y: SEG_A.top + p[1] }); });
+  rawB.forEach(function (p) { points.push({ x: SEG_B.left + (SEG_B.width - p[0]), y: SEG_B.top + p[1] }); });
+  rawC.forEach(function (p) { points.push({ x: SEG_C.left + (SEG_C.width - p[0]), y: SEG_C.top + p[1] }); });
+  points.sort(function (a, b) { return a.x - b.x; });
+
+  function yForX(x) {
+    if (x <= points[0].x) return points[0].y;
+    if (x >= points[points.length - 1].x) return points[points.length - 1].y;
+    for (var i = 0; i < points.length - 1; i++) {
+      if (x >= points[i].x && x <= points[i + 1].x) {
+        var t = (x - points[i].x) / ((points[i + 1].x - points[i].x) || 1);
+        return points[i].y + t * (points[i + 1].y - points[i].y);
+      }
     }
-    // session icon beside the top-bar clock — sunrise pre-market, moon after
-    const clockIcon = document.getElementById('clock-session-icon');
-    if (clockIcon) {
-      clockIcon.innerHTML =
-        s === 'pre' ? '<svg width="11" height="10" viewBox="0 0 14 12" fill="none" stroke="#fbc308" stroke-width="1.1" stroke-linecap="round" style="vertical-align:-1px;"><path d="M3.6 9.2a3.4 3.4 0 0 1 6.8 0"/><path d="M1 9.2h12"/><path d="M7 1.2v1.7"/><path d="M2.9 3.1l1.2 1.2"/><path d="M11.1 3.1l-1.2 1.2"/></svg>'
-        : s === 'after' ? '<svg width="10" height="10" viewBox="0 0 13 13" fill="none" style="vertical-align:-1px;"><path d="M11.2 8.3A5 5 0 0 1 4.7 1.8a5.4 5.4 0 1 0 6.5 6.5Z" stroke="#4a7dff" stroke-width="1.1" stroke-linejoin="round"/></svg>'
-        : '';
-    }
-    buildPositions();
+    return points[points.length - 1].y;
   }
 
-  function openRecords() {
-    recordsOpen = true;
-    renderRecords();
-    document.getElementById('records-screen').classList.add('open');
+  var CHART_MIN_X = points[0].x, CHART_MAX_X = points[points.length - 1].x;
+  var CHART_MIN_Y = 0, CHART_MAX_Y = 179;
+  var DAY_HIGH = 88.60, DAY_LOW = 86.20, PREV_CLOSE = 86.66;
+
+  function formatTime(frac) {
+    var startMin = 9 * 60 + 30, endMin = 16 * 60;
+    var mins = startMin + frac * (endMin - startMin);
+    var h = Math.floor(mins / 60), m = Math.floor(mins % 60);
+    var ampm = h >= 12 ? 'PM' : 'AM';
+    var h12 = h % 12; if (h12 === 0) h12 = 12;
+    return h12 + ':' + (m < 10 ? '0' : '') + m + ' ' + ampm;
   }
-  function closeRecords() {
-    recordsOpen = false;
-    document.getElementById('records-screen').classList.remove('open');
+
+  var RESTING_X = 101;
+
+  function updateAt(clientX) {
+    var rect = chartCanvasWrap.getBoundingClientRect();
+    var x = clientX === null ? RESTING_X : clientX - rect.left;
+    if (x < CHART_MIN_X) x = CHART_MIN_X;
+    if (x > CHART_MAX_X) x = CHART_MAX_X;
+    var y = yForX(x);
+    var frac = (x - CHART_MIN_X) / (CHART_MAX_X - CHART_MIN_X);
+
+    chartHairline.style.left = x + 'px';
+    chartDot.style.left = (x - 2.2) + 'px';
+    chartDot.style.top = (y - 2.2) + 'px';
+
+    var price = DAY_LOW + (1 - (y - CHART_MIN_Y) / (CHART_MAX_Y - CHART_MIN_Y)) * (DAY_HIGH - DAY_LOW);
+    var chg = price - PREV_CLOSE;
+    var pct = (chg / PREV_CLOSE) * 100;
+
+    if (clientX === null) {
+      chartPrice.textContent = '87.60';
+      chartChange.textContent = '+1.54 (+1.2%)';
+      chartTimeFloat.textContent = '10:30 AM';
+    } else {
+      chartPrice.textContent = price.toFixed(2);
+      chartChange.textContent = (chg >= 0 ? '+' : '') + chg.toFixed(2) + ' (' + (pct >= 0 ? '+' : '') + pct.toFixed(1) + '%)';
+      chartTimeFloat.textContent = formatTime(frac);
+    }
+    chartTimeFloat.style.left = Math.max(0, Math.min(x - 28, rect.width - 60)) + 'px';
+
+    popPrice.textContent = price.toFixed(2);
+    popChg.textContent = (chg >= 0 ? '+' : '') + chg.toFixed(2);
+    popPctChg.textContent = (pct >= 0 ? '+' : '') + pct.toFixed(2) + '%';
+    popAvgPrc.textContent = ((DAY_HIGH + DAY_LOW) / 2).toFixed(2);
+    popTurnover.textContent = (10 + frac * 8).toFixed(2) + 'M';
+    popVolume.textContent = (30 + frac * 25).toFixed(2) + 'K';
+    popTime.textContent = clientX === null ? '10:30 AM' : formatTime(frac);
   }
-  renderRecords();
+
+  function showInteraction(clientX) {
+    priceBlockEl.classList.add('popup-active');
+    chartPopup.hidden = false;
+    updateAt(clientX);
+  }
+  function hideInteraction() {
+    updateAt(null);
+    priceBlockEl.classList.remove('popup-active');
+    chartPopup.hidden = true;
+  }
+
+  chartCanvasWrap.addEventListener('mousemove', function (e) { updateAt(e.clientX); });
+  chartCanvasWrap.addEventListener('mouseenter', function (e) { showInteraction(e.clientX); });
+  chartCanvasWrap.addEventListener('mouseleave', hideInteraction);
+  chartCanvasWrap.addEventListener('touchstart', function (e) { showInteraction(e.touches[0].clientX); e.preventDefault(); }, { passive: false });
+  chartCanvasWrap.addEventListener('touchmove', function (e) { updateAt(e.touches[0].clientX); e.preventDefault(); }, { passive: false });
+  chartCanvasWrap.addEventListener('touchend', hideInteraction);
+
+  /* ---------- Volume bars (colored by trend of the underlying price line) ---------- */
+  var chartVolumeEl = document.getElementById('chartVolume');
+  (function buildVolumeBars() {
+    var BAR_COUNT = 42;
+    var frag = document.createDocumentFragment();
+    var prevY = null;
+    for (var i = 0; i < BAR_COUNT; i++) {
+      var x = CHART_MIN_X + (i + 0.5) / BAR_COUNT * (CHART_MAX_X - CHART_MIN_X);
+      var y = yForX(x);
+      var seed = Math.sin(i * 12.9898) * 43758.5453;
+      var rnd = seed - Math.floor(seed);
+      var h = 8 + rnd * 32;
+      var up = prevY === null ? true : y < prevY;
+      prevY = y;
+      var bar = document.createElement('div');
+      bar.className = 'bar ' + (up ? 'up' : 'down');
+      bar.style.height = h.toFixed(1) + 'px';
+      frag.appendChild(bar);
+    }
+    chartVolumeEl.appendChild(frag);
+  })();
+
+  /* ---------- Order Book - Level 1 (live) ---------- */
+  var l1Bid = document.getElementById('l1Bid');
+  var l1Ask = document.getElementById('l1Ask');
+  var l1BidSize = document.getElementById('l1BidSize');
+  var l1AskSize = document.getElementById('l1AskSize');
+  var l1BidRatioFill = document.getElementById('l1BidRatioFill');
+  var l1AskRatioFill = document.getElementById('l1AskRatioFill');
+  var l1TickList = document.getElementById('l1TickList');
+  var l1VolumeList = document.getElementById('l1VolumeList');
+  var l1RowPickerBtn = document.getElementById('l1RowPickerBtn');
+  var l1RowPickerMenu = document.getElementById('l1RowPickerMenu');
+  var l1TabTick = document.getElementById('l1TabTick');
+  var l1TabVolume = document.getElementById('l1TabVolume');
+  var lastSaleNum = null;
+  var l1RowLimit = 10;
+  var l1Trades = [];
+  var l1BidPct = 50;
+
+  function randLotSize() { return (1 + Math.floor(Math.random() * 5)) * 100; }
+
+  function renderQuote() {
+    /* The NBBO bid/ask and trade tape only exist while the regular session
+       is live — outside of it they stay frozen at the last live quote. */
+    if (pageMode !== 'full') return;
+    var spread = 0.04 + Math.random() * 0.04;
+    var bid = market.price - spread / 2;
+    var ask = market.price + spread / 2;
+    l1Bid.textContent = bid.toFixed(2);
+    l1Ask.textContent = ask.toFixed(2);
+    l1BidSize.textContent = randLotSize();
+    l1AskSize.textContent = randLotSize();
+    l1BidPct = 10 + Math.random() * 80;
+    var askPct = 100 - l1BidPct;
+    l1BidRatioFill.style.width = l1BidPct.toFixed(1) + '%';
+    l1AskRatioFill.style.width = askPct.toFixed(1) + '%';
+    addTickRow();
+  }
+
+  function addTickRow() {
+    var price = market.price + (Math.random() - 0.5) * 0.06;
+    var priceStr = price.toFixed(2);
+    var priceNum = parseFloat(priceStr);
+    var status = 'up';
+    if (lastSaleNum !== null) {
+      if (priceNum > lastSaleNum) status = 'up';
+      else if (priceNum < lastSaleNum) status = 'down';
+      else status = 'flat';
+    }
+    lastSaleNum = priceNum;
+    var size = randLotSize();
+
+    var row = document.createElement('div');
+    row.className = 'l1-tick-row ' + status;
+    var t = document.createElement('span');
+    t.className = 'l1-tick-time';
+    t.textContent = marketClock.textContent.replace(' ET', '');
+    var p = document.createElement('span');
+    p.className = 'l1-tick-price';
+    p.textContent = priceStr;
+    var v = document.createElement('span');
+    v.className = 'l1-tick-volume';
+    v.textContent = size;
+    var s = document.createElement('span');
+    s.className = 'l1-tick-side';
+    s.textContent = status === 'up' ? '↑' : (status === 'down' ? '↓' : '—');
+    row.appendChild(t); row.appendChild(p); row.appendChild(v); row.appendChild(s);
+    l1TickList.insertBefore(row, l1TickList.firstChild);
+    while (l1TickList.children.length > l1RowLimit) l1TickList.removeChild(l1TickList.lastChild);
+
+    l1Trades.unshift({ price: priceStr, size: size, status: status });
+    if (l1Trades.length > 100) l1Trades.length = 100;
+    renderVolumeAnalysis();
+  }
+
+  function renderVolumeAnalysis() {
+    var byPrice = {};
+    l1Trades.forEach(function (t) {
+      if (!byPrice[t.price]) byPrice[t.price] = { buy: 0, sell: 0 };
+      if (t.status === 'down') byPrice[t.price].sell += t.size;
+      else byPrice[t.price].buy += t.size;
+    });
+    var prices = Object.keys(byPrice).sort(function (a, b) { return b - a; }).slice(0, l1RowLimit);
+    l1VolumeList.innerHTML = '';
+    prices.forEach(function (price) {
+      var v = byPrice[price];
+      var total = v.buy + v.sell;
+      var buyPct = total ? (v.buy / total) * 100 : 50;
+      var row = document.createElement('div');
+      row.className = 'l1-volume-row';
+      var priceEl = document.createElement('span');
+      priceEl.className = 'l1-volume-price';
+      priceEl.textContent = price;
+      var trackEl = document.createElement('div');
+      trackEl.className = 'l1-volume-bar-track';
+      var buyEl = document.createElement('div');
+      buyEl.className = 'l1-volume-bar--buy';
+      buyEl.style.width = buyPct.toFixed(1) + '%';
+      var sellEl = document.createElement('div');
+      sellEl.className = 'l1-volume-bar--sell';
+      sellEl.style.width = (100 - buyPct).toFixed(1) + '%';
+      trackEl.appendChild(buyEl); trackEl.appendChild(sellEl);
+      var totalEl = document.createElement('span');
+      totalEl.className = 'l1-volume-total';
+      totalEl.textContent = total;
+      row.appendChild(priceEl); row.appendChild(trackEl); row.appendChild(totalEl);
+      l1VolumeList.appendChild(row);
+    });
+  }
+
+  l1RowPickerBtn.addEventListener('click', function (e) {
+    e.stopPropagation();
+    l1RowPickerMenu.hidden = !l1RowPickerMenu.hidden;
+  });
+  document.addEventListener('click', function (e) {
+    if (!l1RowPickerMenu.hidden && !l1RowPickerMenu.contains(e.target) && e.target !== l1RowPickerBtn) l1RowPickerMenu.hidden = true;
+  });
+  l1RowPickerMenu.querySelectorAll('.l1-row-picker__item').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      l1RowPickerMenu.querySelectorAll('.l1-row-picker__item').forEach(function (b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      l1RowLimit = parseInt(btn.getAttribute('data-rows'), 10);
+      l1RowPickerBtn.firstChild.textContent = l1RowLimit + ' ';
+      while (l1TickList.children.length > l1RowLimit) l1TickList.removeChild(l1TickList.lastChild);
+      renderVolumeAnalysis();
+      l1RowPickerMenu.hidden = true;
+    });
+  });
+
+  var l1TickCols = document.getElementById('l1TickCols');
+  var l1VolumeCols = document.getElementById('l1VolumeCols');
+  l1TabTick.addEventListener('click', function () {
+    l1TabTick.classList.add('active');
+    l1TabVolume.classList.remove('active');
+    l1TickList.hidden = false;
+    l1VolumeList.hidden = true;
+    l1TickCols.hidden = false;
+    l1VolumeCols.hidden = true;
+  });
+  l1TabVolume.addEventListener('click', function () {
+    l1TabVolume.classList.add('active');
+    l1TabTick.classList.remove('active');
+    l1VolumeList.hidden = false;
+    l1TickList.hidden = true;
+    l1VolumeCols.hidden = false;
+    l1TickCols.hidden = true;
+  });
+
+  /* ---------- Live market simulation (header, price block, position stats) ---------- */
+  var headerPrice = document.getElementById('headerPrice');
+  var headerChg = document.getElementById('headerChg');
+  var pbPrice = document.getElementById('pbPrice');
+  var pbChangeAbs = document.getElementById('pbChangeAbs');
+  var pbChangePct = document.getElementById('pbChangePct');
+  var predTrackingVal = document.getElementById('predTrackingVal');
+  var predSincePurchaseVal = document.getElementById('predSincePurchaseVal');
+  var marketClock = document.getElementById('marketClock');
+  var posMarketValueUSD = document.getElementById('posMarketValueUSD');
+  var posMarketValuePct = document.getElementById('posMarketValuePct');
+  var posMarketValueCAD = document.getElementById('posMarketValueCAD');
+  var posMarketValuePctCAD = document.getElementById('posMarketValuePctCAD');
+  var posUnrealizedUSD = document.getElementById('posUnrealizedUSD');
+  var posUnrealizedPct = document.getElementById('posUnrealizedPct');
+  var posUnrealizedCAD = document.getElementById('posUnrealizedCAD');
+  var posUnrealizedPctCAD = document.getElementById('posUnrealizedPctCAD');
+  var posSPReturnUSD = document.getElementById('posSPReturnUSD');
+  var posSPReturnPct = document.getElementById('posSPReturnPct');
+  var posSPReturnCAD = document.getElementById('posSPReturnCAD');
+  var posSPReturnPctCAD = document.getElementById('posSPReturnPctCAD');
+  var posAlpha = document.getElementById('posAlpha');
+  var posAlphaCAD = document.getElementById('posAlphaCAD');
+  var posAlphaCADAhLine = document.getElementById('posAlphaCADAhLine');
+  var posAlphaCADAh = document.getElementById('posAlphaCADAh');
+  var posAlphaCADAhPct = document.getElementById('posAlphaCADAhPct');
+  var posMarketValueAhLine = document.getElementById('posMarketValueAhLine');
+  var posMarketValueAh = document.getElementById('posMarketValueAh');
+  var posMarketValueAhPct = document.getElementById('posMarketValueAhPct');
+  var posUnrealizedAhLine = document.getElementById('posUnrealizedAhLine');
+  var posUnrealizedAh = document.getElementById('posUnrealizedAh');
+  var posUnrealizedAhPct = document.getElementById('posUnrealizedAhPct');
+  var posSPReturnAhLine = document.getElementById('posSPReturnAhLine');
+  var posSPReturnAh = document.getElementById('posSPReturnAh');
+  var posSPReturnAhPct = document.getElementById('posSPReturnAhPct');
+  var posAlphaAhLine = document.getElementById('posAlphaAhLine');
+  var posAlphaAh = document.getElementById('posAlphaAh');
+  var posWeightAhLine = document.getElementById('posWeightAhLine');
+  var posWeightAh = document.getElementById('posWeightAh');
+  var posWeight = document.getElementById('posWeight');
+  var CAD_RATE = 1.36995;
+
+  var pbAhChangeRow = document.getElementById('pbAhChangeRow');
+  var marketStatusDot = document.getElementById('marketStatusDot');
+  var headerAhDot = document.getElementById('headerAhDot');
+  var headerDotSep = document.getElementById('headerDotSep');
+  var pbAhChange = document.getElementById('pbAhChange');
+  var pbAhPriceInline = document.getElementById('pbAhPriceInline');
+  var pbCloseLabel = document.getElementById('pbCloseLabel');
+  /* 'full' | 'market-close' | 'after-hours' | 'pre-market' */
+  var pageMode = 'full';
+
+  /* Each preview scenario starts the simulated clock at a time of day
+     consistent with that session, so the ET clock in the header isn't
+     stuck showing mid-day hours during an "after hours" preview. */
+  var STATE_CLOCK = {
+    'full': [9, 14, 26],
+    'market-close': [16, 0, 4],
+    'after-hours': [18, 30, 0],
+    'pre-market': [8, 15, 0]
+  };
+  var clockDate = new Date(2026, 0, 1, 9, 14, 26);
+  function isAfterHours() { return pageMode === 'after-hours'; }
+  function isPreMarket() { return pageMode === 'pre-market'; }
+  function isExtendedSession() { return isAfterHours() || isPreMarket(); }
+
+  /* Outlined moon/sunrise glyphs matching the Calibration page reference. */
+  var MOON_ICON = '<path d="M11.2 8.3A5 5 0 0 1 4.7 1.8a5.4 5.4 0 1 0 6.5 6.5Z" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"/>';
+  var MOON_VIEWBOX = '0 0 13 13';
+  var SUNRISE_ICON = '<path d="M3.6 9.2a3.4 3.4 0 0 1 6.8 0" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/>' +
+    '<path d="M1 9.2h12" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/>' +
+    '<path d="M7 1.2v1.7" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/>' +
+    '<path d="M2.9 3.1l1.2 1.2" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/>' +
+    '<path d="M11.1 3.1l-1.2 1.2" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/>';
+  var SUNRISE_VIEWBOX = '0 0 14 12';
+  function setSessionIcons() {
+    var pm = isPreMarket();
+    var icon = pm ? SUNRISE_ICON : MOON_ICON;
+    var viewBox = pm ? SUNRISE_VIEWBOX : MOON_VIEWBOX;
+    document.querySelectorAll('.ah-moon').forEach(function (svg) {
+      svg.setAttribute('viewBox', viewBox);
+      svg.innerHTML = icon;
+    });
+    /* All session icons (header ticker, price-block, Position stat-lines)
+       get a color cue — blue for After Hours, yellow for Pre-Market. */
+    document.querySelectorAll('.ah-moon--badge').forEach(function (svg) {
+      svg.classList.toggle('ah-moon--pm', pm);
+      svg.classList.toggle('ah-moon--ah', !pm);
+    });
+  }
+
+  function fmtMoney(n) {
+    var neg = n < 0;
+    var parts = Math.abs(n).toFixed(2).split('.');
+    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    return (neg ? '-' : '') + parts.join('.');
+  }
+  function fmtSigned(n) { return (n >= 0 ? '+' : '') + fmtMoney(n); }
+
+  var market = {
+    price: 87.60,
+    prevClose: 86.66,
+    shares: 18950 / 87.60,
+    costBasis: 18950 - 5652,
+    totalPortfolio: 18950 / 0.422,
+    spCostBasis: 4652 / 0.356,
+    spPLPct: 35.6,
+    ahPrice: 87.42,
+    pmPrice: 87.18,
+    /* Prediction-window tracking is independent of the position's own
+       inception-to-date P/L above — a thesis can be behind its prediction
+       while the position overall is ahead, or vice versa. These two track
+       the S&P and the stock strictly within the prediction's own elapsed
+       window (Oct 2025 -> now), never reused for the Position section. */
+    predSPRetPct: 10.0,
+    predStockRetPct: 17.4
+  };
+
+  function renderMarket() {
+    var showExt = isExtendedSession();
+    var sessionPrice = isAfterHours() ? market.ahPrice : (isPreMarket() ? market.pmPrice : market.price);
+    var sessionLabel = isAfterHours() ? 'After Hours' : 'Pre-Market';
+    /* Header ticker tracks the active session's price and gets the
+       moon/sunrise icon. The big price-block number stays anchored to the
+       close, with the session price + delta shown in its own secondary row. */
+    var headerDisplayPrice = showExt ? sessionPrice : market.price;
+    var pbDisplayPrice = market.price;
+    /* Position stats stay anchored to the close — the session equivalent
+       shows as its own line per field instead of swapping the primary
+       numbers. */
+    var statsPrice = market.price;
+
+    var headerChange = headerDisplayPrice - market.prevClose;
+    var headerPct = (headerChange / market.prevClose) * 100;
+    var pbChange = pbDisplayPrice - market.prevClose;
+    var pbPct = (pbChange / market.prevClose) * 100;
+    var change = statsPrice - market.prevClose;
+    var pct = (change / market.prevClose) * 100;
+    var marketValue = statsPrice * market.shares;
+    var weight = (marketValue / market.totalPortfolio) * 100;
+    var unrealizedPL = marketValue - market.costBasis;
+    var unrealizedPLPct = (unrealizedPL / market.costBasis) * 100;
+    var alphaPp = unrealizedPLPct - market.spPLPct;
+    var pctStr = (pct >= 0 ? '+' : '') + pct.toFixed(1) + '%';
+
+    headerPrice.textContent = headerDisplayPrice.toFixed(2);
+    headerChg.textContent = (headerPct >= 0 ? '+' : '') + headerPct.toFixed(2) + '%';
+    pbPrice.textContent = pbDisplayPrice.toFixed(2);
+    pbChangeAbs.textContent = fmtSigned(pbChange);
+    pbChangePct.textContent = (pbPct >= 0 ? '+' : '') + pbPct.toFixed(2) + '%';
+    pbCloseLabel.hidden = pageMode === 'full';
+    var marketOpen = pageMode === 'full';
+    if (showExt) headerAhDot.removeAttribute('hidden'); else headerAhDot.setAttribute('hidden', '');
+    headerDotSep.hidden = showExt;
+    marketStatusDot.classList.toggle('dot--green', marketOpen);
+    marketStatusDot.classList.toggle('dot--red', !marketOpen);
+    setSessionIcons();
+
+    /* The big price stays anchored to the close; a secondary row shows the
+       session icon (moon/sunrise — no text label) + delta from close. */
+    if (showExt) {
+      var sinceCloseChg = sessionPrice - market.price;
+      var sinceClosePct = (sinceCloseChg / market.price) * 100;
+      pbAhPriceInline.textContent = sessionPrice.toFixed(2);
+      pbAhChange.textContent = (sinceCloseChg >= 0 ? '+' : '') + sinceCloseChg.toFixed(2) + ' (' + (sinceClosePct >= 0 ? '+' : '') + sinceClosePct.toFixed(1) + '%)';
+      pbAhChangeRow.hidden = false;
+    } else {
+      pbAhChangeRow.hidden = true;
+    }
+
+    posMarketValueUSD.textContent = fmtMoney(marketValue);
+    posMarketValuePct.textContent = pctStr;
+    posMarketValueCAD.textContent = fmtMoney(marketValue * CAD_RATE);
+    posMarketValuePctCAD.textContent = pctStr;
+    posUnrealizedUSD.textContent = fmtSigned(unrealizedPL);
+    posUnrealizedPct.textContent = (unrealizedPLPct >= 0 ? '+' : '') + unrealizedPLPct.toFixed(1) + '%';
+    posUnrealizedCAD.textContent = fmtSigned(unrealizedPL * CAD_RATE);
+    posUnrealizedPctCAD.textContent = (unrealizedPLPct >= 0 ? '+' : '') + unrealizedPLPct.toFixed(1) + '%';
+    var spPL = market.costBasis * (market.spPLPct / 100);
+    var spPctStr = (market.spPLPct >= 0 ? '+' : '') + market.spPLPct.toFixed(1) + '%';
+    posSPReturnUSD.textContent = fmtSigned(spPL);
+    posSPReturnPct.textContent = spPctStr;
+    posSPReturnCAD.textContent = fmtSigned(spPL * CAD_RATE);
+    posSPReturnPctCAD.textContent = spPctStr;
+    posAlpha.textContent = (alphaPp >= 0 ? '+' : '') + alphaPp.toFixed(1) + ' pp';
+    var alphaDollar = unrealizedPL - spPL;
+    posAlphaCAD.textContent = fmtSigned(alphaDollar * CAD_RATE);
+    posWeight.textContent = weight.toFixed(1) + '%';
+
+    /* Prediction card shows two independently-sourced figures side by side:
+       "since purchase" reuses alphaPp verbatim (the same value driving the
+       Position section's Alpha, so the two can never diverge/disagree), and
+       "since last prediction" is scoped strictly to the prediction's own
+       elapsed window. A thesis can be behind its prediction while the
+       position is ahead overall, or vice versa — that's the point. */
+    predSincePurchaseVal.textContent = (alphaPp >= 0 ? '+' : '') + alphaPp.toFixed(1) + ' pp';
+    predSincePurchaseVal.classList.toggle('is-behind', alphaPp < 0);
+    var predPp = market.predStockRetPct - market.predSPRetPct;
+    predTrackingVal.textContent = (predPp >= 0 ? '+' : '') + predPp.toFixed(1) + ' pp';
+    predTrackingVal.classList.toggle('is-behind', predPp < 0);
+
+    /* Badges design: an amber "after hours" line under each affected field,
+       computed from the after-hours price, while the primary numbers above
+       stay anchored to the close. */
+    posMarketValueAhLine.hidden = !showExt;
+    posUnrealizedAhLine.hidden = !showExt;
+    posSPReturnAhLine.hidden = !showExt;
+    posAlphaAhLine.hidden = !showExt;
+    posAlphaCADAhLine.hidden = !showExt;
+    posWeightAhLine.hidden = !showExt;
+    if (showExt) {
+      var ahMarketValue = sessionPrice * market.shares;
+      var ahMarketValuePct = ((sessionPrice - market.prevClose) / market.prevClose) * 100;
+      var ahUnrealizedPL = ahMarketValue - market.costBasis;
+      var ahUnrealizedPLPct = (ahUnrealizedPL / market.costBasis) * 100;
+      var ahAlphaPp = ahUnrealizedPLPct - market.spPLPct;
+      var ahWeight = (ahMarketValue / market.totalPortfolio) * 100;
+
+      posMarketValueAh.textContent = fmtMoney(ahMarketValue);
+      posMarketValueAhPct.textContent = (ahMarketValuePct >= 0 ? '+' : '') + ahMarketValuePct.toFixed(1) + '%';
+      posUnrealizedAh.textContent = fmtSigned(ahUnrealizedPL);
+      posUnrealizedAhPct.textContent = (ahUnrealizedPLPct >= 0 ? '+' : '') + ahUnrealizedPLPct.toFixed(1) + '%';
+      posSPReturnAh.textContent = fmtSigned(spPL);
+      posSPReturnAhPct.textContent = spPctStr;
+      posAlphaAh.textContent = (ahAlphaPp >= 0 ? '+' : '') + ahAlphaPp.toFixed(1) + ' pp';
+      posWeightAh.textContent = ahWeight.toFixed(1) + '%';
+      var ahAlphaDollar = ahUnrealizedPL - spPL;
+      posAlphaCADAh.textContent = fmtSigned(ahAlphaDollar * CAD_RATE);
+      posAlphaCADAhPct.textContent = (ahAlphaPp >= 0 ? '+' : '') + ahAlphaPp.toFixed(1) + '%';
+    }
+
+    /* Chart tooltip copy: "Full" stays exactly as-is (no label). Market
+       Close adds a "Close" label to the existing change line. After Hours
+       and Pre-Market add a primary session line above it too. */
+    chartCloseLabel.hidden = pageMode === 'full';
+    chartSessionRow.hidden = !showExt;
+    if (showExt) {
+      var chartSessionChg = sessionPrice - market.prevClose;
+      var chartSessionPct = (chartSessionChg / market.prevClose) * 100;
+      chartSessionLabel.textContent = sessionLabel;
+      chartSessionChange.textContent = (chartSessionChg >= 0 ? '+' : '') + chartSessionChg.toFixed(2) + ' (' + (chartSessionPct >= 0 ? '+' : '') + chartSessionPct.toFixed(2) + '%)';
+    }
+
+    renderQuote();
+  }
+
+  function tickMarket() {
+    /* Only the live regular session moves the official close price and its
+       derived stats. "Market Close" is a fully frozen snapshot (no trading
+       at all). After Hours / Pre-Market only move their own session price —
+       the close stays anchored to the last regular-session print. */
+    if (pageMode === 'full') {
+      market.price += (Math.random() - 0.5) * 0.12;
+      if (market.price < 85.5) market.price = 85.5;
+      if (market.price > 89.5) market.price = 89.5;
+      market.spPLPct += (Math.random() - 0.5) * 0.04;
+      if (market.spPLPct < 33) market.spPLPct = 33;
+      if (market.spPLPct > 38) market.spPLPct = 38;
+      market.ahPrice = market.price + (Math.random() - 0.5) * 0.06;
+      market.pmPrice = market.price + (Math.random() - 0.5) * 0.06;
+      /* Prediction-window S&P/stock returns drift independently of the
+         position's own P/L — they can diverge from the overall alpha above. */
+      market.predSPRetPct += (Math.random() - 0.5) * 0.03;
+      if (market.predSPRetPct < 8) market.predSPRetPct = 8;
+      if (market.predSPRetPct > 12) market.predSPRetPct = 12;
+      market.predStockRetPct += (Math.random() - 0.5) * 0.05;
+      if (market.predStockRetPct < 14) market.predStockRetPct = 14;
+      if (market.predStockRetPct > 21) market.predStockRetPct = 21;
+    } else if (pageMode === 'after-hours') {
+      market.ahPrice += (Math.random() - 0.5) * 0.1;
+      if (market.ahPrice < 85.5) market.ahPrice = 85.5;
+      if (market.ahPrice > 89.5) market.ahPrice = 89.5;
+    } else if (pageMode === 'pre-market') {
+      market.pmPrice += (Math.random() - 0.5) * 0.1;
+      if (market.pmPrice < 85.5) market.pmPrice = 85.5;
+      if (market.pmPrice > 89.5) market.pmPrice = 89.5;
+    }
+    /* 'market-close': nothing moves — market is shut, no session trading. */
+    renderMarket();
+  }
+  renderMarket();
+  /* Seed the tape with a few extra rows so Time & Sales isn't sparse on load
+     (the first renderMarket() call above already added one). */
+  for (var __l1SeedI = 0; __l1SeedI < 7; __l1SeedI++) addTickRow();
+  setInterval(tickMarket, 2500);
+
+  function pad(n) { return (n < 10 ? '0' : '') + n; }
+  function formatClockTime() {
+    var h = clockDate.getHours(), m = clockDate.getMinutes();
+    var ampm = h >= 12 ? 'PM' : 'AM';
+    var h12 = h % 12; if (h12 === 0) h12 = 12;
+    return h12 + ':' + pad(m) + ' ' + ampm;
+  }
+  function renderClockText() {
+    var h = clockDate.getHours(), m = clockDate.getMinutes(), s = clockDate.getSeconds();
+    marketClock.textContent = pad(h) + ':' + pad(m) + ':' + pad(s) + ' ET';
+  }
+  function tickClock() {
+    clockDate.setSeconds(clockDate.getSeconds() + 1);
+    renderClockText();
+    renderMarket();
+  }
+  setInterval(tickClock, 1000);
+
+  /* ---------- Investor Relations detail overlay ---------- */
+  var irTrigger = document.getElementById('investorRelationsTrigger');
+  var irOverlay = document.getElementById('irOverlay');
+  var irBackBtn = document.getElementById('irBackBtn');
+  function openIrOverlay() { irOverlay.hidden = false; }
+  function closeIrOverlay() { irOverlay.hidden = true; }
+  irTrigger.addEventListener('click', openIrOverlay);
+  irTrigger.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') openIrOverlay(); });
+  irBackBtn.addEventListener('click', closeIrOverlay);
+
+  /* ---------- Burger menu + page-state preview switcher ---------- */
+  var burgerBtn = document.getElementById('burgerBtn');
+  var burgerMenu = document.getElementById('burgerMenu');
+  var menuItems = burgerMenu.querySelectorAll('.burger-menu__item');
+  var positionEmptyEl = document.getElementById('positionEmpty');
+  var positionFullEl = document.getElementById('positionFull');
+
+  function setRichCard(target, showFull) {
+    var card = document.querySelector('.rich-card[data-state-target="' + target + '"]');
+    card.querySelector('.rich-card__empty').hidden = showFull;
+    card.querySelector('.rich-card__full').hidden = !showFull;
+  }
+
+  function applyPageState(state) {
+    setRichCard('thesis', true);
+    setRichCard('kill', true);
+
+    thesisText.textContent = 'Compute Demand Keeps Outpacing Supply.';
+    thesisDot.hidden = true;
+    thesisVersionChip.hidden = false;
+    thesisBanner.classList.add('has-version');
+    savedThesis = thesisText.textContent;
+    checkStuck();
+
+    positionEmptyEl.hidden = true;
+    positionFullEl.hidden = false;
+
+    pageMode = state;
+    var t = STATE_CLOCK[state] || STATE_CLOCK.full;
+    clockDate = new Date(2026, 0, 1, t[0], t[1], t[2]);
+    renderClockText();
+    renderMarket();
+  }
+
+  burgerBtn.addEventListener('click', function (e) {
+    e.stopPropagation();
+    burgerMenu.hidden = !burgerMenu.hidden;
+  });
+  document.addEventListener('click', function (e) {
+    if (!burgerMenu.hidden && !burgerMenu.contains(e.target) && e.target !== burgerBtn) burgerMenu.hidden = true;
+  });
+  menuItems.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      menuItems.forEach(function (b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      applyPageState(btn.getAttribute('data-page-state'));
+      burgerMenu.hidden = true;
+    });
+  });
+
+  applyPageState('full');
+
+  /* ---------- Prediction timeline (time left in the 3-year window) ---------- */
+  (function () {
+    var start = new Date(2025, 9, 14);
+    var end = new Date(2028, 9, 14);
+    var now = new Date(2026, 5, 22);
+    var totalDays = Math.round((end - start) / 86400000);
+    var elapsedDays = Math.round((now - start) / 86400000);
+    var daysLeft = totalDays - elapsedDays;
+    var pct = Math.max(0, Math.min(100, (elapsedDays / totalDays) * 100));
+
+    var label;
+    if (daysLeft < 100) {
+      label = daysLeft + ' days left';
+    } else {
+      var months = (end.getFullYear() - now.getFullYear()) * 12 + (end.getMonth() - now.getMonth());
+      if (end.getDate() < now.getDate()) months -= 1;
+      var years = Math.floor(months / 12);
+      var remMonths = months % 12;
+      var parts = [];
+      if (years > 0) parts.push(years + 'y');
+      if (remMonths > 0 || years === 0) parts.push(remMonths + 'mo');
+      label = parts.join(' ') + ' left';
+    }
+    document.getElementById('predTimeLeft').textContent = label;
+    document.getElementById('predTimeFill').style.width = pct.toFixed(1) + '%';
+  })();
+})();
 </script>
-
 </body>
 </html>
