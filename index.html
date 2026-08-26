@@ -482,8 +482,8 @@
       <div class="divider" style="left:16px; top:1550.92px; width:361px;"></div>
       <div class="divider" style="left:16px; top:1600.92px; width:361px;"></div>
       <div class="abs" style="left:16px; top:1567.58px; font-size:13px; color:#929292; letter-spacing:-0.26px;">Difference</div>
-      <div id="stat-diff-value" class="abs" style="right:76px; top:1566.51px; font-size:15px; letter-spacing:-0.3px; color:#30d158;">+2,184.18</div>
-      <div id="stat-diff-pct" class="abs" style="right:16px; top:1568.51px; font-size:13px; color:#30d158; letter-spacing:-0.26px;">+4.90%</div>
+      <div id="stat-diff-value" class="abs" style="right:76px; top:1566.51px; font-size:15px; letter-spacing:-0.3px; color:#ffffff;"><span id="stat-diff-value-num">+2,184.18</span> <span id="stat-diff-tri" style="font-size:10px; vertical-align:1.5px; color:#30d158;">▲</span></div>
+      <div id="stat-diff-pct" class="abs" style="right:16px; top:1568.51px; font-size:13px; color:#ffffff; letter-spacing:-0.26px;">+4.90%</div>
 
       <!-- ============ CALIBRATION ============ -->
       <div class="abs" style="left:300.3px; top:1647.92px; font-size:15px; color:#c7c7c7; letter-spacing:-0.3px;">Calibration</div>
@@ -636,12 +636,13 @@
     const hasDesc = r.desc.length > 0;
     const hasTags = r.tags.length > 0;
 
-    // vs S&P as percentage points beside the ticker — green when the position
-    // beats the index over its holding window, red when it lags.
+    // vs S&P as percentage points beside the ticker — white text, with a
+    // small triangle carrying the direction color (▲ green / ▼ red)
     const spRet = 6 + ((i * 37) % 25);
     r._spRet = spRet;
     const pp = parsePct(r.pct) - spRet;
     const ppTxt = (pp >= 0 ? '+' : '−') + Math.abs(pp).toFixed(1) + ' pp vs S&P';
+    const ppTri = pp >= 0 ? '▲' : '▼';
     const ppCol = pp >= 0 ? '#30d158' : '#ff3533';
 
     // extended-session move — stable per position
@@ -657,8 +658,8 @@
     const rowHeight = localCursor;
 
     html += `
-      <div class="abs" style="left:16px; top:${top + 0.93}px; font-size:13px;"><span style="font-weight:500; text-transform:uppercase;">${r.ticker}</span><span id="pos-pp-${i}" style="font-size:11.5px; color:${ppCol}; margin-left:7px; letter-spacing:-0.1px; font-variant-numeric:tabular-nums;">${ppTxt}</span></div>
-      <div class="abs" style="left:16px; top:${top + 21.95}px; font-size:10px; color:#929292;">${r.category}<span style="color:#565b5e; margin-left:6px; text-transform:uppercase;">${r.weight}</span></div>
+      <div class="abs" style="left:16px; top:${top + 0.93}px; font-size:13px;"><span style="font-weight:500; text-transform:uppercase;">${r.ticker}</span><span id="pos-pp-${i}" style="font-size:11.5px; color:#ffffff; margin-left:7px; letter-spacing:-0.1px; font-variant-numeric:tabular-nums;"><span class="pp-num">${ppTxt}</span><span class="pp-tri" style="font-size:8px; vertical-align:1.5px; color:${ppCol}; margin-left:4px;">${ppTri}</span></span></div>
+      <div class="abs" style="left:16px; top:${top + 21.95}px; font-size:10px; color:#929292;">${r.category}<span style="color:#c7c7c7; margin-left:6px; text-transform:uppercase;">${r.weight}</span></div>
       <div id="pos-value-${i}" class="abs" style="left:167px; top:${top}px; font-size:13px; font-weight:300; letter-spacing:-0.28px; text-align:right; width:150px;">${r.value}</div>
       <div id="pos-pct-${i}" class="abs" style="left:327px; top:${top}px; font-size:13px; color:#929292; letter-spacing:-0.24px; text-align:right; width:50px;">${r.pct}</div>
       <div id="pos-price-${i}" class="abs" style="left:167px; top:${top + 20.45}px; font-size:13px; font-weight:300; letter-spacing:-0.28px; text-align:right; width:150px;">${r.price}</div>
@@ -776,13 +777,19 @@
     if (s.mirrorEl) s.mirrorEl.textContent = text;
     if (s.mirrorEl2) s.mirrorEl2.textContent = text;
     if (s.mirrorClass) document.querySelectorAll('.' + s.mirrorClass).forEach(x => { x.textContent = text; });
-    // sign-colored stats (benchmark difference): green ahead of the index,
-    // red behind — applied to the stat, its mirrors, and optional containers
-    if (s.colorBySign) {
+    // direction color: on the dashboard body the text stays white and a small
+    // triangle carries the color; the pinned top bar keeps its colored text
+    if (s.colorBySign || s.colorClass || s.signTriangleId) {
       const c = s.value >= 0 ? '#30d158' : '#ff3533';
-      s.el.style.color = c;
-      if (s.mirrorEl) s.mirrorEl.style.color = c;
+      if (s.colorBySign) {
+        s.el.style.color = c;
+        if (s.mirrorEl) s.mirrorEl.style.color = c;
+      }
       if (s.colorClass) document.querySelectorAll('.' + s.colorClass).forEach(x => { x.style.color = c; });
+      if (s.signTriangleId) {
+        const t = document.getElementById(s.signTriangleId);
+        if (t) { t.textContent = s.value >= 0 ? '▲' : '▼'; t.style.color = c; }
+      }
     }
   }
 
@@ -798,8 +805,8 @@
     makeLiveStat('stat-bench-portfolio', 46777.23, { volatility: 0.0012, reversion: 0.05 }),
     // the S&P index itself stops moving when the market closes
     makeLiveStat('stat-bench-sp500', 44593.05, { volatility: 0.0008, reversion: 0.05, frozenExtended: true }),
-    makeLiveStat('stat-diff-value', 2184.18, { kind: 'signedMoney', volatility: 0.02, reversion: 0.06, colorBySign: true, mirrorClass: 'tb-diffval', colorClass: 'tb-diffsign' }),
-    makeLiveStat('stat-diff-pct', 4.90, { kind: 'pct', decimals: 2, volatility: 0.02, reversion: 0.08, colorBySign: true, mirrorClass: 'tb-diffpct' }),
+    makeLiveStat('stat-diff-value-num', 2184.18, { kind: 'signedMoney', volatility: 0.02, reversion: 0.06, mirrorClass: 'tb-diffval', colorClass: 'tb-diffsign', signTriangleId: 'stat-diff-tri' }),
+    makeLiveStat('stat-diff-pct', 4.90, { kind: 'pct', decimals: 2, volatility: 0.02, reversion: 0.08, mirrorClass: 'tb-diffpct' }),
   ].filter(Boolean);
 
   // ================= S&P 500 DAILY-CHANGE INDICATOR =================
@@ -980,11 +987,17 @@
       row.extEl.textContent = fmtPct(row.ext, 2);
     }
 
-    // vs S&P in percentage points, beside the ticker — live like the rest
+    // vs S&P in percentage points, beside the ticker — white text, the
+    // triangle alone carries the direction color
     if (row.ppEl) {
       const pp = row.pct - row.spRet;
-      row.ppEl.textContent = (pp >= 0 ? '+' : '−') + Math.abs(pp).toFixed(1) + ' pp vs S&P';
-      row.ppEl.style.color = pp >= 0 ? '#30d158' : '#ff3533';
+      const tri = row.ppEl.querySelector('.pp-tri');
+      const numEl = row.ppEl.querySelector('.pp-num');
+      if (tri) {
+        tri.textContent = pp >= 0 ? '▲' : '▼';
+        tri.style.color = pp >= 0 ? '#30d158' : '#ff3533';
+      }
+      if (numEl) numEl.textContent = (pp >= 0 ? '+' : '−') + Math.abs(pp).toFixed(1) + ' pp vs S&P';
     }
   }
 
