@@ -114,6 +114,19 @@
     flex: none;
   }
 
+  /* Under Review — the user's own one-line note, editable in place */
+  .rev-note {
+    width: 361px;
+    font-size: 12px;
+    color: #c7c7c7;
+    letter-spacing: -0.19px;
+    white-space: nowrap;
+    overflow: hidden;
+    outline: none;
+    cursor: text;
+    caret-color: #ffffff;
+  }
+
   .row-divider {
     position: absolute;
     left: 16px;
@@ -127,6 +140,47 @@
     50% { opacity: 0.35; }
   }
   .pulse-dot { animation: pulse-dot 2s ease-in-out infinite; }
+
+  /* ============ S&P COMPARISON CARD + CALIBRATION FAN (ported) ============ */
+  #bench-cal-block{
+    font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif; line-height:normal;
+    --c-live-muted:#288752; --c-urgent-muted:#BE3C36; --c-gold:#C29A2A;
+    --c-800:#565B5E; --c-700:#929292; --c-1000:#1C1C1C;
+  }
+  #bench-cal-block p{margin:0;}
+  .bpad{padding:0 16px;}
+  .bx-sec-title{font-size:15px;color:#fff;letter-spacing:-0.02em;}
+  .bx-chev{font-size:17px;color:#565b5e;line-height:1;}
+  .chart-plot{position:relative;background:#0A0A0A;border:0.5px solid #232627;padding:12px;}
+  .plot-window{font-size:11px;color:#929292;letter-spacing:-0.02em;margin-bottom:8px;}
+  .bx-chart{display:block;width:100%;height:180px;overflow:visible;touch-action:none;cursor:crosshair;}
+  .plot-ends{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-top:8px;
+    font-size:11px;letter-spacing:-0.02em;font-variant-numeric:tabular-nums;white-space:nowrap;}
+  .plot-ends .pe-acct{color:#fff;} .plot-ends .pe-bm{color:#C29A2A;}
+  .bx-rows{display:flex;flex-direction:column;gap:12px;}
+  .bx-row{display:flex;align-items:baseline;justify-content:space-between;gap:16px;
+    padding:0 0 12px;border-bottom:1px solid #232627;}
+  .bx-label{font-size:15px;color:#929292;letter-spacing:-0.02em;white-space:nowrap;}
+  .bx-val{font-size:15px;color:#fff;letter-spacing:-0.02em;text-align:right;
+    font-variant-numeric:tabular-nums;white-space:nowrap;}
+  .bx-pct{display:inline-block;text-align:right;font-size:13px;color:#929292;margin-left:9px;}
+  .bx-trend{display:inline-block;width:11px;font-size:11px;line-height:1;margin-left:9px;
+    vertical-align:0.5px;text-align:center;}
+  .bx-trend.up{color:#288752;} .bx-trend.down{color:#BE3C36;}
+  .bx-foot{margin:12px 0 0 !important;font-size:11px;color:#565b5e;letter-spacing:-0.02em;line-height:1.4;}
+  .calx{margin:57px 16px 0;padding:30px 0 40px;
+    border-top:0.5px solid #232627;border-bottom:0.5px solid #232627;cursor:pointer;}
+  .calx-head{display:flex;align-items:baseline;justify-content:space-between;}
+  .calx-title{font-size:15px;color:#fff;letter-spacing:-0.02em;}
+  .calx-title .sep{color:#929292;} .calx-title .win{color:#565b5e;}
+  .calx-plot{margin-top:16px;}
+  .calx-plot svg{display:block;width:100%;height:176px;overflow:visible;}
+  .calx-sum{margin-top:16px;font-size:15px;letter-spacing:-0.02em;line-height:1.4;
+    font-variant-numeric:tabular-nums;}
+  .calx-sum .ahead{color:#288752;} .calx-sum .avg{color:#c7c7c7;}
+  .calx-mid{margin:12px 0 0 !important;font-size:11px;color:#565b5e;letter-spacing:-0.02em;line-height:1.4;}
+  .calx-mid .sep{margin:0 6px;} .calx-mid .forming{color:#966E26;}
+  .calx-foot{margin:12px 0 0 !important;font-size:11px;color:#565b5e;letter-spacing:-0.02em;line-height:1.4;}
 
   /* ================= TOP-BAR EXPERIMENT PANELS ================= */
   /* Each .tbx is a complete, mutually-exclusive layout of the area between
@@ -242,6 +296,152 @@
   /* invisible tap target over the Calibration section on the dashboard */
   #cal-link { position: absolute; cursor: pointer; }
   #cal-link:active { background: rgba(255,255,255,0.03); border-radius: 8px; }
+
+  /* ================= CONNECT TO AI (MCP flow, ported) =================
+     Menu drawer + flow screens, scoped under #v-menu / #mcp-flow so nothing
+     leaks into the dashboard's own styles. */
+  #v-menu { position: absolute; top: 12px; left: 12px; width: 397px; height: 852px;
+    border-radius: 46px; overflow: hidden; z-index: 95; pointer-events: none; }
+  #v-menu.open { pointer-events: all; }
+  #menu-scrim { position: absolute; inset: 0; background: rgba(0,0,0,.6);
+    opacity: 0; transition: opacity 260ms linear; }
+  #v-menu.open #menu-scrim { opacity: 1; }
+  #menu-panel { position: absolute; top: 0; right: 0; bottom: 0; width: 50%;
+    background: #1c1c1c; display: flex; flex-direction: column; padding: 0 20px 0 26px;
+    transform: translateX(100%); transition: transform 260ms cubic-bezier(.45,.05,.15,1); }
+  #v-menu.open #menu-panel { transform: none; }
+  #v-menu .menu-x { position: absolute; top: 26px; right: 20px; background: none; border: none;
+    padding: 8px; cursor: pointer; line-height: 0; }
+  #v-menu .menu-x:active path { stroke: #565b5e; }
+  #v-menu .menu-items { margin-top: 150px; }
+  #v-menu .menu-item { font-size: 17px; color: #fff; letter-spacing: -.02em;
+    padding: 14px 0; cursor: pointer; }
+  #v-menu .menu-item:active { color: #929292; }
+  #v-menu .menu-logout { margin-top: auto; margin-bottom: 78px; font-size: 17px;
+    color: #c7c7c7; letter-spacing: -.02em; padding: 14px 0; cursor: pointer; }
+  #v-menu .menu-logout:active { color: #565b5e; }
+
+  /* full-screen page like #records-screen — its own head replaces the
+     dashboard's top bar while the flow is open */
+  #mcp-flow { position: absolute; top: 12px; left: 12px; width: 397px; height: 852px;
+    border-radius: 46px; overflow: hidden; background: #000; z-index: 46;
+    color: #fff; letter-spacing: -.02em;
+    transform: translateX(104%); visibility: hidden;
+    transition: transform 340ms cubic-bezier(0.32,0.72,0,1), visibility 0s linear 340ms; }
+  #mcp-flow.open { transform: none; visibility: visible;
+    transition: transform 340ms cubic-bezier(0.32,0.72,0,1), visibility 0s linear 0s; }
+
+  #mcp-flow .vw { position: absolute; inset: 0; background: #000; border-radius: 46px;
+    overflow: hidden; display: flex; flex-direction: column;
+    transform: translateX(100%); opacity: 1; visibility: hidden; z-index: 1;
+    transition: transform 260ms cubic-bezier(.45,.05,.15,1), opacity 260ms linear,
+      visibility 0s linear 260ms; }
+  #mcp-flow .vw.cur    { transform: none; visibility: visible; z-index: 3; transition-delay: 0s,0s,0s; }
+  #mcp-flow .vw.behind { transform: translateX(-3.2%); opacity: .94; visibility: visible; z-index: 2; transition-delay: 0s,0s,0s; }
+  #mcp-flow .vw.out-r  { transform: translateX(100%); visibility: visible; z-index: 4; transition-delay: 0s,0s,0s; }
+  #mcp-flow .vw.snap   { transition: none !important; }
+  /* while the flow is closed its screens must never override the container's
+     hidden state (visibility is overridable by children) — hide them after
+     the 340ms slide-out finishes, restore instantly on open */
+  #mcp-flow:not(.open) .vw { visibility: hidden; transition: visibility 0s linear 340ms; }
+
+  /* page head — same spec as the record page's .rec-head: 71px with island
+     clearance, chevron + left title, hairline bottom */
+  #mcp-flow .nav { flex: none; position: relative; height: 71px; display: flex; align-items: center;
+    gap: 15px; padding: 20px 16px 0 24px; border-bottom: 1px solid #1c1c1c; background: #000; }
+  #mcp-flow .nav-back { background: none; border: none; padding: 4px 8px 4px 0;
+    display: flex; align-items: center; cursor: pointer; }
+  #mcp-flow .nav-back:active svg path { stroke: #565b5e; }
+  #mcp-flow .nav-t { font-size: 17px; font-weight: 600; letter-spacing: -.4px; color: #fff; }
+  #mcp-flow .body { flex: 1; overflow-y: auto; overflow-x: hidden; padding: 0 20px; scrollbar-width: none; }
+  #mcp-flow .body::-webkit-scrollbar { display: none; }
+  #mcp-flow .body.pad { padding-bottom: 40px; }
+  #mcp-flow .h1 { font-size: 24px; color: #fff; letter-spacing: -.02em; line-height: 1.2; margin-top: 34px; }
+  #mcp-flow .sub { font-size: 13px; color: #929292; letter-spacing: -.01em; margin-top: 9px; line-height: 1.5; }
+  #mcp-flow .p { font-size: 14px; color: #a7a7a7; letter-spacing: -.02em; line-height: 1.55; margin-top: 22px; }
+  #mcp-flow .p b { color: #fff; font-weight: 400; }
+  #mcp-flow .lbl { font-size: 11px; color: #565b5e; letter-spacing: -.02em; margin-top: 34px; }
+  #mcp-flow .foot { font-size: 12px; color: #565b5e; letter-spacing: -.01em; line-height: 1.5; margin-top: 20px; }
+  #mcp-flow .row { display: flex; align-items: center; gap: 14px; padding: 20px 0;
+    border-bottom: 1px solid #1c1c1c; }
+  #mcp-flow .row.tap { cursor: pointer; }
+  #mcp-flow .row.tap:active { background: rgba(255,255,255,.03); }
+  #mcp-flow .row-l { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+  #mcp-flow .row-nm { font-size: 15px; color: #fff; letter-spacing: -.02em; }
+  #mcp-flow .row-sub { font-size: 13px; color: #565b5e; letter-spacing: -.01em; line-height: 1.45; max-width: 262px; }
+  #mcp-flow .row-r { margin-left: auto; display: flex; align-items: center; gap: 12px; flex: none; }
+  #mcp-flow .row-v { font-size: 13px; color: #929292; letter-spacing: -.01em; }
+  #mcp-flow .box { width: 15px; height: 15px; flex: none; border: 1px solid #565b5e;
+    display: flex; align-items: center; justify-content: center; }
+  #mcp-flow .box.on { background: #fff; border-color: #fff; }
+  #mcp-flow .box svg { display: none; }
+  #mcp-flow .box.on svg { display: block; }
+  #mcp-flow .step { display: flex; gap: 14px; padding: 15px 0; border-bottom: 1px solid #1c1c1c; }
+  #mcp-flow .step .n { font-size: 13px; color: #565b5e; flex: none; width: 13px;
+    font-variant-numeric: tabular-nums; line-height: 1.5; }
+  #mcp-flow .step .t { font-size: 14px; color: #a7a7a7; line-height: 1.5; letter-spacing: -.02em; }
+  #mcp-flow .step .t b { color: #fff; font-weight: 400; }
+  #mcp-flow .listing { margin-top: 14px; border: 1px solid #1c1c1c; padding: 16px 16px 17px; }
+  #mcp-flow .listing-nm { font-size: 15px; color: #fff; letter-spacing: -.02em; }
+  #mcp-flow .listing-tag { font-size: 12px; color: #929292; letter-spacing: -.01em; line-height: 1.45; margin-top: 7px; }
+  #mcp-flow .listing-k { font-size: 10px; color: #565b5e; letter-spacing: .12em; margin-top: 16px; }
+  #mcp-flow .listing-by { font-size: 11.5px; color: #c7c7c7; letter-spacing: -.01em; margin-top: 6px; }
+  #mcp-flow .listing-url { display: flex; align-items: baseline; gap: 12px; margin-top: 6px; cursor: pointer; }
+  #mcp-flow .listing-url .u { font-size: 11.5px; color: #c7c7c7; letter-spacing: 0;
+    font-variant-numeric: tabular-nums; word-break: break-all; }
+  #mcp-flow .listing-url .c { margin-left: auto; flex: none; font-size: 11.5px; color: #929292; letter-spacing: -.01em; }
+  #mcp-flow .listing-url:active .c { color: #fff; }
+  #mcp-flow .ph { position: relative; padding: 0 0 28px 34px; }
+  #mcp-flow .ph::before { content: ''; position: absolute; left: 9px; top: 22px; bottom: 0;
+    width: 1px; background: #1c1c1c; }
+  #mcp-flow .ph:last-child { padding-bottom: 10px; }
+  #mcp-flow .ph:last-child::before { display: none; }
+  #mcp-flow .ph-n { position: absolute; left: 0; top: 1px; width: 19px; height: 19px;
+    border: 1px solid #565b5e; background: #000; display: flex; align-items: center;
+    justify-content: center; font-size: 10px; color: #c7c7c7; font-variant-numeric: tabular-nums; }
+  #mcp-flow .ph-t { font-size: 15px; color: #fff; letter-spacing: -.02em; }
+  #mcp-flow .ph-d { font-size: 13px; color: #565b5e; letter-spacing: -.01em; line-height: 1.5; margin-top: 8px; }
+  #mcp-flow .ph-d b { color: #a7a7a7; font-weight: 400; }
+  #mcp-flow .ph .row { padding: 16px 0; }
+  #mcp-flow .ph .row:first-of-type { margin-top: 6px; }
+  #mcp-flow .toast { position: absolute; left: 0; right: 0; bottom: 96px; margin: 0 auto;
+    width: max-content; max-width: calc(100% - 40px); transform: translateY(6px);
+    background: #1C1C1C; border: 1px solid rgba(255,255,255,.08); color: #FFF;
+    font-size: 12.5px; letter-spacing: -.01em; padding: 9px 14px; border-radius: 2px;
+    opacity: 0; transition: opacity 200ms ease, transform 200ms ease;
+    pointer-events: none; white-space: nowrap; z-index: 30; }
+  #mcp-flow .toast.show { opacity: 1; transform: translateY(0); }
+  #mcp-flow .bbar { flex: none; display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 20px 34px; background: #000; }
+  #mcp-flow .close-btn { background: none; border: none; font-size: 15px; color: #c7c7c7;
+    letter-spacing: -.01em; padding: 8px 12px 8px 0; cursor: pointer; }
+  #mcp-flow .nextarrow { background: none; border: none; color: #3a3a3a; display: inline-flex;
+    align-items: center; padding: 10px 0 10px 16px; cursor: default; transition: color 200ms ease; }
+  #mcp-flow .nextarrow.on { color: #fff; cursor: pointer; }
+  #mcp-flow .cta { background: none; border: none; font-size: 15px; color: #fff; letter-spacing: -.01em;
+    padding: 8px 0 8px 12px; cursor: pointer; display: inline-flex; align-items: center; }
+  #mcp-flow .cta .arr2 { margin-left: 7px; }
+  #mcp-flow .lpb { flex: none; width: 100%; height: 99px; background: #1c1c1c; border: none;
+    color: #fff; font-size: 15px; letter-spacing: -.01em; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; }
+  #mcp-flow .kv { display: flex; align-items: baseline; padding: 14px 0; border-bottom: 1px solid #1c1c1c; }
+  #mcp-flow .kv .k { font-size: 13px; color: #929292; letter-spacing: -.24px; }
+  #mcp-flow .kv .v { margin-left: auto; font-size: 13px; color: #c7c7c7; letter-spacing: -.24px;
+    text-align: right; font-variant-numeric: tabular-nums; }
+  #mcp-flow .agr { margin-top: 22px; border: 1px solid #1c1c1c; padding: 16px 16px 18px;
+    max-height: 250px; overflow-y: auto; scrollbar-width: none; }
+  #mcp-flow .agr::-webkit-scrollbar { display: none; }
+  #mcp-flow .agr h4 { font-size: 12px; color: #fff; font-weight: 500; letter-spacing: -.01em; margin: 0 0 9px; }
+  #mcp-flow .agr p { font-size: 12px; color: #a7a7a7; line-height: 1.6; letter-spacing: -.01em; margin: 0 0 13px; }
+  #mcp-flow .agr p:last-child { margin-bottom: 0; }
+  #mcp-flow .sig { margin-top: 22px; display: flex; align-items: center; gap: 12px;
+    border-bottom: 1px solid #1c1c1c; padding-bottom: 12px; }
+  #mcp-flow .sig label { font-size: 13px; color: #565b5e; letter-spacing: -.01em; flex: none; }
+  #mcp-flow .sig input { flex: 1; background: none; border: none; outline: none; color: #fff;
+    font-family: inherit; font-size: 15px; letter-spacing: -.02em; }
+  #mcp-flow .sig input::placeholder { color: #565b5e; }
+  #mcp-flow .ack { display: flex; align-items: flex-start; gap: 12px; margin-top: 22px; cursor: pointer; }
+  #mcp-flow .ack span { font-size: 13px; color: #a7a7a7; line-height: 1.5; letter-spacing: -.01em; }
 </style>
 </head>
 <body>
@@ -300,7 +500,7 @@
           <path d="M7 13C10.3137 13 13 10.3137 13 7C13 3.68629 10.3137 1 7 1C3.68629 1 1 3.68629 1 7C1 10.3137 3.68629 13 7 13Z" stroke="white" stroke-width="1.3"/>
           <path d="M11.2 11.2L16 16" stroke="white" stroke-width="1.3"/>
         </svg>
-        <svg style="position:absolute; left:347px; top:34px;" width="17" height="13" viewBox="0 0 17 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <svg onclick="openMenu()" style="position:absolute; left:347px; top:34px; cursor:pointer;" width="17" height="13" viewBox="0 0 17 13" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M0 1H17" stroke="white" stroke-width="1.3"/>
           <path d="M0 6.5H17" stroke="white" stroke-width="1.3"/>
           <path d="M0 12H17" stroke="white" stroke-width="1.3"/>
@@ -427,35 +627,63 @@
       <div class="abs" style="left:309.6px; top:1331.92px; font-size:13px; color:#929292; letter-spacing:-0.26px;">Cash (10%)</div>
       <div class="abs" style="left:317.6px; top:1353.92px; font-size:15px; color:#c7c7c7; letter-spacing:-0.3px;">4,677.72</div>
 
-      <!-- ============ BENCHMARK ============ -->
-      <div class="abs" style="left:14.5px; top:1442.92px; font-size:15px; letter-spacing:-0.3px;">
-        S&amp;P 500 Comparison <span style="color:#929292;">·</span> <span style="color:#565b5e;">All Accounts</span>
+      <!-- ============ S&P 500 COMPARISON CARD + CALIBRATION FAN ============
+           Ported from main-dashboard-states: percent-growth chart with press-scrub,
+           dollar rows below it, then the calibration fan (11 calls vs the S&P). -->
+      <div id="bench-cal-block" style="position:absolute; left:0; top:1442.92px; width:100%; white-space:normal;">
+
+        <div id="card-bench">
+          <div class="bpad" style="display:flex; align-items:baseline; justify-content:space-between;">
+            <span class="bx-sec-title">S&amp;P 500 Comparison <span style="color:#929292;">&middot;</span> <span style="color:#565b5e;">All Accounts</span></span>
+            <span class="bx-chev">&#8250;</span>
+          </div>
+          <div class="bpad" style="margin-top:18px;">
+            <div class="chart-plot">
+              <div class="plot-window">3y 4m &middot; Portfolio vs S&amp;P 500</div>
+              <svg class="bx-chart" id="bench-svg" viewBox="0 0 320 180" preserveAspectRatio="none" aria-hidden="true">
+                <path id="bench-curveBm" d="" fill="none" stroke="#C29A2A" stroke-width="1" vector-effect="non-scaling-stroke"/>
+                <path id="bench-curveAcct" d="" fill="none" stroke="#FFFFFF" stroke-width="1" vector-effect="non-scaling-stroke"/>
+                <line class="scrub-line" x1="0" y1="12" x2="0" y2="172" stroke="#565B5E" stroke-width="0.5" vector-effect="non-scaling-stroke" visibility="hidden"/>
+                <ellipse class="scrub-dot-b" rx="2.5" ry="2.5" fill="#C29A2A" visibility="hidden"/>
+                <ellipse class="scrub-dot-a" rx="2.5" ry="2.5" fill="#FFFFFF" visibility="hidden"/>
+                <text class="scrub-date-label" x="0" y="22" font-size="11" font-family="Inter" text-anchor="middle" fill="#FFFFFF" letter-spacing="-0.02em" visibility="hidden">Jan 24</text>
+              </svg>
+              <div class="plot-ends">
+                <span class="pe-acct">Portfolio <span data-pct-acct>+39.4%</span></span>
+                <span class="pe-bm">S&amp;P 500 <span data-pct-sp>+45.2%</span></span>
+              </div>
+            </div>
+          </div>
+          <div class="bpad bx-rows" style="margin-top:20px;">
+            <div class="bx-row">
+              <span class="bx-label">Portfolio Value</span>
+              <span class="bx-val" data-portfolio-val>57,142.02</span>
+            </div>
+            <div class="bx-row">
+              <span class="bx-label">S&amp;P 500 Value</span>
+              <span class="bx-val" data-sp-val>59,515.92</span>
+            </div>
+            <div class="bx-row">
+              <span class="bx-label">Difference</span>
+              <span class="bx-val"><span data-diff>&minus;2,373.90</span><span class="bx-pct" data-diff-pct>&minus;3.99%</span><span class="bx-trend down" data-diff-arrow>&#9660;</span></span>
+            </div>
+          </div>
+          <p class="bpad bx-foot">This percentage is the gap between the two values above.<br>Alpha, on the performance page, is a different figure: your return against the index, in percentage points.</p>
+        </div>
+
+        <div class="calx" onclick="openRecords()">
+          <div class="calx-head">
+            <span class="calx-title">Calibration <span class="sep">&middot;</span> <span class="win">last 4 months</span></span>
+            <span class="bx-chev">&#8250;</span>
+          </div>
+          <div class="calx-plot">
+            <svg id="cal-svg" viewBox="0 0 358 176" preserveAspectRatio="none" aria-hidden="true"></svg>
+          </div>
+          <div class="calx-sum"><span class="ahead">6 of 11 ahead of the S&amp;P 500</span> <span class="avg">avg +1.9 pp</span></div>
+          <p class="calx-mid"><span id="cal-horizon">~19%</span> of the way to their horizons<span class="sep">&middot;</span>0 resolved<span class="sep">&middot;</span><span class="forming">verdicts forming</span></p>
+          <p class="calx-foot">Each call against the S&amp;P 500, measured from the day you made it.</p>
+        </div>
       </div>
-      <svg class="abs" style="left:374.5px; top:1447.4px;" width="6" height="10" viewBox="0 0 6 10" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M1 1L5 5L1 9" stroke="#565B5E" stroke-width="1.2"/>
-      </svg>
-
-      <div class="abs" style="left:14.5px; top:1486.92px; font-size:13px; color:#929292; letter-spacing:-0.26px;">Portfolio Value</div>
-      <div class="abs" style="left:14.5px; top:1519.92px; font-size:13px; color:#929292; letter-spacing:-0.26px;">S&amp;P 500 Equivalent Value</div>
-      <div id="stat-bench-portfolio" class="abs" style="right:16px; top:1484.92px; font-size:13px; color:#c7c7c7; letter-spacing:-0.3px;">46,777.23</div>
-      <div id="stat-bench-sp500" class="abs" style="right:16px; top:1517.92px; font-size:13px; color:#c7c7c7; letter-spacing:-0.3px;">44,593.05</div>
-
-      <!-- ============ DIFFERENCE ============ -->
-      <div class="divider" style="left:16px; top:1550.92px; width:361px;"></div>
-      <div class="divider" style="left:16px; top:1600.92px; width:361px;"></div>
-      <div class="abs" style="left:16px; top:1567.58px; font-size:13px; color:#929292; letter-spacing:-0.26px;">Difference</div>
-      <div id="stat-diff-value" class="abs" style="right:76px; top:1566.51px; font-size:15px; letter-spacing:-0.3px; color:#ffffff;"><span id="stat-diff-value-num">+2,184.18</span> <span id="stat-diff-tri" style="font-size:10px; vertical-align:1.5px; color:#30d158;">▲</span></div>
-      <div id="stat-diff-pct" class="abs" style="right:16px; top:1568.51px; font-size:13px; color:#ffffff; letter-spacing:-0.26px;">+4.90%</div>
-
-      <!-- ============ CALIBRATION ============ -->
-      <div class="abs" style="left:300.3px; top:1647.92px; font-size:15px; color:#c7c7c7; letter-spacing:-0.3px;">Calibration</div>
-      <div class="abs" style="left:283px; top:1674.88px; font-size:13px; color:#929292; letter-spacing:-0.24px;">Accuracy</div>
-      <div class="abs" style="left:348.7px; top:1674.88px; font-size:13px; color:#c7c7c7; letter-spacing:-0.24px;">54%</div>
-      <div class="abs" style="left:278.5px; top:1695.75px; font-size:13px; color:#929292; letter-spacing:-0.24px;">Predictions</div>
-      <div class="abs" style="left:360.3px; top:1696.26px; font-size:13px; color:#c7c7c7; letter-spacing:-0.24px;">17</div>
-      <div class="abs" style="left:205.3px; top:1717.64px; font-size:13px; color:#929292; letter-spacing:-0.24px;">Next Judgment</div>
-      <div class="abs" style="left:309px; top:1717.64px; font-size:13px; color:#c7c7c7; letter-spacing:-0.24px;">Apr 1, 2027</div>
-      <div id="cal-link" style="left:180px; top:1638px; width:210px; height:102px;" onclick="openRecords()"></div>
 
       <!-- ============ POSITIONS LIST (section headlines generated with it) ============ -->
       <div id="positions-list"></div>
@@ -483,6 +711,246 @@
       <div class="rec-intro">Every sealed forecast — the append-only ledger. A sale, a re-underwrite, or a killed thesis each gets its own status; nothing is ever overwritten.</div>
       <div id="rec-list" style="padding-bottom:56px"></div>
     </div>
+  </div>
+
+  <!-- ══════════ CONNECT TO AI · menu drawer (over the dashboard) ══════════ -->
+  <div id="v-menu">
+    <div id="menu-scrim" onclick="closeMenu()"></div>
+    <div id="menu-panel">
+      <button class="menu-x" onclick="closeMenu()" aria-label="Close">
+        <svg width="17" height="17" viewBox="0 0 17 17" fill="none"><path d="M1 1L16 16M16 1L1 16" stroke="#C7C7C7" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </button>
+      <div class="menu-items">
+        <div class="menu-item" onclick="closeMenu()">Transfer Funds</div>
+        <div class="menu-item" onclick="closeMenu()">Activity</div>
+        <div class="menu-item" onclick="closeMenu()">Account</div>
+        <div class="menu-item" onclick="closeMenu(); openMcp()">Connect to AI</div>
+        <div class="menu-item" onclick="closeMenu()">Manual</div>
+        <div class="menu-item" onclick="closeMenu()">Support</div>
+      </div>
+      <div class="menu-logout" onclick="closeMenu()">Log Out</div>
+    </div>
+  </div>
+
+  <!-- ══════════ CONNECT TO AI · flow stack (slides in over everything) ══════════ -->
+  <div id="mcp-flow">
+    <div class="dynamic-island"></div>
+
+    <!-- CONNECT TO AI hub -->
+    <section class="vw cur" id="v-hub">
+      <div class="nav">
+        <button class="nav-back" onclick="mcpBack()" aria-label="Back"><svg width="11" height="19" viewBox="0 0 11 19" fill="none"><path d="M9.5 1.5L2 9.5L9.5 17.5" stroke="#C7C7C7" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        <span class="nav-t">Connect to AI</span>
+      </div>
+      <div class="body pad">
+        <div style="height:20px;"></div>
+        <div class="ph">
+          <span class="ph-n">1</span>
+          <div class="ph-t">Connect</div>
+          <div class="ph-d">Find <b>Intelligent Investing</b> under Connectors in a supported assistant.</div>
+          <div class="row tap" onclick="startConnect('claude')">
+            <div class="row-l"><span class="row-nm">Claude</span><span class="row-sub">Anthropic</span></div>
+            <div class="row-r"><span class="row-v" data-conn="claude"></span><svg width="6" height="10" viewBox="0 0 6 10" fill="none"><path d="M1 1L5 5L1 9" stroke="#565B5E" stroke-width="1.2"/></svg></div>
+          </div>
+          <div class="row tap" onclick="startConnect('chatgpt')">
+            <div class="row-l"><span class="row-nm">ChatGPT</span><span class="row-sub">OpenAI</span></div>
+            <div class="row-r"><span class="row-v" data-conn="chatgpt"></span><svg width="6" height="10" viewBox="0 0 6 10" fill="none"><path d="M1 1L5 5L1 9" stroke="#565B5E" stroke-width="1.2"/></svg></div>
+          </div>
+          <div class="row tap" onclick="startConnect('grok')">
+            <div class="row-l"><span class="row-nm">Grok</span><span class="row-sub">xAI</span></div>
+            <div class="row-r"><span class="row-v" data-conn="grok"></span><svg width="6" height="10" viewBox="0 0 6 10" fill="none"><path d="M1 1L5 5L1 9" stroke="#565B5E" stroke-width="1.2"/></svg></div>
+          </div>
+          <div class="row tap" onclick="startConnect('other')" style="border-bottom:none;">
+            <div class="row-l"><span class="row-nm">Other MCP client</span><span class="row-sub">Cursor, Zed, or your own</span></div>
+            <div class="row-r"><span class="row-v" data-conn="other"></span><svg width="6" height="10" viewBox="0 0 6 10" fill="none"><path d="M1 1L5 5L1 9" stroke="#565B5E" stroke-width="1.2"/></svg></div>
+          </div>
+        </div>
+        <div class="ph">
+          <span class="ph-n">2</span>
+          <div class="ph-t">Ask</div>
+          <div class="ph-d">Ask about your positions, your benchmark comparison, or the reasoning in a memo. <b>It cannot place orders or move capital.</b></div>
+        </div>
+        <div class="ph">
+          <span class="ph-n">3</span>
+          <div class="ph-t">Manage</div>
+          <div class="ph-d">Review what an assistant has read, or revoke its access.</div>
+          <div class="row tap" onclick="mcpGo('v-conns')" style="border-bottom:none;">
+            <div class="row-l"><span class="row-nm">Connections</span></div>
+            <div class="row-r"><span class="row-v" id="hub-conn-ct">None</span><svg width="6" height="10" viewBox="0 0 6 10" fill="none"><path d="M1 1L5 5L1 9" stroke="#565B5E" stroke-width="1.2"/></svg></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ADD IN THE ASSISTANT -->
+    <section class="vw" id="v-setup">
+      <div class="nav plain">
+        <button class="nav-back" onclick="mcpBack()" aria-label="Back"><svg width="11" height="19" viewBox="0 0 11 19" fill="none"><path d="M9.5 1.5L2 9.5L9.5 17.5" stroke="#C7C7C7" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      </div>
+      <div class="body">
+        <div class="h1" id="setup-h1">Add in Claude</div>
+        <div class="sub">Step 1 of 3</div>
+        <div class="row tap" id="setup-link" onclick="openLink()" style="margin-top:24px;">
+          <div class="row-l">
+            <span class="row-nm" id="setup-link-t">Open in Claude</span>
+            <span class="row-sub" id="setup-link-u">claude.ai/directory/intelligent-investing</span>
+          </div>
+          <div class="row-r">
+            <svg width="11" height="11" viewBox="0 0 11 11" fill="none"><path d="M1 10L10 1M10 1H3.5M10 1V7.5" stroke="#C7C7C7" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+        </div>
+        <div id="setup-steps"></div>
+        <div class="lbl">Check this before adding</div>
+        <div class="listing">
+          <div class="listing-nm">Intelligent Investing</div>
+          <div class="listing-tag">Read your positions, performance, record, and memos</div>
+          <div class="listing-k">CONNECTOR URL</div>
+          <div class="listing-url" onclick="copyUrl()">
+            <span class="u">https://mcp.intelligentinvesting.com/v1/mcp</span>
+            <span class="c">Copy</span>
+          </div>
+          <div class="listing-k">MADE BY</div>
+          <div class="listing-by">Orion Digital Corp.</div>
+          <div class="listing-k">SIGN-IN</div>
+          <div class="listing-by">Required</div>
+        </div>
+        <div class="foot">Add only a connector whose URL matches this one exactly. Intelligent Investing publishes no other.</div>
+        <div class="foot" id="setup-fallback"></div>
+      </div>
+      <div class="toast" id="toastEl" role="status"></div>
+      <div class="bbar">
+        <button class="close-btn" onclick="cancelConnect()">Cancel</button>
+        <button class="cta" onclick="mcpGo('v-agree')" id="setup-cta">Added it
+          <span class="arr2"><svg width="28" height="12" viewBox="0 0 28 12" fill="none"><path d="M1 6h25M21.5 1.5L26 6l-4.5 4.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        </button>
+      </div>
+    </section>
+
+    <!-- AGREEMENTS -->
+    <section class="vw" id="v-agree">
+      <div class="nav plain">
+        <button class="nav-back" onclick="mcpBack()" aria-label="Back"><svg width="11" height="19" viewBox="0 0 11 19" fill="none"><path d="M9.5 1.5L2 9.5L9.5 17.5" stroke="#C7C7C7" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      </div>
+      <div class="body">
+        <div class="h1">Agreements and disclosures</div>
+        <div class="sub">Step 2 of 3 &middot; <span id="agr-client">Claude</span></div>
+        <div class="agr" id="agr-pane">
+          <h4>What the assistant can read</h4>
+          <p>Positions and weights, cost basis, order and contribution history, performance and benchmark comparison, sealed forecasts and calibration, and the text of your memos and theses &mdash; for the accounts you select in the next step.</p>
+          <h4>What it cannot do</h4>
+          <p>The assistant cannot place, modify, or cancel an order. It cannot change an allocation, move capital, alter your Core portfolio, or write anything back to this account. Access is read-only. These functions are not exposed to any assistant and are not configurable.</p>
+          <h4>No advice</h4>
+          <p>Intelligent Investing does not supply the assistant with recommendations, target allocations, or return forecasts, and does not review what the assistant tells you. Output from a third-party assistant is not advice from Intelligent Investing and is not a suitability determination. Responsibility for security selection, position sizing, and every execution decision remains yours.</p>
+          <h4>Record and revocation</h4>
+          <p>Every read is recorded. Access can be revoked at any time under Connections; revocation ends future access and does not recall what was already read. Records are retained for seven years.</p>
+        </div>
+        <div class="sig">
+          <label>Signature</label>
+          <input id="agr-sig" type="text" placeholder="Type your full name" autocomplete="off" oninput="agrCheck()" />
+        </div>
+        <div class="ack" onclick="agrAck()">
+          <span class="box" id="agr-box"><svg width="9" height="7" viewBox="0 0 9 7" fill="none"><path d="M1 3.5L3.5 6L8 1" stroke="#000" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <span>I have read the agreements and disclosures in full.</span>
+        </div>
+      </div>
+      <div class="bbar">
+        <button class="close-btn" onclick="cancelConnect()">Cancel</button>
+        <button class="nextarrow" id="agr-next" onclick="agrNext()" aria-label="Continue">
+          <svg width="28" height="12" viewBox="0 0 28 12" fill="none"><path d="M1 6h25M21.5 1.5L26 6l-4.5 4.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+      </div>
+    </section>
+
+    <!-- ACCOUNT ACCESS -->
+    <section class="vw" id="v-acct">
+      <div class="nav plain">
+        <button class="nav-back" onclick="mcpBack()" aria-label="Back"><svg width="11" height="19" viewBox="0 0 11 19" fill="none"><path d="M9.5 1.5L2 9.5L9.5 17.5" stroke="#C7C7C7" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      </div>
+      <div class="body">
+        <div class="h1">Account access</div>
+        <div class="sub">Step 3 of 3 &middot; select the accounts <span id="acct-client">Claude</span> can read</div>
+        <div class="row tap" onclick="tog('RRSP')" style="margin-top:26px;">
+          <span class="box on" data-ac="RRSP"><svg width="9" height="7" viewBox="0 0 9 7" fill="none"><path d="M1 3.5L3.5 6L8 1" stroke="#000" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <div class="row-l"><span class="row-nm">RRSP</span><span class="row-sub">Self-Directed &middot; 24 positions</span></div>
+          <div class="row-r"><span class="row-v num">46,777.23</span></div>
+        </div>
+        <div class="row tap" onclick="tog('TFSA')">
+          <span class="box on" data-ac="TFSA"><svg width="9" height="7" viewBox="0 0 9 7" fill="none"><path d="M1 3.5L3.5 6L8 1" stroke="#000" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <div class="row-l"><span class="row-nm">TFSA</span><span class="row-sub">Self-Directed &middot; 6 positions</span></div>
+          <div class="row-r"><span class="row-v num">18,410.55</span></div>
+        </div>
+        <div class="row tap" onclick="tog('Cash')">
+          <span class="box on" data-ac="Cash"><svg width="9" height="7" viewBox="0 0 9 7" fill="none"><path d="M1 3.5L3.5 6L8 1" stroke="#000" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <div class="row-l"><span class="row-nm">Cash</span><span class="row-sub">Self-Directed &middot; 3 positions</span></div>
+          <div class="row-r"><span class="row-v num">7,589.45</span></div>
+        </div>
+        <div class="row">
+          <span class="box" style="border-color:#262626;"></span>
+          <div class="row-l"><span class="row-nm" style="color:#565b5e;">Core &middot; Managed</span><span class="row-sub">Read only in every configuration.</span></div>
+          <div class="row-r"><span class="row-v num" style="color:#565b5e;">126,471.77</span></div>
+        </div>
+        <div class="foot">Access expires in 90 days. You can revoke it sooner at any time.</div>
+      </div>
+      <div class="bbar">
+        <button class="close-btn" onclick="cancelConnect()">Cancel</button>
+        <button class="cta" onclick="giveAccess()">Give access
+          <span class="arr2"><svg width="28" height="12" viewBox="0 0 28 12" fill="none"><path d="M1 6h25M21.5 1.5L26 6l-4.5 4.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        </button>
+      </div>
+    </section>
+
+    <!-- CONNECTED -->
+    <section class="vw" id="v-done">
+      <div class="nav plain"></div>
+      <div class="body">
+        <div class="h1">Connected</div>
+        <div class="sub"><span id="done-client">Claude</span> can now read <span id="done-accts">RRSP, TFSA and Cash</span>.</div>
+        <div class="lbl">Connection</div>
+        <div class="kv"><span class="k">Assistant</span><span class="v" id="done-client2">Claude</span></div>
+        <div class="kv"><span class="k">Accounts</span><span class="v" id="done-accts2">RRSP &middot; TFSA &middot; Cash</span></div>
+        <div class="kv"><span class="k">Access</span><span class="v">Read only</span></div>
+        <div class="kv"><span class="k">Expires</span><span class="v num">12.01.26</span></div>
+        <div class="kv"><span class="k">Signed</span><span class="v num">09.02.26 13:14 ET</span></div>
+        <div class="foot">Ask it about your positions, your benchmark comparison, or the reasoning in a memo. Revoke access under Connect to AI &middot; Connections.</div>
+      </div>
+      <button class="lpb" onclick="finishConnect()">Done</button>
+    </section>
+
+    <!-- CONNECTIONS -->
+    <section class="vw" id="v-conns">
+      <div class="nav">
+        <button class="nav-back" onclick="mcpBack()" aria-label="Back"><svg width="11" height="19" viewBox="0 0 11 19" fill="none"><path d="M9.5 1.5L2 9.5L9.5 17.5" stroke="#C7C7C7" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        <span class="nav-t">Connections</span>
+      </div>
+      <div class="body pad">
+        <div id="con-none">
+          <div class="p" style="color:#565b5e;">No assistant has access.</div>
+        </div>
+        <div id="con-some" style="display:none;">
+          <div class="lbl" style="margin-top:22px;">Active</div>
+          <div class="row">
+            <div class="row-l"><span class="row-nm" id="con-client">Claude</span><span class="row-sub" id="con-sub">RRSP &middot; TFSA &middot; Cash &middot; read only</span></div>
+            <div class="row-r"><span class="row-v">Last read 3m ago</span></div>
+          </div>
+          <div class="kv"><span class="k">Reads</span><span class="v num">46</span></div>
+          <div class="kv"><span class="k">Orders placed</span><span class="v">None &mdash; not permitted</span></div>
+          <div class="kv"><span class="k">Signed</span><span class="v num">09.02.26 13:14 ET</span></div>
+          <div class="kv"><span class="k">Expires</span><span class="v num">12.01.26</span></div>
+          <div class="row tap" onclick="revoke()" style="border-bottom:none;margin-top:8px;">
+            <div class="row-l"><span class="row-nm">Revoke access</span><span class="row-sub">Ends future access immediately. The record of past reads is kept.</span></div>
+            <div class="row-r"><svg width="6" height="10" viewBox="0 0 6 10" fill="none"><path d="M1 1L5 5L1 9" stroke="#565B5E" stroke-width="1.2"/></svg></div>
+          </div>
+          <div class="foot">Remove the connector in <span id="con-where">Claude</span> as well, or it will keep appearing there.</div>
+        </div>
+        <div id="con-revoked" style="display:none;">
+          <div class="lbl" style="margin-top:22px;">Revoked</div>
+          <div class="row" style="border-bottom:none;">
+            <div class="row-l"><span class="row-nm" style="color:#565b5e;" id="con-rev-client">Claude</span><span class="row-sub">Revoked 09.02.26 13:44 ET &middot; 46 reads &middot; record kept</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
   </div>
 
   <div class="home-indicator"></div>
@@ -559,6 +1027,27 @@
       desc: "Serial acquirer compounding at a steady clip.", tags: ["Earnings", "52 Week High"] }
   ];
 
+  // Under Review — the watchlist: tracked but not held. `added` is the date
+  // the user put it under review (MM.DD.YY); `since` is the stock's move
+  // since that day; `sp` is the S&P's move over the same window, so
+  // pp-vs-S&P = since − sp.
+  // Watchlist rows carry only event tags (Earnings / 52 Week High) — no
+  // investment case, thesis or order tags, since nothing is held. `note` is
+  // the user's own one-liner, shown above the tags only when non-empty —
+  // rows without a note stay two lines tall.
+  const reviews = [
+    { ticker: "PLTR",   price: "167.80 USD",   change: "+2.1%", added: "02.05.26", since: 18.4, sp: 6.2,
+      tags: ["Earnings"], note: "Wait for a pullback below 150 before sizing an entry." },
+    { ticker: "UBER",   price: "88.35 USD",    change: "-0.8%", added: "11.21.25", since: 7.9,  sp: 9.1,
+      tags: [], note: "" },
+    { ticker: "NBIS",   price: "61.42 USD",    change: "+4.6%", added: "03.14.26", since: 32.7, sp: 4.0,
+      tags: ["Earnings", "52 Week High"], note: null },
+    { ticker: "TOI.TO", price: "112.90 CAD",   change: "+0.3%", added: "08.02.25", since: -6.1, sp: 12.8,
+      tags: [], note: "Lagging the index — revisit the case after Q3 results." },
+    { ticker: "ASML",   price: "1,043.20 USD", change: "-1.4%", added: "12.10.25", since: 11.2, sp: 8.7,
+      tags: [], note: null }
+  ];
+
   const ROW_GAP = 20;
   const LIST_TOP = 1814.4; // the list now starts at the (generated) Treasury headline
 
@@ -580,9 +1069,11 @@
   let positionLive = [];
 
   // section collapse state — tapping a headline rebuilds the list
-  let TREASURY_COLLAPSED = false, ACTIVE_COLLAPSED = false;
+  let TREASURY_COLLAPSED = false, ACTIVE_COLLAPSED = false, REVIEW_COLLAPSED = false;
+  let reviewLive = [];
   function toggleSection(which) {
     if (which === 'treasury') TREASURY_COLLAPSED = !TREASURY_COLLAPSED;
+    else if (which === 'review') REVIEW_COLLAPSED = !REVIEW_COLLAPSED;
     else ACTIVE_COLLAPSED = !ACTIVE_COLLAPSED;
     buildPositions();
   }
@@ -594,19 +1085,20 @@
     ? '<svg width="12" height="11" viewBox="0 0 14 12" fill="none" stroke="#fbc308" stroke-width="1.1" stroke-linecap="round" style="vertical-align:-1px; margin-right:5px;"><path d="M3.6 9.2a3.4 3.4 0 0 1 6.8 0"/><path d="M1 9.2h12"/><path d="M7 1.2v1.7"/><path d="M2.9 3.1l1.2 1.2"/><path d="M11.1 3.1l-1.2 1.2"/></svg>'
     : '<svg width="11" height="11" viewBox="0 0 13 13" fill="none" style="vertical-align:-1px; margin-right:5px;"><path d="M11.2 8.3A5 5 0 0 1 4.7 1.8a5.4 5.4 0 1 0 6.5 6.5Z" stroke="#4a7dff" stroke-width="1.1" stroke-linejoin="round"/></svg>';
   let html = '';
-  let cursorTop = LIST_TOP;
+  // the comparison card + calibration fan block above is normal-flow content of
+  // variable height, so the list starts wherever it ends (+30 section seam)
+  const bcb = document.getElementById('bench-cal-block');
+  let cursorTop = bcb && bcb.offsetHeight > 0 ? (1442.92 + bcb.offsetHeight + 30) : LIST_TOP;
   const HDR_BLOCK = 53.27; // headline row → first position row (matches the original spacing)
 
   // ── Treasury headline — the cash-equivalent sleeve sits above everything ──
   const treasuries = positions.filter(p => p.treasury);
-  const tSum = treasuries.reduce((a, p) => a + parseMoney(p.value).num, 0);
   html += `
     <div class="abs" style="left:14.5px; top:${cursorTop}px; font-size:15px; letter-spacing:-0.3px;">Treasury</div>
     <div class="abs" style="left:89px; top:${cursorTop - 0.9}px; font-size:15px; letter-spacing:-0.3px;">${treasuries.length}</div>
     <svg class="abs" style="left:110px; top:${cursorTop + 5.1}px; transition:transform .3s ease; transform:rotate(${TREASURY_COLLAPSED ? '-90deg' : '0deg'});" width="11" height="7" viewBox="0 0 11 7" fill="none" xmlns="http://www.w3.org/2000/svg">
       <path d="M1 1.5L5.5 6L10 1.5" stroke="#929292" stroke-width="1.2"/>
     </svg>
-    <div class="abs" style="right:16px; top:${cursorTop + 1}px; font-size:13px; color:#929292; letter-spacing:-0.24px; font-variant-numeric:tabular-nums;">${fmtMoney(tSum)} CAD</div>
     <div class="abs" style="left:0; top:${cursorTop - 8}px; width:220px; height:32px; cursor:pointer;" onclick="toggleSection('treasury')"></div>
   `;
   cursorTop += TREASURY_COLLAPSED ? 34 : HDR_BLOCK;
@@ -673,6 +1165,54 @@
     `;
     cursorTop += rowHeight + ROW_GAP;
   });
+
+  // ── Under Review — the watchlist section, below Active Positions ──
+  cursorTop += 14;
+  html += `
+    <div class="abs" style="left:14.5px; top:${cursorTop}px; font-size:15px; letter-spacing:-0.3px;">Under Review</div>
+    <div class="abs" style="left:122px; top:${cursorTop - 0.9}px; font-size:15px; letter-spacing:-0.3px;">${reviews.length}</div>
+    <svg class="abs" style="left:143px; top:${cursorTop + 5.1}px; transition:transform .3s ease; transform:rotate(${REVIEW_COLLAPSED ? '-90deg' : '0deg'});" width="11" height="7" viewBox="0 0 11 7" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M1 1.5L5.5 6L10 1.5" stroke="#929292" stroke-width="1.2"/>
+    </svg>
+    <div class="abs" style="left:0; top:${cursorTop - 8}px; width:220px; height:32px; cursor:pointer;" onclick="toggleSection('review')"></div>
+  `;
+  cursorTop += REVIEW_COLLAPSED ? 26 : HDR_BLOCK;
+  if (!REVIEW_COLLAPSED) {
+    reviews.forEach((r, i) => {
+      const top = cursorTop;
+      const changePositive = r.change.trim().startsWith('+');
+      const pp = r.since - r.sp;
+      const ppTxt = (pp >= 0 ? '+' : '−') + Math.abs(pp).toFixed(1) + ' pp vs S&P';
+      const ppTri = pp >= 0 ? '▲' : '▼';
+      const ppCol = pp >= 0 ? '#30d158' : '#ff3533';
+      const sTxt = (r.since >= 0 ? '+' : '−') + Math.abs(r.since).toFixed(1) + '%';
+      const sTri = r.since >= 0 ? '▲' : '▼';
+      const sCol = r.since >= 0 ? '#30d158' : '#ff3533';
+      // same section rhythm as position rows: header → note → tags → divider,
+      // each block skipped (with its gap) when absent. A row with no saved
+      // note shows nothing — the row stays two lines tall.
+      const hasTags = r.tags && r.tags.length > 0;
+      const hasNote = !!(r.note && r.note.trim());
+      let localCursor = HEADER_H;
+      let tagsTop = null, noteTop = null;
+      if (hasNote) { localCursor += SECTION_GAP; noteTop = localCursor; localCursor += DESC_H; }
+      if (hasTags) { localCursor += SECTION_GAP; tagsTop = localCursor; localCursor += TAGS_H; }
+      localCursor += SECTION_GAP;
+      const rowHeight = localCursor;
+      html += `
+        <div class="abs" style="left:16px; top:${top + 0.93}px; font-size:13px;"><span style="font-weight:500; text-transform:uppercase;">${r.ticker}</span><span id="rev-pp-${i}" style="font-size:11.5px; color:#ffffff; margin-left:7px; letter-spacing:-0.1px; font-variant-numeric:tabular-nums;"><span class="pp-num">${ppTxt}</span><span class="pp-tri" style="font-size:8px; vertical-align:1.5px; color:${ppCol}; margin-left:4px;">${ppTri}</span></span></div>
+        <div class="abs" style="left:16px; top:${top + 21.95}px; font-size:10px; color:#929292;">Added <span class="num" style="color:#c7c7c7; margin-left:2px;">${r.added}</span></div>
+        <div id="rev-price-${i}" class="abs" style="left:167px; top:${top}px; font-size:13px; font-weight:300; letter-spacing:-0.28px; text-align:right; width:150px;">${r.price}</div>
+        <div id="rev-change-${i}" class="abs" style="left:327px; top:${top}px; font-size:13px; font-weight:${changePositive ? 700 : 400}; color:${changePositive ? '#ffffff' : '#929292'}; letter-spacing:-0.24px; text-align:right; width:50px;">${r.change}</div>
+        <div class="abs" style="left:167px; top:${top + 21.2}px; width:210px; text-align:right; font-size:11.5px; letter-spacing:-0.22px; font-variant-numeric:tabular-nums;"><span id="rev-since-${i}" style="color:#ffffff;">${sTxt}</span> <span style="color:#929292; font-size:10px;">since added</span><span id="rev-stri-${i}" style="font-size:8px; vertical-align:1px; color:${sCol}; margin-left:4px;">${sTri}</span></div>
+        ${hasNote ? `<div class="rev-note abs" contenteditable="true" spellcheck="false" style="left:16px; top:${top + noteTop}px;" oninput="reviews[${i}].note=this.textContent" onblur="if(!this.textContent.trim()){reviews[${i}].note='';buildPositions();}" onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur();}">${r.note}</div>` : ''}
+        ${hasTags ? `<div class="tags-row" style="left:16px; top:${top + tagsTop}px;">${r.tags.map(label => `<span class="tag"><span class="tag-dot" style="background:${TAG_COLORS[label]};"></span>${label}</span>`).join('')}</div>` : ''}
+        <div class="row-divider" style="top:${top + rowHeight}px;"></div>
+      `;
+      cursorTop += rowHeight + ROW_GAP;
+    });
+  }
+
   listEl.innerHTML = html;
   const lastRowBottom = cursorTop - ROW_GAP;
   fullMinHeight = lastRowBottom + 40 + TOP_SPACING_EXTRA;
@@ -696,6 +1236,19 @@
       priceBase: price.num, price: price.num, priceCcy: price.ccy,
       pctBase: parsePct(r.pct), pct: parsePct(r.pct),
       changeBase: parsePct(r.change), change: parsePct(r.change),
+    };
+  });
+  reviewLive = reviews.map((r, i) => {
+    const price = parseMoney(r.price);
+    return {
+      priceEl: document.getElementById(`rev-price-${i}`),
+      changeEl: document.getElementById(`rev-change-${i}`),
+      sinceEl: document.getElementById(`rev-since-${i}`),
+      striEl: document.getElementById(`rev-stri-${i}`),
+      ppEl: document.getElementById(`rev-pp-${i}`),
+      priceBase: price.num, price: price.num, priceCcy: price.ccy,
+      changeBase: parsePct(r.change), change: parsePct(r.change),
+      sinceBase: r.since, since: r.since, sp: r.sp,
     };
   });
   if (window.__applyCore) window.__applyCore();
@@ -805,11 +1358,8 @@
     makeLiveStat('stat-active-value', 46777.23, { volatility: 0.0012, reversion: 0.05 }),
     makeLiveStat('stat-active-allchg', 2353.46, { kind: 'signedMoney', volatility: 0.012, reversion: 0.06 }),
     makeLiveStat('stat-active-allpct', 5.3, { kind: 'pct', volatility: 0.02, reversion: 0.08, wrap: t => `(${t})` }),
-    makeLiveStat('stat-bench-portfolio', 46777.23, { volatility: 0.0012, reversion: 0.05 }),
-    // the S&P index itself stops moving when the market closes
-    makeLiveStat('stat-bench-sp500', 44593.05, { volatility: 0.0008, reversion: 0.05, frozenExtended: true }),
-    makeLiveStat('stat-diff-value-num', 2184.18, { kind: 'signedMoney', volatility: 0.02, reversion: 0.06, mirrorClass: 'tb-diffval', colorClass: 'tb-diffsign', signTriangleId: 'stat-diff-tri' }),
-    makeLiveStat('stat-diff-pct', 4.90, { kind: 'pct', decimals: 2, volatility: 0.02, reversion: 0.08, mirrorClass: 'tb-diffpct' }),
+    // (the S&P comparison card's rows are driven by its own ported chart
+    //  engine + scrub, not by the random-walk sim)
   ].filter(Boolean);
 
   // ================= S&P 500 DAILY-CHANGE INDICATOR =================
@@ -971,8 +1521,42 @@
     }
   }
 
+  // Under Review rows: price/daily like a position, plus the since-added
+  // reading and its pp-vs-S&P derivative — all triangles, text stays white
+  function tickReview(row) {
+    if (!row.priceEl) return; // section collapsed
+    const extended = MARKET_STATE !== 'market';
+    const deltaFrac = (Math.random() * 2 - 1) * 0.003 * (extended ? 0.35 : 1);
+    row.price += row.price * deltaFrac;
+    row.price += (row.priceBase - row.price) * 0.03;
+    row.since += deltaFrac * 100 * 0.6;
+    row.since += (row.sinceBase - row.since) * 0.05;
+    row.priceEl.textContent = `${fmtMoney(row.price)} ${row.priceCcy}`;
+    if (!extended) {
+      row.change += deltaFrac * 100;
+      row.change += (row.changeBase - row.change) * 0.05;
+      const cp = row.change >= 0;
+      row.changeEl.textContent = fmtPct(row.change);
+      row.changeEl.style.fontWeight = cp ? '700' : '400';
+      row.changeEl.style.color = cp ? '#ffffff' : '#929292';
+    }
+    row.sinceEl.textContent = fmtPct(row.since);
+    if (row.striEl) {
+      row.striEl.textContent = row.since >= 0 ? '▲' : '▼';
+      row.striEl.style.color = row.since >= 0 ? '#30d158' : '#ff3533';
+    }
+    if (row.ppEl) {
+      const pp = row.since - row.sp;
+      const tri = row.ppEl.querySelector('.pp-tri');
+      const numEl = row.ppEl.querySelector('.pp-num');
+      if (tri) { tri.textContent = pp >= 0 ? '▲' : '▼'; tri.style.color = pp >= 0 ? '#30d158' : '#ff3533'; }
+      if (numEl) numEl.textContent = (pp >= 0 ? '+' : '−') + Math.abs(pp).toFixed(1) + ' pp vs S&P';
+    }
+  }
+
   setInterval(() => {
     positionLive.forEach(row => { if (Math.random() < 0.18) tickPosition(row); });
+    reviewLive.forEach(row => { if (Math.random() < 0.18) tickReview(row); });
   }, 900);
 
   // ================= THE RECORD — data engine + navigation =================
@@ -1138,6 +1722,505 @@
     document.getElementById('records-screen').classList.remove('open');
   }
   renderRecords();
+
+  // ══════════ S&P 500 COMPARISON CARD + CALIBRATION FAN ══════════
+  // Ported from main-dashboard-states: seeded mulberry32/gaussian noise,
+  // per-year-recentred stepReturns, deposit-aware series(), deposit-neutral
+  // percent growth pinned to the published TWR figures, the pointer-scrub
+  // machinery, and drawCal()'s eleven-call fan. Scoped in an IIFE so its
+  // fmtPct etc. cannot collide with this file's own helpers.
+  (function () {
+    const MONTHS = 41, SUB = 6;
+    const YEAR_SPAN = [[0, 9, 0], [10, 21, 1], [22, 33, 2], [34, 41, 3]];
+    const ACCOUNT_YEARS = [12.0, 4.4, 15.0, 3.7];
+    const BM_YEARS = [14.0, 12.0, 10.0, 3.4];
+    const DEPOSITS = { 0: 15000, 6: 8000, 11: 9000, 20: 7000, 27: -4000, 35: 6000 };
+    function monthLabel(m) {
+      const d = new Date(2023, 2 + m, 1);
+      return ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][d.getMonth()]
+        + ' ' + String(d.getFullYear()).slice(2);
+    }
+    function mulberry32(seed) {
+      return function () {
+        seed = (seed + 0x6D2B79F5) | 0;
+        let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+        t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+        return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+      };
+    }
+    function gaussians(seed, n) {
+      const rand = mulberry32(seed), out = [];
+      for (let i = 0; i < n; i++) {
+        const u = Math.max(rand(), 1e-9), v = rand();
+        out.push(Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v));
+      }
+      return out;
+    }
+    const N_STEPS = MONTHS * SUB;
+    const Z_MKT = gaussians(20230314, N_STEPS);
+    const Z_OWN = gaussians(20260810, N_STEPS);
+    function stepReturns(years, vol, corr) {
+      const perStep = vol * 0.65 / Math.sqrt(12 * SUB);
+      const logs = [];
+      for (let i = 0; i < N_STEPS; i++)
+        logs.push((corr * Z_MKT[i] + Math.sqrt(1 - corr * corr) * Z_OWN[i]) * perStep);
+      for (const [a, b, yi] of YEAR_SPAN) {
+        const from = a * SUB, to = Math.min(b * SUB + SUB, N_STEPS);
+        let sum = 0;
+        for (let i = from; i < to; i++) sum += logs[i];
+        const fix = (Math.log(1 + years[yi] / 100) - sum) / (to - from);
+        for (let i = from; i < to; i++) logs[i] += fix;
+      }
+      return logs.map(Math.exp);
+    }
+    function series(years, targetGain, vol, corr) {
+      const factors = stepReturns(years, vol, corr);
+      const out = [], dep = [];
+      let v = 0, d = 0;
+      for (let i = 0; i <= N_STEPS; i++) {
+        const add = DEPOSITS[i / SUB] || 0;
+        v += add; d += add;
+        if (i > 0) v *= factors[i - 1];
+        out.push(v); dep.push(d);
+      }
+      const endGain = out[out.length - 1] - dep[dep.length - 1];
+      const k = endGain === 0 ? 1 : targetGain / endGain;
+      return out.map((val, i) => dep[i] + (val - dep[i]) * k);
+    }
+    // deposit-neutral percent growth, pinned to the published endpoint
+    function growthIndex(curve) {
+      const out = [1];
+      let acc = 1;
+      for (let i = 1; i < curve.length; i++) {
+        const flow = DEPOSITS[i / SUB] || 0;
+        const denom = curve[i - 1] + flow;
+        acc *= denom === 0 ? 1 : curve[i] / denom;
+        out.push(acc);
+      }
+      return out;
+    }
+    function pinGrowth(curve, targetPct) {
+      const idx = growthIndex(curve);
+      const end = idx[idx.length - 1];
+      const lnEnd = Math.log(end);
+      const p = (end > 0 && lnEnd !== 0) ? Math.log(1 + targetPct / 100) / lnEnd : 1;
+      return idx.map(v => (Math.pow(Math.max(v, 1e-9), p) - 1) * 100);
+    }
+    // All Accounts, the published set: account trails the index
+    const A = { value: 57142.02, sp: 59515.92, basis: 41000, ret: 39.4 };
+    const SP_RET = 45.2;
+    const ACCT_CURVE = series(ACCOUNT_YEARS, A.value - A.basis, 0.172, 0.85);
+    const SP_CURVE = series(BM_YEARS, A.sp - A.basis, 0.154, 1);
+    const ACCT_PCT = pinGrowth(ACCT_CURVE, A.ret);
+    const SP_PCT = pinGrowth(SP_CURVE, SP_RET);
+
+    const fmtAbs = v => Math.abs(v).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    const fmtSigned = v => (v < 0 ? '−' : '+') + fmtAbs(v);
+    const fmtPctB = v => (v < 0 ? '−' : '+') + Math.abs(v).toFixed(2) + '%';
+    const fmtPct1 = v => (v < 0 ? '−' : '+') + Math.abs(v).toFixed(1) + '%';
+
+    // ── the chart: two percent-growth lines on empty ground ──
+    let CHART = null;
+    function drawCompare() {
+      const av = ACCT_CURVE.slice(), bv = SP_CURVE.slice();
+      const ap = ACCT_PCT.slice(), bp = SP_PCT.slice();
+      const lo = Math.min(...ap, ...bp), hi = Math.max(...ap, ...bp);
+      const pad = (hi - lo) * 0.08 || 1;
+      const bot = lo - pad, top = hi + pad;
+      const y = v => 176 - (v - bot) / (top - bot) * 164;
+      const path = arr => arr.map((v, i) =>
+        (i ? 'L' : 'M') + (i / (arr.length - 1) * 320).toFixed(1) + ',' + y(v).toFixed(1)).join(' ');
+      document.getElementById('bench-curveAcct').setAttribute('d', path(ap));
+      document.getElementById('bench-curveBm').setAttribute('d', path(bp));
+      document.querySelector('[data-pct-acct]').textContent = fmtPct1(ap[ap.length - 1]);
+      document.querySelector('[data-pct-sp]').textContent = fmtPct1(bp[bp.length - 1]);
+      CHART = { av, bv, ap, bp, y };
+    }
+    const rowEls = {
+      portfolio: document.querySelector('[data-portfolio-val]'),
+      sp: document.querySelector('[data-sp-val]'),
+      diff: document.querySelector('[data-diff]'),
+      diffPct: document.querySelector('[data-diff-pct]'),
+      diffArrow: document.querySelector('[data-diff-arrow]')
+    };
+    function writeRows(acct, sp) {
+      const diff = acct - sp;
+      const pct = sp === 0 ? 0 : diff / sp * 100;
+      rowEls.portfolio.textContent = fmtAbs(acct);
+      rowEls.sp.textContent = fmtAbs(sp);
+      rowEls.diff.textContent = fmtSigned(diff);
+      rowEls.diffPct.textContent = fmtPctB(pct);
+      const down = diff < 0;
+      rowEls.diffArrow.classList.toggle('up', !down);
+      rowEls.diffArrow.classList.toggle('down', down);
+      rowEls.diffArrow.textContent = down ? '▼' : '▲';
+    }
+    function restoreRows() {
+      if (!CHART) return;
+      const i = CHART.av.length - 1;
+      writeRows(CHART.av[i], CHART.bv[i]);
+    }
+    // ── ported scrub machinery ──
+    function svgUnitX(svg, clientX) {
+      const pt = svg.createSVGPoint(); pt.x = clientX; pt.y = 0;
+      return pt.matrixTransform(svg.getScreenCTM().inverse()).x;
+    }
+    function dotRadii(svg, px) {
+      const r = svg.getBoundingClientRect();
+      if (!r.width || !r.height) return { rx: px, ry: px };
+      return { rx: px * 320 / r.width, ry: px * 180 / r.height };
+    }
+    function roundDot(svg, el) {
+      const d = dotRadii(svg, 2.5);
+      el.setAttribute('rx', d.rx.toFixed(2)); el.setAttribute('ry', d.ry.toFixed(2));
+    }
+    function marker(svg, on, x, ya, yb) {
+      const set = (sel, attrs) => {
+        const el = svg.querySelector(sel); if (!el) return;
+        el.setAttribute('visibility', on ? 'visible' : 'hidden');
+        for (const k in attrs) el.setAttribute(k, attrs[k]);
+      };
+      set('.scrub-line', on ? { x1: x, x2: x } : {});
+      set('.scrub-dot-a', on ? { cx: x, cy: ya } : {});
+      set('.scrub-dot-b', on ? { cx: x, cy: yb } : {});
+      if (on) { roundDot(svg, svg.querySelector('.scrub-dot-a')); roundDot(svg, svg.querySelector('.scrub-dot-b')); }
+    }
+    function setDateLabel(svg, on, x, text) {
+      const el = svg.querySelector('.scrub-date-label'); if (!el) return;
+      el.setAttribute('visibility', on ? 'visible' : 'hidden');
+      if (on) { el.setAttribute('x', x); el.textContent = text; }
+    }
+    (function attachRowScrub() {
+      const svg = document.getElementById('bench-svg');
+      if (!svg) return;
+      let live = false;
+      const move = ev => {
+        if (!CHART) return;
+        const ux = Math.max(0, Math.min(320, svgUnitX(svg, ev.clientX)));
+        const i = Math.round(ux / 320 * (CHART.av.length - 1));
+        const m = MONTHS * i / (CHART.av.length - 1);
+        writeRows(CHART.av[i], CHART.bv[i]);
+        marker(svg, true, ux, CHART.y(CHART.ap[i]), CHART.y(CHART.bp[i]));
+        setDateLabel(svg, true, ux, monthLabel(m));
+        ev.preventDefault();
+      };
+      const end = () => { if (!live) return; live = false; marker(svg, false); restoreRows(); setDateLabel(svg, false); };
+      svg.addEventListener('pointerdown', ev => { live = true; try { svg.setPointerCapture(ev.pointerId); } catch (e) {} move(ev); });
+      svg.addEventListener('pointermove', ev => { if (live) move(ev); });
+      svg.addEventListener('pointerup', end);
+      svg.addEventListener('pointercancel', end);
+      svg.addEventListener('pointerleave', end);
+    })();
+    drawCompare();
+    restoreRows();
+
+    // ══ CALIBRATION FAN: one thin line per call, pp vs the S&P, 4-month window ══
+    const CAL_CALLS = [
+      { t: 'AVGO', pp: 18.4, d: 412 }, { t: 'MSFT', pp: 9.1, d: 296 },
+      { t: 'COST', pp: 7.8, d: 578 }, { t: 'LLY', pp: 6.2, d: 185 },
+      { t: 'AAPL', pp: 4.0, d: 879 }, { t: 'V', pp: 1.6, d: 91 },
+      { t: 'NFLX', pp: -1.1, d: 59 }, { t: 'BA', pp: -3.0, d: 142 },
+      { t: 'DIS', pp: -4.2, d: 314 }, { t: 'META', pp: -6.7, d: 526 },
+      { t: 'TSLA', pp: -11.3, d: 352 }
+    ];
+    const CAL_LABELLED = 7;
+    const CAL_HORIZON_DAYS = 1826;
+    const CAL_PROGRESS = Math.round(
+      100 * CAL_CALLS.reduce((s, c) => s + c.d, 0) / CAL_CALLS.length / CAL_HORIZON_DAYS);
+    const CAL_WINDOW_DAYS = 122;
+    const CAL = { gutter: 26, x0: 30, x1: 288, top: 8, bot: 152, hi: 30, lo: -15, step: 15, xlab: 168, lx: 306 };
+    const calY = v => CAL.bot - (v - CAL.lo) / (CAL.hi - CAL.lo) * (CAL.bot - CAL.top);
+    const calSign = v => (v < 0 ? '−' : '+') + Math.abs(v);
+    const calCol = pp => pp >= 0 ? '--c-live-muted' : '--c-urgent-muted';
+    const CAL_MAGS = CAL_CALLS.map(c => Math.abs(c.pp));
+    const CAL_MAG_LO = Math.min.apply(null, CAL_MAGS), CAL_MAG_HI = Math.max.apply(null, CAL_MAGS);
+    const calR = pp => 1.9 + 1.7 * Math.sqrt((Math.abs(pp) - CAL_MAG_LO) / (CAL_MAG_HI - CAL_MAG_LO));
+    const CAL_F = [0, 0.25, 0.5, 0.75, 1];
+    const calStart = c => Math.max(0, 1 - Math.min(c.d, CAL_WINDOW_DAYS) / CAL_WINDOW_DAYS);
+    function calPath(c, k) {
+      const f0 = calStart(c);
+      const z = gaussians(6070214 + k * 977, CAL_F.length);
+      const px = f => (CAL.x0 + f * (CAL.x1 - CAL.x0)).toFixed(1);
+      const clamp = v => Math.max(CAL.lo, Math.min(CAL.hi, v));
+      let d = 'M' + px(0) + ',' + calY(0).toFixed(1);
+      if (f0 > 0) d += 'L' + px(f0) + ',' + calY(0).toFixed(1);
+      const fs = CAL_F.filter(f => f > f0);
+      fs.forEach((f, i) => {
+        const g = (f - f0) / (1 - f0);
+        const v = (i === fs.length - 1) ? c.pp : clamp(c.pp * g + 2.2 * z[i + 1]);
+        d += 'L' + px(f) + ',' + calY(v).toFixed(1);
+      });
+      return d;
+    }
+    function drawCal() {
+      const svg = document.getElementById('cal-svg');
+      if (!svg) return;
+      const p = [];
+      const txt = (x, y, anchor, colour, s) =>
+        '<text x="' + x + '" y="' + y + '" text-anchor="' + anchor + '" font-size="11"' +
+        ' font-family="Inter" letter-spacing="-0.02em" style="fill:var(' + colour + ')">' + s + '</text>';
+      const zeroY = calY(0), plotW = CAL.x1 - CAL.x0;
+      p.push('<rect x="' + CAL.x0 + '" y="' + CAL.top + '" width="' + plotW + '" height="' +
+        (zeroY - CAL.top).toFixed(1) + '" style="fill:var(--c-live-muted)" fill-opacity="0.055"/>');
+      p.push('<rect x="' + CAL.x0 + '" y="' + zeroY.toFixed(1) + '" width="' + plotW + '" height="' +
+        (CAL.bot - zeroY).toFixed(1) + '" style="fill:var(--c-urgent-muted)" fill-opacity="0.07"/>');
+      const nowX = CAL.x1 - 0.15 * plotW;
+      p.push('<rect x="' + nowX.toFixed(1) + '" y="' + CAL.top + '" width="' + (CAL.x1 - nowX).toFixed(1) +
+        '" height="' + (CAL.bot - CAL.top) + '" style="fill:var(--c-1000)" fill-opacity="0.35"/>');
+      for (let v = CAL.hi; v >= CAL.lo; v -= CAL.step)
+        p.push('<line x1="' + CAL.x0 + '" y1="' + calY(v).toFixed(1) + '" x2="' + CAL.x1 +
+          '" y2="' + calY(v).toFixed(1) + '" style="stroke:var(--c-1000)" stroke-width="1"' +
+          ' vector-effect="non-scaling-stroke"/>');
+      p.push('<line x1="' + CAL.x0 + '" y1="' + CAL.top + '" x2="' + CAL.x0 + '" y2="' + CAL.bot +
+        '" style="stroke:var(--c-1000)" stroke-width="1" vector-effect="non-scaling-stroke"/>');
+      for (let v = CAL.hi; v >= CAL.lo; v -= CAL.step)
+        if (v !== 0) p.push(txt(CAL.gutter, (calY(v) + 3.6).toFixed(1), 'end', '--c-800', calSign(v)));
+      p.push(txt(CAL.gutter, (zeroY + 3.6).toFixed(1), 'end', '--c-gold', 'S&amp;P'));
+      p.push(txt(CAL.x0, CAL.xlab, 'start', '--c-800', '−4mo'));
+      p.push(txt((CAL.x0 + CAL.x1) / 2, CAL.xlab, 'middle', '--c-800', '−2'));
+      p.push(txt(CAL.x1, CAL.xlab, 'end', '--c-800', 'now'));
+      const byMag = CAL_CALLS.slice().sort((a, b) => Math.abs(b.pp) - Math.abs(a.pp));
+      const rolled = byMag.slice(CAL_LABELLED);
+      const items = byMag.slice(0, CAL_LABELLED).map(c => ({ s: c.t, pp: c.pp, col: calCol(c.pp) }))
+        .sort((a, b) => b.pp - a.pp);
+      const PITCH = 13;
+      let ys = items.map(it => calY(it.pp));
+      for (let i = 1; i < ys.length; i++) if (ys[i] - ys[i - 1] < PITCH) ys[i] = ys[i - 1] + PITCH;
+      if (rolled.length) {
+        items.push({ s: '+' + rolled.length + ' more', col: '--c-800' });
+        ys.push(ys[ys.length - 1] + PITCH);
+      }
+      const over = ys[ys.length - 1] - CAL.bot;
+      if (over > 0) ys = ys.map(v => v - over);
+      const under = CAL.top - ys[0];
+      if (under > 0) ys = ys.map(v => v + under);
+      const labelled = {};
+      items.forEach((it, i) => { if (it.pp !== undefined) labelled[it.s] = ys[i]; });
+      CAL_CALLS.forEach((c, k) => {
+        p.push('<path d="' + calPath(c, k) + '" fill="none" style="stroke:var(' + calCol(c.pp) +
+          ')" stroke-width="1" stroke-opacity="0.85" vector-effect="non-scaling-stroke"/>');
+      });
+      p.push('<line x1="' + CAL.x0 + '" y1="' + zeroY.toFixed(1) + '" x2="' + CAL.x1 +
+        '" y2="' + zeroY.toFixed(1) + '" style="stroke:var(--c-gold)" stroke-width="1"' +
+        ' vector-effect="non-scaling-stroke"/>');
+      CAL_CALLS.forEach((c) => {
+        const col = calCol(c.pp);
+        const cy = calY(c.pp), r = calR(c.pp);
+        if (labelled[c.t] !== undefined)
+          p.push('<line x1="' + (CAL.x1 + r + 1.5).toFixed(1) + '" y1="' + cy.toFixed(1) +
+            '" x2="' + (CAL.lx - 3) + '" y2="' + cy.toFixed(1) + '" style="stroke:var(' + col +
+            ')" stroke-width="1" stroke-opacity="0.6" vector-effect="non-scaling-stroke"/>');
+        p.push('<circle cx="' + CAL.x1 + '" cy="' + cy.toFixed(1) + '" r="' + r.toFixed(2) +
+          '" style="fill:var(' + col + ')"/>');
+      });
+      items.forEach((it, i) => p.push(txt(CAL.lx, (ys[i] + 3.6).toFixed(1), 'start', it.col, it.s)));
+      svg.innerHTML = p.join('');
+      const prog = document.getElementById('cal-horizon');
+      if (prog) prog.textContent = '~' + CAL_PROGRESS + '%';
+    }
+    drawCal();
+
+    // the block above the positions list has flow height; rebuild the list
+    // once fonts have settled so it starts exactly below the block
+    const reflow = () => { if (typeof buildPositions === 'function') buildPositions(); };
+    window.addEventListener('load', reflow);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => setTimeout(reflow, 0));
+    setTimeout(reflow, 400);
+  })();
+
+  // ══════════ CONNECT TO AI · menu drawer + MCP flow (ported) ══════════
+  const MCP_MICRO = 150;
+  const ASSISTANTS = {
+    claude: {
+      name: 'Claude',
+      link: { label: 'Open in Claude', url: 'claude.ai/directory/intelligent-investing',
+              href: 'https://claude.ai/directory/intelligent-investing' },
+      steps: ['Tap <b>Add</b> on the connector page.',
+              'Sign in to Intelligent Investing when Claude asks.',
+              'Come back here.'],
+      fallback: 'If the link does not open: in Claude, go to Settings, then Connectors, then Browse, and search for Intelligent Investing.'
+    },
+    chatgpt: {
+      name: 'ChatGPT',
+      link: { label: 'Open the ChatGPT directory', url: 'chatgpt.com/plugins', href: 'https://chatgpt.com/plugins' },
+      steps: ['Find <b>Intelligent Investing</b> and tap <b>Connect</b>.',
+              'Sign in when ChatGPT asks.', 'Come back here.'],
+      fallback: 'If the link does not open: in ChatGPT, go to Settings, then Apps.'
+    },
+    grok: {
+      name: 'Grok',
+      link: { label: 'Open Grok connectors', url: 'grok.com/connectors', href: 'https://grok.com/connectors' },
+      steps: ['Choose <b>New Connector</b>, then <b>Custom</b>.',
+              'Paste the connector URL below and name it <b>Intelligent Investing</b>.',
+              'Sign in when Grok asks, then come back here.'],
+      fallback: 'Custom connectors require a paid Grok tier.'
+    },
+    other: {
+      name: 'your client',
+      link: null,
+      steps: ['Add a server with the connector URL below.',
+              'Authorize with <b>OAuth 2.1 and PKCE</b>.', 'Come back here.'],
+      fallback: 'Discovery is at /.well-known/oauth-authorization-server. Transport is SSE.'
+    }
+  };
+
+  let mcpCur = 'v-hub';
+  let mcpHist = [];
+  let mcpKey = 'claude';
+  let mcpAccts = { RRSP: true, TFSA: true, Cash: true };
+  let mcpConnected = false;
+
+  function openMenu()  { document.getElementById('v-menu').classList.add('open'); }
+  function closeMenu() { document.getElementById('v-menu').classList.remove('open'); }
+
+  function openMcp() {
+    // reset the stack to the hub before sliding the whole flow in
+    document.querySelectorAll('#mcp-flow .vw').forEach(v => {
+      mcpSnap(v, () => v.classList.remove('cur', 'behind', 'out-r'));
+    });
+    document.getElementById('v-hub').classList.add('cur');
+    mcpCur = 'v-hub'; mcpHist = [];
+    document.getElementById('mcp-flow').classList.add('open');
+  }
+  function closeMcp() { document.getElementById('mcp-flow').classList.remove('open'); }
+
+  function mcpSetView(next, reverse) {
+    if (next === mcpCur) return;
+    const a = document.getElementById(mcpCur), b = document.getElementById(next);
+    setTimeout(() => {
+      document.querySelectorAll('#mcp-flow .vw').forEach(v => {
+        if (v !== a && v !== b) mcpSnap(v, () => v.classList.remove('cur', 'behind', 'out-r'));
+      });
+      if (reverse) {
+        mcpSnap(b, () => { b.classList.remove('cur', 'out-r'); b.classList.add('behind'); });
+        a.classList.remove('cur'); a.classList.add('out-r');
+        b.classList.remove('behind'); b.classList.add('cur');
+      } else {
+        mcpSnap(b, () => b.classList.remove('cur', 'behind', 'out-r'));
+        const bd = b.querySelector('.body'); if (bd) bd.scrollTop = 0;
+        a.classList.remove('cur'); a.classList.add('behind');
+        b.classList.add('cur');
+      }
+      mcpCur = next;
+    }, MCP_MICRO);
+  }
+  function mcpSnap(el, fn) { el.classList.add('snap'); fn(); void el.offsetWidth; el.classList.remove('snap'); }
+  function mcpGo(n) { mcpHist.push(mcpCur); mcpSetView(n, false); }
+  function mcpBack() {
+    if (!mcpHist.length) { closeMcp(); return; }   // hub -> back to the dashboard
+    mcpSetView(mcpHist.pop(), true);
+  }
+
+  function paintAssistant(k) {
+    mcpKey = k;
+    const A = ASSISTANTS[k];
+    document.getElementById('setup-h1').textContent =
+      (k === 'other') ? 'Add the connector' : 'Add in ' + A.name;
+    const linkRow = document.getElementById('setup-link');
+    if (A.link) {
+      linkRow.style.display = '';
+      document.getElementById('setup-link-t').textContent = A.link.label;
+      document.getElementById('setup-link-u').textContent = A.link.url;
+    } else {
+      linkRow.style.display = 'none';
+    }
+    document.getElementById('setup-steps').innerHTML = A.steps.map((s, i) =>
+      '<div class="step"><span class="n">' + (i + 1) + '</span><span class="t">' + s + '</span></div>'
+    ).join('');
+    document.getElementById('setup-fallback').textContent = A.fallback;
+    ['agr-client', 'acct-client', 'done-client', 'done-client2', 'con-client', 'con-rev-client', 'con-where']
+      .forEach(id => { const e = document.getElementById(id); if (e) e.textContent = A.name; });
+  }
+
+  function startConnect(k) {
+    if (mcpConnected && k === mcpKey) { mcpGo('v-conns'); return; }
+    paintAssistant(k);
+    document.getElementById('agr-sig').value = '';
+    document.getElementById('agr-box').classList.remove('on');
+    document.getElementById('agr-pane').scrollTop = 0;
+    agrCheck();
+    mcpGo('v-setup');
+  }
+
+  function cancelConnect() { mcpHist = []; mcpSetView('v-hub', true); }
+
+  function openLink() {
+    const L = ASSISTANTS[mcpKey].link;
+    if (!L) return;
+    window.open(L.href, '_blank', 'noopener');
+    mcpToast('Opening ' + L.url);
+  }
+  async function copyUrl() {
+    const url = document.querySelector('#v-setup .listing-url .u').textContent.trim();
+    try {
+      await navigator.clipboard.writeText(url);
+    } catch (e) {
+      const t = document.createElement('textarea');
+      t.value = url; t.style.position = 'fixed'; t.style.opacity = '0';
+      document.body.appendChild(t); t.select();
+      try { document.execCommand('copy'); } catch (_) {}
+      document.body.removeChild(t);
+    }
+    mcpToast('Connector URL copied');
+  }
+  let mcpToastTimer = null;
+  function mcpToast(msg) {
+    const t = document.getElementById('toastEl');
+    t.textContent = msg;
+    t.classList.add('show');
+    if (mcpToastTimer) clearTimeout(mcpToastTimer);
+    mcpToastTimer = setTimeout(() => t.classList.remove('show'), 1800);
+  }
+
+  function agrAck() { document.getElementById('agr-box').classList.toggle('on'); agrCheck(); }
+  function agrCheck() {
+    const ok = document.getElementById('agr-sig').value.trim().length > 1
+            && document.getElementById('agr-box').classList.contains('on');
+    document.getElementById('agr-next').classList.toggle('on', ok);
+    return ok;
+  }
+  function agrNext() { if (agrCheck()) mcpGo('v-acct'); }
+
+  function tog(k) {
+    if (mcpAccts[k] && Object.values(mcpAccts).filter(Boolean).length === 1) return;
+    mcpAccts[k] = !mcpAccts[k];
+    document.querySelectorAll('[data-ac]').forEach(b => b.classList.toggle('on', mcpAccts[b.dataset.ac]));
+  }
+  function acctList(style) {
+    const on = Object.keys(mcpAccts).filter(k => mcpAccts[k]);
+    if (style === 'prose') {
+      return on.length === 1 ? on[0]
+           : on.slice(0, -1).join(', ') + ' and ' + on[on.length - 1];
+    }
+    return on.join(' · ');
+  }
+  function giveAccess() {
+    document.getElementById('done-accts').textContent  = acctList('prose');
+    document.getElementById('done-accts2').textContent = acctList();
+    document.getElementById('con-sub').textContent     = acctList() + ' · read only';
+    mcpGo('v-done');
+  }
+  function finishConnect() {
+    mcpConnected = true;
+    document.getElementById('hub-conn-ct').textContent = '1';
+    document.querySelectorAll('[data-conn]').forEach(e => {
+      e.textContent = (e.dataset.conn === mcpKey) ? 'Connected' : '';
+      e.style.color = '#c7c7c7';
+    });
+    document.getElementById('con-none').style.display    = 'none';
+    document.getElementById('con-some').style.display    = '';
+    document.getElementById('con-revoked').style.display = 'none';
+    mcpHist = [];
+    mcpSetView('v-hub', false);
+  }
+  function revoke() {
+    mcpConnected = false;
+    document.getElementById('con-some').style.display    = 'none';
+    document.getElementById('con-revoked').style.display = '';
+    document.getElementById('hub-conn-ct').textContent   = 'None';
+    document.querySelectorAll('[data-conn]').forEach(e => e.textContent = '');
+  }
+  paintAssistant('claude');
 </script>
 
 </body>
