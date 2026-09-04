@@ -264,19 +264,6 @@
       <span class="ttl">After hours</span>
       <span class="sub">Moon line per position · red dots · daily moves frozen</span>
     </div>
-    <div class="iter-head" style="margin-top:4px;">TOP BAR · EXPERIMENTS</div>
-    <div class="iter-item on" id="exp-item-grid" onclick="setTopbarExp('grid')">
-      <span class="ttl">Grid — rotating market cell</span>
-      <span class="sub">Two fixed columns · only the US·CA ↔ S&amp;P cell dissolves in place</span>
-    </div>
-    <div class="iter-item" id="exp-item-line" onclick="setTopbarExp('line')">
-      <span class="ttl">One-liner — full carousel</span>
-      <span class="sub">A single line cycles clock → S&amp;P → portfolio · nothing stacked</span>
-    </div>
-    <div class="iter-item" id="exp-item-static" onclick="setTopbarExp('static')">
-      <span class="ttl">Static split — everything visible</span>
-      <span class="sub">Two tidy columns, no animation · diff as percent only</span>
-    </div>
   </div>
 </div>
 
@@ -297,41 +284,16 @@
         <!-- two-line stack on the left (timer over markets), total value on the
              right — nothing renders under the dynamic island (bottom y≈40) -->
         <div id="topbar-inline" style="position:absolute; left:60px; right:102px; top:0; height:71px; opacity:0; transition:opacity .3s ease; pointer-events:none;">
-
-          <!-- ═══ X1 · GRID — two fixed columns; only the market cell dissolves ═══ -->
-          <div class="tbx" id="tbx-grid" style="padding-right:16px;">
-            <div class="tb-col">
-              <span class="tb-r1"><span class="tb-clock">13:14:26</span> ET<span class="tb-session-icon" style="margin-left:6px;"></span></span>
-              <span class="tb-rotate" style="width:66px; height:10px;">
-                <span class="tb-card on"><span class="mkt-dot tb-dot"></span><span class="tb-sm" style="margin-left:5px;">US</span><span class="mkt-dot tb-dot" style="margin-left:9px;"></span><span class="tb-sm" style="margin-left:5px;">CA</span></span>
-                <span class="tb-card sp500-slot"><span class="sp500-inner"><span class="tb-sm">S&amp;P</span> <span class="sp500-val num" style="color:#fff;">+0.52%</span></span></span>
-              </span>
-            </div>
-            <div class="tb-col" style="align-items:flex-end;">
-              <span class="tb-r1v tb-gated"><span class="tb-total num">173,249.00</span> <span style="color:#565b5e;">CAD</span></span>
-              <span class="tb-diffsign tb-gated" style="font-size:10px; letter-spacing:-0.1px; color:#30d158; line-height:1; white-space:nowrap;"><span class="tb-diffval num">+2,184.18</span> (<span class="tb-diffpct num">+4.90%</span>) <span style="color:#929292;">vs S&amp;P</span></span>
-            </div>
-          </div>
-
-          <!-- ═══ X2 · ONE-LINER — a single centered line carousels through all three ═══ -->
-          <div class="tbx" id="tbx-line" style="display:none;">
-            <span class="tb-rotate" style="flex:1; height:12px;">
-              <span class="tb-card on" style="color:#fff;"><span class="tb-clock num">13:14:26</span> ET<span class="tb-session-icon" style="margin-left:6px;"></span><span class="mkt-dot tb-dot" style="margin-left:12px;"></span><span class="tb-sm" style="margin-left:5px;">US</span><span class="mkt-dot tb-dot" style="margin-left:9px;"></span><span class="tb-sm" style="margin-left:5px;">CA</span></span>
-              <span class="tb-card sp500-slot"><span class="sp500-inner"><span style="color:#929292;">S&amp;P 500</span> <span class="sp500-val num" style="color:#fff;">+0.52%</span></span></span>
-              <span class="tb-card tb-money" style="color:#fff;"><span class="tb-total num">173,249.00</span> <span style="color:#565b5e;">CAD</span><span style="color:#565b5e; margin:0 8px;">·</span><span class="tb-diffsign" style="color:#30d158;"><span class="tb-diffpct num">+4.90%</span></span> <span style="color:#929292;">vs S&amp;P</span></span>
+          <!-- single-line nav: clock + session icon + market dots, nothing else.
+               padding-top drops the line to the logo/search icons' optical center -->
+          <div class="tbx" id="tbx-simple" style="padding-top:7px;">
+            <span class="tb-r1" style="display:flex; align-items:center;">
+              <span class="tb-clock num">13:14:26</span>&nbsp;ET
+              <span class="tb-session-icon" style="margin-left:7px; display:inline-flex; align-items:center;"></span>
+              <span style="color:#565b5e; margin:0 12px; font-size:11px; font-weight:300;">|</span>
+              <span class="mkt-dot tb-dot"></span><span class="tb-sm" style="margin-left:5px;">US</span>
+              <span class="mkt-dot tb-dot" style="margin-left:10px;"></span><span class="tb-sm" style="margin-left:5px;">CA</span>
             </span>
-          </div>
-
-          <!-- ═══ X3 · STATIC SPLIT — everything visible, no animation ═══ -->
-          <div class="tbx" id="tbx-static" style="display:none; padding-right:14px;">
-            <div class="tb-col">
-              <span class="tb-r1"><span class="tb-clock">13:14:26</span> ET<span class="tb-session-icon" style="margin-left:6px;"></span></span>
-              <span style="line-height:1; white-space:nowrap; font-size:9.5px;"><span class="mkt-dot tb-dot"></span><span class="tb-sm" style="margin-left:3px; font-size:9.5px; letter-spacing:0.1px;">US</span><span class="mkt-dot tb-dot" style="margin-left:6px;"></span><span class="tb-sm" style="margin-left:3px; font-size:9.5px; letter-spacing:0.1px;">CA</span><span class="sp500-slot" style="margin-left:8px;"><span class="sp500-inner"><span class="tb-sm" style="font-size:9.5px; letter-spacing:0.1px;">S&amp;P</span> <span class="sp500-val num" style="color:#fff; font-size:9.5px;">+0.52%</span></span></span></span>
-            </div>
-            <div class="tb-col" style="align-items:flex-end;">
-              <span class="tb-r1v tb-gated"><span class="tb-total num">173,249.00</span> <span style="color:#565b5e;">CAD</span></span>
-              <span class="tb-gated" style="font-size:9.5px; line-height:1; white-space:nowrap;"><span class="tb-diffsign" style="color:#30d158;"><span class="tb-diffpct num">+4.90%</span></span> <span style="color:#929292;">vs S&amp;P</span></span>
-            </div>
           </div>
         </div>
         <svg style="position:absolute; left:298px; top:31px;" width="17" height="17" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -467,7 +429,7 @@
 
       <!-- ============ BENCHMARK ============ -->
       <div class="abs" style="left:14.5px; top:1442.92px; font-size:15px; letter-spacing:-0.3px;">
-        S&amp;P 500 Benchmark <span style="color:#929292;">·</span> <span style="color:#565b5e;">All Accounts · 3y 2m</span>
+        S&amp;P 500 Comparison <span style="color:#929292;">·</span> <span style="color:#565b5e;">All Accounts</span>
       </div>
       <svg class="abs" style="left:374.5px; top:1447.4px;" width="6" height="10" viewBox="0 0 6 10" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M1 1L5 5L1 9" stroke="#565B5E" stroke-width="1.2"/>
@@ -495,16 +457,7 @@
       <div class="abs" style="left:309px; top:1717.64px; font-size:13px; color:#c7c7c7; letter-spacing:-0.24px;">Apr 1, 2027</div>
       <div id="cal-link" style="left:180px; top:1638px; width:210px; height:102px;" onclick="openRecords()"></div>
 
-      <!-- ============ ACTIVE POSITIONS HEADER ============ -->
-      <div class="abs" style="left:14.5px; top:1814.4px; font-size:15px; letter-spacing:-0.3px;">Active Positions</div>
-      <div class="abs" style="left:133px; top:1813.5px; font-size:15px; letter-spacing:-0.3px;">24</div>
-      <svg class="abs" style="left:162.2px; top:1819.5px;" width="11" height="7" viewBox="0 0 11 7" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M1 1.5L5.5 6L10 1.5" stroke="#929292" stroke-width="1.2"/>
-      </svg>
-      <div class="abs" style="left:273.4px; top:1813.5px; font-size:15px; color:#929292; letter-spacing:-0.3px;">Open Orders</div>
-      <div class="abs" style="left:367.1px; top:1813.5px; font-size:15px; color:#929292; letter-spacing:-0.3px;">2</div>
-
-      <!-- ============ POSITIONS LIST ============ -->
+      <!-- ============ POSITIONS LIST (section headlines generated with it) ============ -->
       <div id="positions-list"></div>
 
       </div><!-- /below-core -->
@@ -551,6 +504,11 @@
   };
 
   const positions = [
+    // Treasury sleeve — cash-equivalents, listed first under their own headline
+    { ticker: "CBIL.TO", weight: "8% WT", category: "Treasury", value: "9,850.00 CAD", pct: "+4.1%", price: "50.02 CAD", change: "+0.02%",
+      desc: "", tags: [], treasury: true },
+    { ticker: "SGOV", weight: "5% WT", category: "Treasury", value: "6,400.00 CAD", pct: "+5.0%", price: "100.68 USD", change: "+0.01%",
+      desc: "", tags: [], treasury: true },
     { ticker: "ORIO.TO", weight: "25% WT", category: "Emerging Compounder", value: "18,950.00 CAD", pct: "+42.6%", price: "87.60 CAD", change: "+7.8%",
       desc: "Parent moat compounding; the NASDAQ listing re-rates it over 3–5 years.", tags: ["Earnings", "Reverse Split"] },
     { ticker: "BWEN", weight: "25% WT", category: "Emerging Compounder", value: "12,950.00 CAD", pct: "+22.6%", price: "82.40 USD", change: "-2.8%",
@@ -602,7 +560,7 @@
   ];
 
   const ROW_GAP = 20;
-  const LIST_TOP = 1867.67;
+  const LIST_TOP = 1814.4; // the list now starts at the (generated) Treasury headline
 
   // Section rhythm within a row (matches the original design's spacing):
   // header group -> 16px gap -> description -> 16px gap -> tags -> 16px gap -> divider.
@@ -621,16 +579,58 @@
   let fullMinHeight = 0;
   let positionLive = [];
 
+  // section collapse state — tapping a headline rebuilds the list
+  let TREASURY_COLLAPSED = false, ACTIVE_COLLAPSED = false;
+  function toggleSection(which) {
+    if (which === 'treasury') TREASURY_COLLAPSED = !TREASURY_COLLAPSED;
+    else ACTIVE_COLLAPSED = !ACTIVE_COLLAPSED;
+    buildPositions();
+  }
+
   function buildPositions() {
   const extended = MARKET_STATE !== 'market';
-  const headerH = HEADER_H + (extended ? AH_H : 0);
   // outlined session icons — sunrise for pre-market, moon for after hours
   const extIcon = MARKET_STATE === 'pre'
     ? '<svg width="12" height="11" viewBox="0 0 14 12" fill="none" stroke="#fbc308" stroke-width="1.1" stroke-linecap="round" style="vertical-align:-1px; margin-right:5px;"><path d="M3.6 9.2a3.4 3.4 0 0 1 6.8 0"/><path d="M1 9.2h12"/><path d="M7 1.2v1.7"/><path d="M2.9 3.1l1.2 1.2"/><path d="M11.1 3.1l-1.2 1.2"/></svg>'
     : '<svg width="11" height="11" viewBox="0 0 13 13" fill="none" style="vertical-align:-1px; margin-right:5px;"><path d="M11.2 8.3A5 5 0 0 1 4.7 1.8a5.4 5.4 0 1 0 6.5 6.5Z" stroke="#4a7dff" stroke-width="1.1" stroke-linejoin="round"/></svg>';
   let html = '';
   let cursorTop = LIST_TOP;
+  const HDR_BLOCK = 53.27; // headline row → first position row (matches the original spacing)
+
+  // ── Treasury headline — the cash-equivalent sleeve sits above everything ──
+  const treasuries = positions.filter(p => p.treasury);
+  const tSum = treasuries.reduce((a, p) => a + parseMoney(p.value).num, 0);
+  html += `
+    <div class="abs" style="left:14.5px; top:${cursorTop}px; font-size:15px; letter-spacing:-0.3px;">Treasury</div>
+    <div class="abs" style="left:89px; top:${cursorTop - 0.9}px; font-size:15px; letter-spacing:-0.3px;">${treasuries.length}</div>
+    <svg class="abs" style="left:110px; top:${cursorTop + 5.1}px; transition:transform .3s ease; transform:rotate(${TREASURY_COLLAPSED ? '-90deg' : '0deg'});" width="11" height="7" viewBox="0 0 11 7" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M1 1.5L5.5 6L10 1.5" stroke="#929292" stroke-width="1.2"/>
+    </svg>
+    <div class="abs" style="right:16px; top:${cursorTop + 1}px; font-size:13px; color:#929292; letter-spacing:-0.24px; font-variant-numeric:tabular-nums;">${fmtMoney(tSum)} CAD</div>
+    <div class="abs" style="left:0; top:${cursorTop - 8}px; width:220px; height:32px; cursor:pointer;" onclick="toggleSection('treasury')"></div>
+  `;
+  cursorTop += TREASURY_COLLAPSED ? 34 : HDR_BLOCK;
+  let activeHdrEmitted = false;
+
   positions.forEach((r, i) => {
+    // ── Active Positions headline — emitted once, before the first equity ──
+    if (!r.treasury && !activeHdrEmitted) {
+      activeHdrEmitted = true;
+      cursorTop += 14;
+      html += `
+        <div class="abs" style="left:14.5px; top:${cursorTop}px; font-size:15px; letter-spacing:-0.3px;">Active Positions</div>
+        <div class="abs" style="left:133px; top:${cursorTop - 0.9}px; font-size:15px; letter-spacing:-0.3px;">${positions.length - treasuries.length}</div>
+        <svg class="abs" style="left:162.2px; top:${cursorTop + 5.1}px; transition:transform .3s ease; transform:rotate(${ACTIVE_COLLAPSED ? '-90deg' : '0deg'});" width="11" height="7" viewBox="0 0 11 7" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M1 1.5L5.5 6L10 1.5" stroke="#929292" stroke-width="1.2"/>
+        </svg>
+        <div class="abs" style="left:273.4px; top:${cursorTop - 0.9}px; font-size:15px; color:#929292; letter-spacing:-0.3px;">Open Orders</div>
+        <div class="abs" style="left:367.1px; top:${cursorTop - 0.9}px; font-size:15px; color:#929292; letter-spacing:-0.3px;">2</div>
+        <div class="abs" style="left:0; top:${cursorTop - 8}px; width:200px; height:32px; cursor:pointer;" onclick="toggleSection('active')"></div>
+      `;
+      cursorTop += ACTIVE_COLLAPSED ? 26 : HDR_BLOCK;
+    }
+    // collapsed sections render only their headline
+    if (r.treasury ? TREASURY_COLLAPSED : ACTIVE_COLLAPSED) return;
     const top = cursorTop;
     const changePositive = r.change.trim().startsWith('+');
     const hasDesc = r.desc.length > 0;
@@ -650,7 +650,9 @@
     r._ext = ah;
     const ahTxt = fmtPct(ah, 2);
 
-    let localCursor = headerH;
+    // treasuries carry no vs-S&P badge and no extended-session line
+    const rowHeaderH = HEADER_H + ((extended && !r.treasury) ? AH_H : 0);
+    let localCursor = rowHeaderH;
     let descTop = null, tagsTop = null;
     if (hasDesc) { localCursor += SECTION_GAP; descTop = localCursor; localCursor += DESC_H; }
     if (hasTags) { localCursor += SECTION_GAP; tagsTop = localCursor; localCursor += TAGS_H; }
@@ -658,13 +660,13 @@
     const rowHeight = localCursor;
 
     html += `
-      <div class="abs" style="left:16px; top:${top + 0.93}px; font-size:13px;"><span style="font-weight:500; text-transform:uppercase;">${r.ticker}</span><span id="pos-pp-${i}" style="font-size:11.5px; color:#ffffff; margin-left:7px; letter-spacing:-0.1px; font-variant-numeric:tabular-nums;"><span class="pp-num">${ppTxt}</span><span class="pp-tri" style="font-size:8px; vertical-align:1.5px; color:${ppCol}; margin-left:4px;">${ppTri}</span></span></div>
+      <div class="abs" style="left:16px; top:${top + 0.93}px; font-size:13px;"><span style="font-weight:500; text-transform:uppercase;">${r.ticker}</span>${r.treasury ? '' : `<span id="pos-pp-${i}" style="font-size:11.5px; color:#ffffff; margin-left:7px; letter-spacing:-0.1px; font-variant-numeric:tabular-nums;"><span class="pp-num">${ppTxt}</span><span class="pp-tri" style="font-size:8px; vertical-align:1.5px; color:${ppCol}; margin-left:4px;">${ppTri}</span></span>`}</div>
       <div class="abs" style="left:16px; top:${top + 21.95}px; font-size:10px; color:#929292;">${r.category}<span style="color:#c7c7c7; margin-left:6px; text-transform:uppercase;">${r.weight}</span></div>
       <div id="pos-value-${i}" class="abs" style="left:167px; top:${top}px; font-size:13px; font-weight:300; letter-spacing:-0.28px; text-align:right; width:150px;">${r.value}</div>
       <div id="pos-pct-${i}" class="abs" style="left:327px; top:${top}px; font-size:13px; color:#929292; letter-spacing:-0.24px; text-align:right; width:50px;">${r.pct}</div>
       <div id="pos-price-${i}" class="abs" style="left:167px; top:${top + 20.45}px; font-size:13px; font-weight:300; letter-spacing:-0.28px; text-align:right; width:150px;">${r.price}</div>
       <div id="pos-change-${i}" class="abs" style="left:327px; top:${top + 20.45}px; font-size:13px; font-weight:${changePositive ? 700 : 400}; color:${changePositive ? '#ffffff' : '#929292'}; letter-spacing:-0.24px; text-align:right; width:50px;">${r.change}</div>
-      ${extended ? `<div class="abs" style="left:167px; top:${top + 41.9}px; width:210px; text-align:right; font-size:12px; color:#ffffff; letter-spacing:-0.24px; font-variant-numeric:tabular-nums;">${extIcon}<span id="pos-ext-${i}">${ahTxt}</span></div>` : ''}
+      ${extended && !r.treasury ? `<div class="abs" style="left:167px; top:${top + 41.9}px; width:210px; text-align:right; font-size:12px; color:#ffffff; letter-spacing:-0.24px; font-variant-numeric:tabular-nums;">${extIcon}<span id="pos-ext-${i}">${ahTxt}</span></div>` : ''}
       ${hasDesc ? `<div class="abs" style="left:16px; top:${top + descTop}px; font-size:12px; color:#c7c7c7; letter-spacing:-0.19px; max-width:361px; overflow:hidden; text-overflow:ellipsis;">${r.desc}</div>` : ''}
       ${hasTags ? `<div class="tags-row" style="left:16px; top:${top + tagsTop}px;">${r.tags.map(label => `<span class="tag"><span class="tag-dot" style="background:${TAG_COLORS[label]};"></span>${label}</span>`).join('')}</div>` : ''}
       <div class="row-divider" style="top:${top + rowHeight}px;"></div>
@@ -689,6 +691,7 @@
       extEl: document.getElementById(`pos-ext-${i}`),
       ext: r._ext,
       spRet: r._spRet,
+      treasury: !!r.treasury,
       valueBase: value.num, value: value.num, valueCcy: value.ccy,
       priceBase: price.num, price: price.num, priceCcy: price.ccy,
       pctBase: parsePct(r.pct), pct: parsePct(r.pct),
@@ -845,40 +848,8 @@
     });
   }
 
-  // ---- top-bar experiments: three mutually-exclusive layouts of the whole
-  // area between the logo and the right-side icons. Only one .tbx panel is
-  // displayed at a time, so variants can never bleed into each other.
-  // 'grid'    X1 — two fixed columns; only the US/CA↔S&P cell dissolves in place
-  // 'line'    X2 — a single centered line carousels clock → S&P → portfolio
-  // 'static'  X3 — everything visible in two tidy columns, no animation
-  let TOPBAR_EXP = 'grid';
-  let tbIdx = 0;
-  function rotateTopbar() {
-    const box = document.getElementById('tbx-' + TOPBAR_EXP);
-    if (!box) return;
-    box.querySelectorAll('.tb-rotate').forEach(rot => {
-      const all = [...rot.querySelectorAll('.tb-card')];
-      // the money card only enters the cycle once the big Total Value is passed
-      const cards = all.filter(c => !c.classList.contains('tb-money') || window.__tbGated);
-      if (!cards.length) return;
-      const targetCard = cards[tbIdx % cards.length];
-      all.forEach(c => c.classList.toggle('on', c === targetCard));
-    });
-  }
-  function setTopbarExp(m) {
-    TOPBAR_EXP = m;
-    tbIdx = 0;
-    document.getElementById('stateMenuPanel').classList.remove('open');
-    ['grid', 'line', 'static'].forEach(k => {
-      const it = document.getElementById('exp-item-' + k);
-      if (it) it.classList.toggle('on', k === m);
-      const panel = document.getElementById('tbx-' + k);
-      if (panel) panel.style.display = k === m ? '' : 'none';
-    });
-    rotateTopbar();
-  }
-  // slow, elevated cycle — 4.5s per pane, 0.7s fade + 5px rise
-  setInterval(() => { tbIdx++; rotateTopbar(); }, 4500);
+  // (top-bar experiments removed — the pinned nav is a single line:
+  //  clock + session icon + market dots)
   // expanded-state placement — one-line switch between the two variants
   (function initSp500Placement() {
     const el = document.getElementById('sp500-page');
@@ -941,9 +912,6 @@
         totalPast = totalBottom < STICKY_HEADER_H;
       }
       inlineBar.style.opacity = show ? '1' : '0';
-      // money cells (total + diff) join only once the big number is passed
-      window.__tbGated = show && totalPast;
-      document.querySelectorAll('.tb-gated').forEach(el => { el.style.opacity = window.__tbGated ? '1' : '0'; });
     }
     screenEl.addEventListener('scroll', () => {
       if (!ticking) { ticking = true; requestAnimationFrame(update); }
@@ -955,9 +923,11 @@
   // (positionLive is built inside buildPositions so the after-hours toggle
   // can rebuild the list and re-bind in one place)
   function tickPosition(row) {
+    if (!row.valueEl) return; // row not rendered (its section is collapsed)
     const extended = MARKET_STATE !== 'market';
-    // extended sessions trade thin — quotes drift at a fraction of RTH pace
-    const deltaFrac = (Math.random() * 2 - 1) * 0.003 * (extended ? 0.35 : 1);
+    // extended sessions trade thin — quotes drift at a fraction of RTH pace.
+    // treasuries are cash-equivalents: they barely move at all.
+    const deltaFrac = (Math.random() * 2 - 1) * 0.003 * (extended ? 0.35 : 1) * (row.treasury ? 0.06 : 1);
     row.price += row.price * deltaFrac;
     row.value += row.value * deltaFrac;
     row.pct += deltaFrac * 100 * 0.4;
