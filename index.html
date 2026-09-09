@@ -114,17 +114,36 @@
     flex: none;
   }
 
-  /* Under Review — the user's own one-line note, editable in place */
+  /* Under Review — the user's own one-line note, editable in place; a step
+     dimmer than a memo thesis so the two read as different voices */
   .rev-note {
     width: 361px;
     font-size: 12px;
-    color: #c7c7c7;
+    color: #929292;
     letter-spacing: -0.19px;
     white-space: nowrap;
     overflow: hidden;
     outline: none;
     cursor: text;
     caret-color: #ffffff;
+  }
+
+  /* daily-move direction triangle, to the RIGHT of the value (house rule);
+     a |move| >= 10% doubles it into a tight vertical stack */
+  .chg-tri {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    margin-left: 4px;
+    font-size: 6.5px;
+    line-height: 0.85;
+    vertical-align: 5.5px; /* optically centers the stack on the 13px digits */
+  }
+  .chg-tri.single {
+    display: inline;
+    font-size: 8px;
+    line-height: normal;
+    vertical-align: 1.5px;
   }
 
   .row-divider {
@@ -296,6 +315,64 @@
   /* invisible tap target over the Calibration section on the dashboard */
   #cal-link { position: absolute; cursor: pointer; }
   #cal-link:active { background: rgba(255,255,255,0.03); border-radius: 8px; }
+
+  /* ================= ACTIVITY (from Figma Post-MVP 106:804) =================
+     Full-screen page reached from the burger menu — same slide pattern as
+     #records-screen, content mapped onto the project's tokens. */
+  #activity-screen {
+    position: absolute; top: 12px; left: 12px; width: 397px; height: 852px;
+    background: #000; border-radius: 46px; z-index: 45; overflow: hidden;
+    display: flex; flex-direction: column;
+    transform: translateX(104%); visibility: hidden;
+    transition: transform 340ms cubic-bezier(0.32, 0.72, 0, 1), visibility 0s linear 340ms;
+  }
+  #activity-screen.open {
+    transform: translateX(0); visibility: visible;
+    transition: transform 340ms cubic-bezier(0.32, 0.72, 0, 1), visibility 0s linear 0s;
+  }
+  /* header — chevron left, "Exit" right, hairline bottom (Figma 106:806) */
+  .act-head {
+    flex: none; position: relative; height: 71px;
+    display: flex; align-items: center;
+    padding: 20px 30px 0 24px;
+    border-bottom: 1px solid #1c1c1c; background: #000;
+  }
+  .act-exit { margin-left: auto; font-size: 14px; color: #929292; letter-spacing: -0.28px; cursor: pointer; }
+  .act-exit:active { color: #565b5e; }
+  .act-body { flex: 1; overflow-y: auto; overflow-x: hidden; padding: 0 20px 56px; scrollbar-width: none; }
+  .act-body::-webkit-scrollbar { display: none; }
+  .act-title { margin: 44px 10px 8px 0; font-size: 22px; color: #fff; letter-spacing: -1.32px; text-align: right; line-height: 1; }
+  /* filter chips — flat rounded rectangles, single-select */
+  .act-filters { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 40px; }
+  .act-chip { font-size: 11px; letter-spacing: -0.1px; color: #929292; padding: 6px 12px;
+    border-radius: 7px; border: 1px solid #1c1c1c; cursor: pointer; user-select: none; }
+  .act-chip.on { color: #fff; background: #1c1c1c; }
+  .act-chip:active { color: #c7c7c7; }
+  /* calibration / research events carry the record page's seal gold as a dot */
+  .res-dot { display: inline-block; width: 4.65px; height: 4.65px; border-radius: 50%;
+    background: #C9A24B; margin-right: 8px; vertical-align: 2.5px; }
+  .act-empty { font-size: 13px; color: #565b5e; letter-spacing: -0.26px; padding: 8px 0 40px; }
+  .act-section { margin-bottom: 60px; }
+  .act-section:last-child { margin-bottom: 0; }
+  .act-sec-t { font-size: 14px; color: #fff; letter-spacing: -0.28px; padding-bottom: 15px; border-bottom: 1px solid #1c1c1c; }
+  .act-group { margin-top: 20px; }
+  .act-group + .act-group { margin-top: 60px; }
+  .act-date { font-size: 13px; color: #929292; letter-spacing: -0.26px; line-height: 1.5; margin-bottom: 20px; }
+  .act-row + .act-row { border-top: 1px solid #1c1c1c; margin-top: 13px; padding-top: 13px; }
+  .act-cols { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; }
+  /* the judgment behind a memo event — reference-style narrative line */
+  .act-why { margin-top: 9px; font-size: 12px; color: #929292; letter-spacing: -0.19px; line-height: 1.5; }
+  .act-conf { margin-top: 5px; font-size: 10px; color: #565b5e; letter-spacing: 0.1px; }
+  .act-count { margin: 0 10px 28px 0; text-align: right; font-size: 11px; color: #565b5e; letter-spacing: -0.1px; }
+  .act-l { min-width: 0; }
+  .act-nm { font-size: 14px; font-weight: 500; color: #fff; letter-spacing: -0.28px; line-height: 1.5; }
+  .act-nm .ty { font-weight: 500; color: #c7c7c7; }
+  .act-sub { font-size: 13px; color: #929292; letter-spacing: -0.26px; margin-top: 5px; }
+  .act-r { flex: none; text-align: right; }
+  .act-v1 { font-size: 14px; color: #fff; letter-spacing: -0.28px; line-height: 1.5; font-variant-numeric: tabular-nums; }
+  .act-v2 { font-size: 13px; color: #929292; letter-spacing: -0.26px; margin-top: 5px; font-variant-numeric: tabular-nums; }
+  /* cancelled / expired / skipped / failed rows read entirely muted */
+  .act-row.muted .act-nm, .act-row.muted .act-nm .ty, .act-row.muted .act-v1 { color: #929292; }
 
   /* ================= CONNECT TO AI (MCP flow, ported) =================
      Menu drawer + flow screens, scoped under #v-menu / #mcp-flow so nothing
@@ -540,34 +617,40 @@
       </div>
 
       <!-- ============ ACTIVITY TICKER 1 (severity order: red > orange > yellow > green) ============ -->
-      <div class="dot" style="left:16.1px; top:138.2px; width:4.65px; height:4.65px; background:#ff3533;"></div>
-      <div class="abs" style="left:26.8px; top:135px; font-size:10px; font-weight:500;">
-        Kill criteria 2 triggered: margin below 68%
+      <!-- urgent alert — a square-cornered card: red outline + faint red tint
+           (no corner radius — nothing else in the system is rounded) -->
+      <div class="abs" style="left:16.1px; top:143px; width:360.9px; height:70px; background:rgba(190,60,54,0.09); border:1px solid rgba(255,53,51,0.6); box-sizing:border-box;"></div>
+      <div class="abs" style="left:28.1px; top:155px; font-size:10px; font-weight:600; letter-spacing:0.2px; color:#ff3533;">Kill criteria met</div>
+      <div class="abs" style="left:28.1px; top:171px; width:336px; font-size:10px; font-weight:500; color:#ffffff;">
+        Margin below 68% for a second consecutive quarter
+      </div>
+      <div class="abs" style="left:28.1px; top:191px; font-size:10px; font-weight:500; color:#929292;">
+        <span style="color:#c7c7c7;">TSLA</span> <span style="color:#565b5e;">&middot;</span> <span class="num">9,840.00 CAD</span> position <span style="color:#565b5e;">&middot; 1h ago</span>
       </div>
 
-      <div class="dot" style="left:16.1px; top:169.2px; width:4.65px; height:4.65px; background:#fbc308;"></div>
-      <div class="abs" style="left:26.8px; top:166px; font-size:10px; font-weight:500;">
+      <div class="dot" style="left:16.1px; top:234.2px; width:4.65px; height:4.65px; background:#fbc308;"></div>
+      <div class="abs" style="left:26.8px; top:231px; font-size:10px; font-weight:500;">
         Earnings <span style="color:#929292;">(3)</span>
       </div>
-      <svg class="abs" style="left:88.8px; top:170px;" width="6" height="3" viewBox="0 0 6.70711 4.06066" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <svg class="abs" style="left:88.8px; top:235px;" width="6" height="3" viewBox="0 0 6.70711 4.06066" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M0.353553 0.353553L3.35355 3.35355L6.35355 0.353553" stroke="#C7C7C7"/>
       </svg>
-      <div class="abs" style="left:16.1px; top:182px; font-size:10px; font-weight:500; color:#929292;">BWEN</div>
-      <div class="abs" style="left:16.1px; top:198px; font-size:10px; font-weight:500; color:#929292;">MSFT</div>
-      <div class="abs" style="left:16.1px; top:214px; font-size:10px; font-weight:500; color:#929292;">TSLA</div>
+      <div class="abs" style="left:16.1px; top:247px; font-size:10px; font-weight:500; color:#929292;">BWEN</div>
+      <div class="abs" style="left:16.1px; top:263px; font-size:10px; font-weight:500; color:#929292;">MSFT</div>
+      <div class="abs" style="left:16.1px; top:279px; font-size:10px; font-weight:500; color:#929292;">TSLA</div>
 
-      <div class="dot" style="left:16.1px; top:248.2px; width:4.65px; height:4.65px; background:#fbc308;"></div>
-      <div class="abs" style="left:26.8px; top:245px; font-size:10px; font-weight:500;">
+      <div class="dot" style="left:16.1px; top:313.2px; width:4.65px; height:4.65px; background:#fbc308;"></div>
+      <div class="abs" style="left:26.8px; top:310px; font-size:10px; font-weight:500;">
         Contribution missed: no deposit this cycle <span style="color:#929292;">04.28.26</span>
       </div>
 
-      <div class="dot" style="left:16.1px; top:279.2px; width:4.65px; height:4.65px; background:#30d158;"></div>
-      <div class="abs" style="left:26.8px; top:276px; font-size:10px; font-weight:500;">
+      <div class="dot" style="left:16.1px; top:344.2px; width:4.65px; height:4.65px; background:#30d158;"></div>
+      <div class="abs" style="left:26.8px; top:341px; font-size:10px; font-weight:500;">
         BWEN Filled <span style="font-weight:500;">1000 @ 87.00</span> <span style="color:#929292;">05.06.26</span>
       </div>
 
-      <div class="dot" style="left:16.1px; top:310.2px; width:4.65px; height:4.65px; background:#30d158;"></div>
-      <div class="abs" style="left:26.8px; top:307px; font-size:10px; font-weight:500;">
+      <div class="dot" style="left:16.1px; top:375.2px; width:4.65px; height:4.65px; background:#30d158;"></div>
+      <div class="abs" style="left:26.8px; top:372px; font-size:10px; font-weight:500;">
         Contribution processed: $500 <span style="color:#929292;">05.06.26</span>
       </div>
 
@@ -713,6 +796,24 @@
     </div>
   </div>
 
+  <!-- ============ ACTIVITY (slides in over the dashboard) ============ -->
+  <div id="activity-screen">
+    <div class="dynamic-island"></div>
+    <div class="act-head">
+      <button class="rec-back" onclick="closeActivity()" aria-label="Back">
+        <svg width="11" height="19" viewBox="0 0 11 19" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M9.5 1.5L2 9.5L9.5 17.5" stroke="#C7C7C7" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+    </div>
+    <div class="act-body">
+      <div class="act-title">Activity</div>
+      <div class="act-count" id="act-count"></div>
+      <div class="act-filters" id="act-filters"></div>
+      <div id="act-list"></div>
+    </div>
+  </div>
+
   <!-- ══════════ CONNECT TO AI · menu drawer (over the dashboard) ══════════ -->
   <div id="v-menu">
     <div id="menu-scrim" onclick="closeMenu()"></div>
@@ -722,7 +823,7 @@
       </button>
       <div class="menu-items">
         <div class="menu-item" onclick="closeMenu()">Transfer Funds</div>
-        <div class="menu-item" onclick="closeMenu()">Activity</div>
+        <div class="menu-item" onclick="closeMenu(); openActivity()">Activity</div>
         <div class="menu-item" onclick="closeMenu()">Account</div>
         <div class="menu-item" onclick="closeMenu(); openMcp()">Connect to AI</div>
         <div class="menu-item" onclick="closeMenu()">Manual</div>
@@ -962,7 +1063,7 @@
     "Open Order": "#fdad00",
     "Reverse Split": "#fd6900",
     "Stock Split": "#fd6900",
-    "Investment Case": "#fd6900",
+    "Kill Criteria Met": "#fd0200",
     "52 Week High": "#ffffff",
     "52 Week Low": "#ffffff",
     "Delisted": "#fd0200",
@@ -971,33 +1072,62 @@
     "No Thesis/Kill Criteria": "#fbc308"
   };
 
+  // how long a watchlist item has been under review — "1y 3m 13d" style,
+  // computed from its Added date (MM.DD.YY) to today, zero units dropped
+  function sinceAddedLabel(added) {
+    const [m, d, y] = added.split('.').map(Number);
+    const from = new Date(2000 + y, m - 1, d);
+    const now = new Date();
+    let yy = now.getFullYear() - from.getFullYear();
+    let mm = now.getMonth() - from.getMonth();
+    let dd = now.getDate() - from.getDate();
+    if (dd < 0) { mm--; dd += new Date(now.getFullYear(), now.getMonth(), 0).getDate(); }
+    if (mm < 0) { yy--; mm += 12; }
+    const parts = [];
+    if (yy > 0) parts.push(yy + 'y');
+    if (mm > 0) parts.push(mm + 'm');
+    if (dd > 0 || !parts.length) parts.push(dd + 'd');
+    return parts.join(' ');
+  }
+
+  // direction triangle for a daily move — green up / red down, doubled into
+  // a vertical stack once the move reaches ±10%
+  function chgTriHTML(chg) {
+    const up = chg >= 0;
+    const g = up ? '▲' : '▼';
+    const col = up ? '#30d158' : '#ff3533';
+    return Math.abs(chg) >= 10
+      ? `<span class="chg-tri" style="color:${col};"><span>${g}</span><span style="margin-top:-2px;">${g}</span></span>`
+      : `<span class="chg-tri single" style="color:${col};">${g}</span>`;
+  };
+
   const positions = [
     // Treasury sleeve — cash-equivalents, listed first under their own headline
     { ticker: "CBIL.TO", weight: "8% WT", category: "Treasury", value: "9,850.00 CAD", pct: "+4.1%", price: "50.02 CAD", change: "+0.02%",
       desc: "", tags: [], treasury: true },
     { ticker: "SGOV", weight: "5% WT", category: "Treasury", value: "6,400.00 CAD", pct: "+5.0%", price: "100.68 USD", change: "+0.01%",
       desc: "", tags: [], treasury: true },
-    { ticker: "ORIO.TO", weight: "25% WT", category: "Emerging Compounder", value: "18,950.00 CAD", pct: "+42.6%", price: "87.60 CAD", change: "+7.8%",
+    { ticker: "ORIO.TO", weight: "25% WT", category: "Emerging Compounder", value: "18,950.00 CAD", pct: "+42.6%", price: "87.60 CAD", change: "+12.8%",
       desc: "Parent moat compounding; the NASDAQ listing re-rates it over 3–5 years.", tags: ["Earnings", "Reverse Split"] },
-    { ticker: "BWEN", weight: "25% WT", category: "Emerging Compounder", value: "12,950.00 CAD", pct: "+22.6%", price: "82.40 USD", change: "-2.8%",
+    { ticker: "BWEN", weight: "25% WT", category: "Emerging Compounder", value: "12,950.00 CAD", pct: "+22.6%", price: "82.40 USD", change: "-12.4%",
       desc: "Delisting risk — watching the appeal. No add until it clears.", tags: ["Delisted"] },
-    { ticker: "EOSCR", weight: "15% WT", category: "Emerging Compounder", value: "12,950.00 CAD", pct: "+22.6%", price: "82.40 USD", change: "-2.8%",
+    { ticker: "EOSCR", weight: "15% WT", category: "Emerging Compounder", value: "12,950.00 CAD", pct: "+22.6%", price: "82.40 USD", change: "-11.6%",
       desc: "", tags: ["No Thesis/Kill Criteria"] },
-    { ticker: "BWEN", weight: "25% WT", category: "Emerging Compounder", value: "12,950.00 CAD", pct: "+22.6%", price: "82.40 USD", change: "-2.8%",
+    { ticker: "BWEN", weight: "25% WT", category: "Emerging Compounder", value: "12,950.00 CAD", pct: "+22.6%", price: "82.40 USD", change: "-12.4%",
       desc: "Delisting risk — watching the appeal. No add until it clears.", tags: ["Delisted"] },
     { ticker: "AMD", weight: "25% WT", category: "Emerging Compounder", value: "12,950.00 CAD", pct: "+22.6%", price: "82.40 USD", change: "-2.8%",
       desc: "Trimmed into strength — revisit after the next print.", tags: ["Order Complete"] },
     { ticker: "MSFT", weight: "8% WT", category: "Core Compounder", value: "22,150.00 CAD", pct: "+18.4%", price: "410.20 USD", change: "+1.2%",
       desc: "Cloud and AI capex compounding; sizing up on pullbacks.", tags: ["Earnings"] },
-    { ticker: "TSLA", weight: "6% WT", category: "Special Situation", value: "9,840.00 CAD", pct: "-8.1%", price: "245.60 USD", change: "-3.4%",
-      desc: "Delivery miss last quarter; watching margin trend.", tags: ["No Thesis/Kill Criteria", "52 Week Low"] },
+    { ticker: "TSLA", weight: "6% WT", category: "Special Situation", value: "9,840.00 CAD", pct: "-8.1%", price: "245.60 USD", change: "-10.8%",
+      desc: "Delivery miss last quarter; watching margin trend.", tags: ["Kill Criteria Met", "52 Week Low"] },
     { ticker: "NVDA", weight: "12% WT", category: "Core Compounder", value: "31,200.00 CAD", pct: "+64.2%", price: "118.30 USD", change: "+2.9%",
       desc: "AI infrastructure buildout still early; core position.", tags: ["52 Week High"] },
     { ticker: "GOOGL", weight: "7% WT", category: "Core Compounder", value: "15,600.00 CAD", pct: "+9.7%", price: "172.40 USD", change: "+0.6%",
       desc: "", tags: [] },
     { ticker: "AAPL", weight: "5% WT", category: "Index Anchor", value: "11,300.00 CAD", pct: "+4.2%", price: "228.90 USD", change: "-0.3%",
       desc: "", tags: [] },
-    { ticker: "SHOP.TO", weight: "4% WT", category: "Emerging Compounder", value: "8,450.00 CAD", pct: "+31.5%", price: "118.75 CAD", change: "+5.1%",
+    { ticker: "SHOP.TO", weight: "4% WT", category: "Emerging Compounder", value: "8,450.00 CAD", pct: "+31.5%", price: "118.75 CAD", change: "+14.2%",
       desc: "Merchant GMV reacceleration; margin expansion story intact.", tags: ["Stock Split", "Open Order"] },
     { ticker: "ENB.TO", weight: "3% WT", category: "Index Anchor", value: "6,200.00 CAD", pct: "+6.8%", price: "58.30 CAD", change: "+0.4%",
       desc: "", tags: [] },
@@ -1008,9 +1138,9 @@
     { ticker: "CP.TO", weight: "3% WT", category: "Index Anchor", value: "5,540.00 CAD", pct: "+7.3%", price: "112.60 CAD", change: "-0.2%",
       desc: "", tags: [] },
     { ticker: "ATD.TO", weight: "3% WT", category: "Core Compounder", value: "5,120.00 CAD", pct: "+11.2%", price: "78.40 CAD", change: "+0.5%",
-      desc: "", tags: ["Investment Case"] },
+      desc: "", tags: [] },
     { ticker: "TD.TO", weight: "2% WT", category: "Index Anchor", value: "4,300.00 CAD", pct: "-3.6%", price: "82.10 CAD", change: "-0.7%",
-      desc: "Litigation overhang capping re-rating near term.", tags: ["No Thesis/Kill Criteria", "Investment Case"] },
+      desc: "Litigation overhang capping re-rating near term.", tags: ["No Thesis/Kill Criteria"] },
     { ticker: "RY.TO", weight: "2% WT", category: "Index Anchor", value: "4,150.00 CAD", pct: "+5.9%", price: "148.30 CAD", change: "+0.3%",
       desc: "", tags: [] },
     { ticker: "BNS.TO", weight: "2% WT", category: "Turnaround Bet", value: "3,880.00 CAD", pct: "-6.7%", price: "62.90 CAD", change: "-1.8%",
@@ -1033,19 +1163,37 @@
   // pp-vs-S&P = since − sp.
   // Watchlist rows carry only event tags (Earnings / 52 Week High) — no
   // investment case, thesis or order tags, since nothing is held. `note` is
-  // the user's own one-liner, shown above the tags only when non-empty —
-  // rows without a note stay two lines tall.
+  // the user's own one-liner, shown only when non-empty. Rows where the user
+  // already wrote a memo carry `cat` (the memo classification, shown on the
+  // Added line) and optionally `thesis` (shown desc-style above the note) —
+  // stack order: thesis → note → tags; rows with none stay two lines tall.
   const reviews = [
     { ticker: "PLTR",   price: "167.80 USD",   change: "+2.1%", added: "02.05.26", since: 18.4, sp: 6.2,
       tags: ["Earnings"], note: "Wait for a pullback below 150 before sizing an entry." },
     { ticker: "UBER",   price: "88.35 USD",    change: "-0.8%", added: "11.21.25", since: 7.9,  sp: 9.1,
       tags: [], note: "" },
-    { ticker: "NBIS",   price: "61.42 USD",    change: "+4.6%", added: "03.14.26", since: 32.7, sp: 4.0,
+    { ticker: "NBIS",   price: "61.42 USD",    change: "+16.4%", added: "03.14.26", since: 32.7, sp: 4.0,
       tags: ["Earnings", "52 Week High"], note: null },
     { ticker: "TOI.TO", price: "112.90 CAD",   change: "+0.3%", added: "08.02.25", since: -6.1, sp: 12.8,
       tags: [], note: "Lagging the index — revisit the case after Q3 results." },
     { ticker: "ASML",   price: "1,043.20 USD", change: "-1.4%", added: "12.10.25", since: 11.2, sp: 8.7,
-      tags: [], note: null }
+      tags: [], note: null },
+    // — memo already written: classification + thesis scenarios —
+    { ticker: "CRWD",   price: "412.66 USD",   change: "+1.8%", added: "01.12.26", since: 9.4,  sp: 4.1,
+      cat: "Emerging Compounder", thesis: "Security spend consolidating onto platforms; watching net-new ARR.",
+      tags: ["Earnings"], note: null },
+    { ticker: "ISRG",   price: "512.40 USD",   change: "-0.6%", added: "10.03.25", since: 14.2, sp: 10.5,
+      cat: "Core Compounder", thesis: "Procedure volumes compound through cycles; robotics moat intact.",
+      tags: [], note: "Enter on the next 10% drawdown." },
+    { ticker: "MELI",   price: "1,842.00 USD", change: "+2.4%", added: "04.20.26", since: 21.7, sp: 3.2,
+      cat: "Emerging Compounder", thesis: "LatAm commerce and fintech flywheel still under-monetized.",
+      tags: [], note: null },
+    { ticker: "CNR.TO", price: "148.35 CAD",   change: "+0.2%", added: "07.15.25", since: 4.8,  sp: 11.9,
+      cat: "Index Anchor", thesis: null,
+      tags: [], note: null },
+    { ticker: "TSM",    price: "188.90 USD",   change: "-1.2%", added: "02.27.26", since: 12.6, sp: 5.0,
+      cat: "Situational Mispricing", thesis: "Geopolitical discount overstates fab-concentration risk.",
+      tags: ["52 Week High"], note: null }
   ];
 
   const ROW_GAP = 20;
@@ -1060,8 +1208,9 @@
 
   const listEl = document.getElementById('positions-list');
   const frameEl = document.querySelector('.frame');
-  // Extra breathing room above "Total Value" (between it and the alert feed)
-  const TOP_SPACING_EXTRA = 32;
+  // Extra breathing room above "Total Value" (between it and the alert feed):
+  // 32 of air + 65 for the urgent-alert card's added height in the feed
+  const TOP_SPACING_EXTRA = 97;
   // 'market' | 'pre' | 'after' — pre/after freeze daily moves, show the
   // extended-session line (sunrise / moon) and turn the market dots red.
   let MARKET_STATE = 'market';
@@ -1157,7 +1306,7 @@
       <div id="pos-value-${i}" class="abs" style="left:167px; top:${top}px; font-size:13px; font-weight:300; letter-spacing:-0.28px; text-align:right; width:150px;">${r.value}</div>
       <div id="pos-pct-${i}" class="abs" style="left:327px; top:${top}px; font-size:13px; color:#929292; letter-spacing:-0.24px; text-align:right; width:50px;">${r.pct}</div>
       <div id="pos-price-${i}" class="abs" style="left:167px; top:${top + 20.45}px; font-size:13px; font-weight:300; letter-spacing:-0.28px; text-align:right; width:150px;">${r.price}</div>
-      <div id="pos-change-${i}" class="abs" style="left:327px; top:${top + 20.45}px; font-size:13px; font-weight:${changePositive ? 700 : 400}; color:${changePositive ? '#ffffff' : '#929292'}; letter-spacing:-0.24px; text-align:right; width:50px;">${r.change}</div>
+      <div id="pos-change-${i}" class="abs" style="left:307px; top:${top + 20.45}px; font-size:13px; color:${changePositive ? '#ffffff' : '#929292'}; letter-spacing:-0.24px; text-align:right; width:70px;"><span class="chg-num">${r.change}</span>${chgTriHTML(parsePct(r.change))}</div>
       ${extended && !r.treasury ? `<div class="abs" style="left:167px; top:${top + 41.9}px; width:210px; text-align:right; font-size:12px; color:#ffffff; letter-spacing:-0.24px; font-variant-numeric:tabular-nums;">${extIcon}<span id="pos-ext-${i}">${ahTxt}</span></div>` : ''}
       ${hasDesc ? `<div class="abs" style="left:16px; top:${top + descTop}px; font-size:12px; color:#c7c7c7; letter-spacing:-0.19px; max-width:361px; overflow:hidden; text-overflow:ellipsis;">${r.desc}</div>` : ''}
       ${hasTags ? `<div class="tags-row" style="left:16px; top:${top + tagsTop}px;">${r.tags.map(label => `<span class="tag"><span class="tag-dot" style="background:${TAG_COLORS[label]};"></span>${label}</span>`).join('')}</div>` : ''}
@@ -1188,23 +1337,30 @@
       const sTxt = (r.since >= 0 ? '+' : '−') + Math.abs(r.since).toFixed(1) + '%';
       const sTri = r.since >= 0 ? '▲' : '▼';
       const sCol = r.since >= 0 ? '#30d158' : '#ff3533';
-      // same section rhythm as position rows: header → note → tags → divider,
-      // each block skipped (with its gap) when absent. A row with no saved
-      // note shows nothing — the row stays two lines tall.
+      // same section rhythm as position rows: header → thesis → note → tags →
+      // divider, each block skipped (with its gap) when absent. A row with
+      // none of them stays two lines tall.
       const hasTags = r.tags && r.tags.length > 0;
       const hasNote = !!(r.note && r.note.trim());
-      let localCursor = HEADER_H;
-      let tagsTop = null, noteTop = null;
+      const hasThesis = !!(r.thesis && r.thesis.length);
+      // rows with a memo get a third header line: L2 is the classification
+      // alone, the Added date + age move down to their own line
+      const hasCat = !!r.cat;
+      let localCursor = HEADER_H + (hasCat ? 18.5 : 0);
+      let tagsTop = null, noteTop = null, thesisTop = null;
+      if (hasThesis) { localCursor += SECTION_GAP; thesisTop = localCursor; localCursor += DESC_H; }
       if (hasNote) { localCursor += SECTION_GAP; noteTop = localCursor; localCursor += DESC_H; }
       if (hasTags) { localCursor += SECTION_GAP; tagsTop = localCursor; localCursor += TAGS_H; }
       localCursor += SECTION_GAP;
       const rowHeight = localCursor;
       html += `
         <div class="abs" style="left:16px; top:${top + 0.93}px; font-size:13px;"><span style="font-weight:500; text-transform:uppercase;">${r.ticker}</span><span id="rev-pp-${i}" style="font-size:11.5px; color:#ffffff; margin-left:7px; letter-spacing:-0.1px; font-variant-numeric:tabular-nums;"><span class="pp-num">${ppTxt}</span><span class="pp-tri" style="font-size:8px; vertical-align:1.5px; color:${ppCol}; margin-left:4px;">${ppTri}</span></span></div>
-        <div class="abs" style="left:16px; top:${top + 21.95}px; font-size:10px; color:#929292;">Added <span class="num" style="color:#c7c7c7; margin-left:2px;">${r.added}</span></div>
+        <div class="abs" style="left:16px; top:${top + 21.95}px; font-size:10px; color:#929292;">${hasCat ? r.cat : `Added <span class="num" style="color:#c7c7c7; margin-left:2px;">${r.added}</span><span class="num" style="color:#565b5e; margin-left:6px;">${sinceAddedLabel(r.added)}</span>`}</div>
+        ${hasCat ? `<div class="abs" style="left:16px; top:${top + 40.45}px; font-size:10px; color:#929292;">Added <span class="num" style="color:#c7c7c7; margin-left:2px;">${r.added}</span><span class="num" style="color:#565b5e; margin-left:6px;">${sinceAddedLabel(r.added)}</span></div>` : ''}
         <div id="rev-price-${i}" class="abs" style="left:167px; top:${top}px; font-size:13px; font-weight:300; letter-spacing:-0.28px; text-align:right; width:150px;">${r.price}</div>
-        <div id="rev-change-${i}" class="abs" style="left:327px; top:${top}px; font-size:13px; font-weight:${changePositive ? 700 : 400}; color:${changePositive ? '#ffffff' : '#929292'}; letter-spacing:-0.24px; text-align:right; width:50px;">${r.change}</div>
+        <div id="rev-change-${i}" class="abs" style="left:307px; top:${top}px; font-size:13px; color:${changePositive ? '#ffffff' : '#929292'}; letter-spacing:-0.24px; text-align:right; width:70px;"><span class="chg-num">${r.change}</span>${chgTriHTML(parsePct(r.change))}</div>
         <div class="abs" style="left:167px; top:${top + 21.2}px; width:210px; text-align:right; font-size:11.5px; letter-spacing:-0.22px; font-variant-numeric:tabular-nums;"><span id="rev-since-${i}" style="color:#ffffff;">${sTxt}</span> <span style="color:#929292; font-size:10px;">since added</span><span id="rev-stri-${i}" style="font-size:8px; vertical-align:1px; color:${sCol}; margin-left:4px;">${sTri}</span></div>
+        ${hasThesis ? `<div class="abs" style="left:16px; top:${top + thesisTop}px; font-size:12px; color:#c7c7c7; letter-spacing:-0.19px; max-width:361px; overflow:hidden; text-overflow:ellipsis;">${r.thesis}</div>` : ''}
         ${hasNote ? `<div class="rev-note abs" contenteditable="true" spellcheck="false" style="left:16px; top:${top + noteTop}px;" oninput="reviews[${i}].note=this.textContent" onblur="if(!this.textContent.trim()){reviews[${i}].note='';buildPositions();}" onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur();}">${r.note}</div>` : ''}
         ${hasTags ? `<div class="tags-row" style="left:16px; top:${top + tagsTop}px;">${r.tags.map(label => `<span class="tag"><span class="tag-dot" style="background:${TAG_COLORS[label]};"></span>${label}</span>`).join('')}</div>` : ''}
         <div class="row-divider" style="top:${top + rowHeight}px;"></div>
@@ -1498,8 +1654,10 @@
       row.change += deltaFrac * 100;
       row.change += (row.changeBase - row.change) * 0.05;
       const changePositive = row.change >= 0;
-      row.changeEl.textContent = fmtPct(row.change);
-      row.changeEl.style.fontWeight = changePositive ? '700' : '400';
+      const numEl = row.changeEl.querySelector('.chg-num');
+      if (numEl) numEl.textContent = fmtPct(row.change);
+      const triEl = row.changeEl.querySelector('.chg-tri');
+      if (triEl) triEl.outerHTML = chgTriHTML(row.change);
       flash(row.changeEl, up, changePositive ? '#ffffff' : '#929292');
     } else if (row.extEl) {
       // ...while pre/post market, the session line is the live number
@@ -1536,8 +1694,10 @@
       row.change += deltaFrac * 100;
       row.change += (row.changeBase - row.change) * 0.05;
       const cp = row.change >= 0;
-      row.changeEl.textContent = fmtPct(row.change);
-      row.changeEl.style.fontWeight = cp ? '700' : '400';
+      const numEl = row.changeEl.querySelector('.chg-num');
+      if (numEl) numEl.textContent = fmtPct(row.change);
+      const triEl = row.changeEl.querySelector('.chg-tri');
+      if (triEl) triEl.outerHTML = chgTriHTML(row.change);
       row.changeEl.style.color = cp ? '#ffffff' : '#929292';
     }
     row.sinceEl.textContent = fmtPct(row.since);
@@ -1722,6 +1882,195 @@
     document.getElementById('records-screen').classList.remove('open');
   }
   renderRecords();
+
+  // ══════════ ACTIVITY PAGE (Figma Post-MVP 106:804) ══════════
+  // Upcoming / Pending / Past, grouped by date. `ty` is the order-type suffix
+  // rendered muted next to the action; `muted: true` greys the whole row
+  // (cancelled / expired / skipped / failed). Filter facets: `k` is the kind
+  // (buy / sell / cash / res — res = memo events, rendered with the seal-gold
+  // dot) and `m` is who manages it (M / S). Memo rows mirror the memo's own
+  // fields (classification / role / thesis / kill criteria / prediction) and
+  // spell out partial updates: the sub says what changed, r2 what didn't.
+  const ACTIVITY = [
+    { section: 'Upcoming', groups: [
+      { date: 'Dec 15, 2026', rows: [
+        { t: '2 Scheduled Investments', sub: 'Managed', r1: '350.00 CAD', k: 'cash', m: 'M' },
+        { t: 'Prediction Resolves', ty: 'AVGO', sub: '', r1: 'At horizon', r2: '55% of 18%/yr · 3 years', k: 'res', m: 'S' }
+      ]}
+    ]},
+    { section: 'Pending', groups: [
+      { date: 'Dec 8, 2025', rows: [
+        { t: 'Withdrawal', sub: 'Retire a Multi-Millionaire · TFSA · Managed', r1: '−100.00 CAD', k: 'cash', m: 'M' },
+        { t: 'Transfer-In (Cash)', sub: 'RRSP · Self-Directed', r1: '1,859.28 CAD', k: 'cash', m: 'S' }
+      ]},
+      { date: 'Dec 7, 2025', rows: [
+        { t: 'Buy',  ty: 'Market · ATZ',     sub: 'TFSA', r1: 'Accepted', r2: '53 shares', k: 'buy', m: 'S' },
+        { t: 'Buy',  ty: 'Stop Limit · ATZ', sub: 'TFSA', r1: 'Queued',   r2: '3 shares x 10.00 CAD', k: 'buy', m: 'S' },
+        { t: 'Buy',  ty: 'Limit · ATZ',      sub: 'TFSA', r1: 'Queued',   r2: '3 shares x 10.00 CAD', k: 'buy', m: 'S' },
+        { t: 'Sell', ty: 'Market · ATZ',     sub: 'TFSA', r1: 'Accepted', r2: '75 shares', k: 'sell', m: 'S' },
+        { t: 'Sell', ty: 'Market · ATZ',     sub: 'TFSA', r1: 'Queued',   r2: '2 shares', k: 'sell', m: 'S' },
+        { t: 'Sell', ty: 'Stop Limit · ATZ', sub: 'TFSA', r1: 'Queued',   r2: '9 shares x 10.00 CAD', k: 'sell', m: 'S' },
+        { t: 'Deposit', sub: 'TFSA · Self-Directed', r1: '150.00 CAD', k: 'cash', m: 'S' },
+        { t: 'Deposit', sub: 'Retire a Multi-Millionaire · TFSA · Managed', r1: '310.09 CAD', k: 'cash', m: 'M' }
+      ]}
+    ]},
+    { section: 'Past', groups: [
+      { date: 'Dec 5, 2025', rows: [
+        { t: 'Reviewed', ty: 'TSLA', sub: '', r1: 'No action', k: 'res', m: 'S',
+          why: 'Checked both kill criteria explicitly: neither has triggered. Holding through the drawdown — this is exactly the scenario the criteria exist to test.',
+          conf: 'Low confidence' },
+        { t: 'Reviewed', ty: 'NVDA', sub: '', r1: 'No action', k: 'res', m: 'S',
+          why: 'Position at 12% of book from appreciation, not new buying. Considered trimming for concentration — still the highest-conviction name.',
+          conf: 'High confidence' }
+      ]},
+      { date: 'Dec 1, 2025', rows: [
+        { t: 'Prediction', ty: 'META', sub: 'probability only', r1: '62% → 68%', r2: 'target · horizon unchanged', k: 'res', m: 'S',
+          why: 'Reels monetization inflecting faster than modeled — raising the odds, not the target.',
+          conf: 'High confidence' },
+        { t: 'Thesis', ty: 'SHOP.TO', sub: 'thesis only', r1: 'Revised', r2: 'prediction unchanged', k: 'res', m: 'S',
+          why: 'Rewritten around take-rate expansion rather than GMV growth alone.' },
+        { t: 'TSLA Dividend',    sub: 'Non-registered · Self-Directed', r1: '10.00 CAD', k: 'cash', m: 'S' },
+        { t: 'Referral Credits', sub: 'TFSA · Managed',                 r1: '1,859.28 CAD', k: 'cash', m: 'M' }
+      ]},
+      { date: 'Nov 24, 2025', rows: [
+        { t: 'Role', ty: 'NVDA', sub: 'role only', r1: 'Starter → Core', r2: 'classification unchanged', k: 'res', m: 'S',
+          why: 'Sized up after two quarters of thesis confirmation.' },
+        { t: 'Membership Fee', sub: 'Non-registered · Self-Directed', r1: '-15.00 CAD', k: 'cash', m: 'S' },
+        { t: 'Deposit', sub: 'Retire a Multi-Millionaire · TFSA · Managed', r1: 'Skipped', r2: '310.09 CAD', muted: true, k: 'cash', m: 'M' }
+      ]},
+      { date: 'Nov 17, 2025', rows: [
+        { t: 'Kill Criteria', ty: 'TSLA', sub: 'kill criteria only', r1: '2 criteria', r2: 'margin · deliveries', k: 'res', m: 'S',
+          why: 'Margin floor and delivery-growth floor made explicit and testable.' },
+        { t: 'Deposit',    sub: 'Non-registered · Self-Directed', r1: '2,000.00 CAD', k: 'cash', m: 'S' },
+        { t: 'Withdrawal', sub: 'Retire a Multi-Millionaire · TFSA · Managed', r1: '- 75.00 CAD', k: 'cash', m: 'M' }
+      ]},
+      { date: 'Nov 10, 2025', rows: [
+        { t: 'Classification', ty: 'SHOP.TO', sub: 'classification only', r1: 'Emerging → Compounder', r2: 'role unchanged', k: 'res', m: 'S',
+          why: 'Graduated — the compounding engine is proven, no longer emerging.' },
+        { t: 'Prediction', ty: 'AMD', sub: 'horizon only', r1: '3 years → 5+ years', r2: 'probability · target unchanged', k: 'res', m: 'S',
+          why: 'Thesis intact but timing pushed out — extending the runway, not the claim.',
+          conf: 'Medium confidence' },
+        { t: 'Buy',  ty: 'Limit · Hood',     sub: 'TFSA', r1: 'Cancelled', r2: '50 shares x 10.00 CAD', muted: true, k: 'buy', m: 'S' },
+        { t: 'Sell', ty: 'Market · ATZ.TO',  sub: 'TFSA', r1: 'Expired',   r2: '40 shares',             muted: true, k: 'sell', m: 'S' }
+      ]},
+      { date: 'Nov 3, 2025', rows: [
+        { t: 'Memo Written', ty: 'CSU.TO', sub: 'all fields', r1: 'Compounder · Core', r2: '60% of 20%/yr · 5+ years', k: 'res', m: 'S',
+          why: 'Initial underwrite — serial-acquisition flywheel with disciplined hurdle rates.',
+          conf: 'High confidence' },
+        { t: 'Transfer-In (Position)', sub: 'RRSP · Self-Directed', r1: '4,200.00 CAD', r2: '40 shares', k: 'cash', m: 'S' }
+      ]},
+      { date: 'Oct 27, 2025', rows: [
+        { t: 'Deposit', sub: 'TFSA · Self-Directed', r1: '50.00 CAD', k: 'cash', m: 'S' },
+        { t: 'Withdrawal', sub: 'Retire a Multi-Millionaire · TFSA · Managed', r1: 'Failed', r2: '- 75.00 CAD', muted: true, k: 'cash', m: 'M' },
+        { t: 'Deposit', sub: 'TFSA · Self-Directed', r1: '15.00 CAD', k: 'cash', m: 'S' },
+        { t: 'Buy',  ty: 'Market',     sub: 'TFSA',           r1: '230.00 CAD', r2: '23 shares x 10.00 CAD', k: 'buy', m: 'S' },
+        { t: 'Buy',  ty: 'Market',     sub: 'Non-Registered', r1: 'Expired',    r2: '23 shares',             muted: true, k: 'buy', m: 'S' },
+        { t: 'Buy',  ty: 'Market',     sub: 'RRSP',           r1: 'Cancelled',  r2: '23 shares',             muted: true, k: 'buy', m: 'S' },
+        { t: 'Buy',  ty: 'Limit',      sub: 'TFSA',           r1: '350.00 CAD', r2: '35 shares x 10.00 CAD', k: 'buy', m: 'S' },
+        { t: 'Buy',  ty: 'Limit',      sub: 'TFSA',           r1: 'Cancelled',  r2: '23 shares x 10.00 CAD', muted: true, k: 'buy', m: 'S' },
+        { t: 'Buy',  ty: 'Limit',      sub: 'TFSA',           r1: 'Expired',    r2: '23 shares x 10.00 CAD', muted: true, k: 'buy', m: 'S' },
+        { t: 'Buy',  ty: 'Stop Limit', sub: 'Non-Registered', r1: '500.00 CAD', r2: '50 shares x 10.00 CAD', k: 'buy', m: 'S' },
+        { t: 'Buy',  ty: 'Stop Limit', sub: 'RRSP',           r1: 'Cancelled',  r2: '23 shares x 10.00 CAD', muted: true, k: 'buy', m: 'S' },
+        { t: 'Buy',  ty: 'Stop Limit', sub: 'RRSP',           r1: 'Expired',    r2: '23 shares x 10.00 CAD', muted: true, k: 'buy', m: 'S' },
+        { t: 'Sell', ty: 'Market',     sub: 'TFSA',           r1: '400.00 CAD', r2: '40 shares x 10.00 CAD', k: 'sell', m: 'S' },
+        { t: 'Sell', ty: 'Market',     sub: 'TFSA',           r1: 'Expired',    r2: '15 shares',             muted: true, k: 'sell', m: 'S' },
+        { t: 'Sell', ty: 'Market',     sub: 'TFSA',           r1: '230.00 CAD', r2: '23 shares x 10.00 CAD', k: 'sell', m: 'S' },
+        { t: 'Sell', ty: 'Limit',      sub: 'TFSA',           r1: 'Cancelled',  r2: '60 shares x 10.00 CAD', muted: true, k: 'sell', m: 'S' },
+        { t: 'Sell', ty: 'Limit',      sub: 'TFSA',           r1: 'Expired',    r2: '60 shares x 10.00 CAD', muted: true, k: 'sell', m: 'S' },
+        { t: 'Sell', ty: 'Stop Limit', sub: 'TFSA',           r1: '230.00 CAD', r2: '23 shares x 10.00 CAD', k: 'sell', m: 'S' },
+        { t: 'Sell', ty: 'Stop Limit', sub: 'RRSP',           r1: 'Cancelled',  r2: '23 shares x 10.00 CAD', muted: true, k: 'sell', m: 'S' },
+        { t: 'Sell', ty: 'Stop Limit', sub: 'Non-Registered', r1: 'Expired',    r2: '44 shares x 10.00 CAD', muted: true, k: 'sell', m: 'S' }
+      ]}
+    ]}
+  ];
+
+  // multi-select filter over two facets: management (Managed / Self-Directed)
+  // and kind (Buys / Sells / Deposits / Withdrawals / Memos). Selections in
+  // the same facet OR together; across facets they AND ("Managed" +
+  // "Deposits" = managed deposits). Empty selection = All.
+  let ACT_SEL = new Set();
+  const ACT_FILTERS = [
+    ['all', 'All'], ['managed', 'Managed'], ['selfdir', 'Self-Directed'],
+    ['buy', 'Buys'], ['sell', 'Sells'], ['dep', 'Deposits'], ['wd', 'Withdrawals'],
+    ['research', 'Memos']
+  ];
+  const ACT_MGMT_KEYS = ['managed', 'selfdir'];
+  // deposits and withdrawals live inside the broader `cash` kind — derive the
+  // finer kind from the row's action name
+  function actKind(r) {
+    if (r.k === 'cash') {
+      if (/^(Deposit|2 Scheduled)/.test(r.t)) return 'dep';
+      if (/^Withdrawal/.test(r.t)) return 'wd';
+    }
+    return r.k;
+  }
+  function actMatch(r) {
+    if (!ACT_SEL.size) return true;
+    const mgmt = [...ACT_SEL].filter(f => ACT_MGMT_KEYS.includes(f));
+    const kind = [...ACT_SEL].filter(f => !ACT_MGMT_KEYS.includes(f));
+    const mgmtOk = !mgmt.length || mgmt.some(f =>
+      (f === 'managed' && r.m === 'M') || (f === 'selfdir' && r.m === 'S'));
+    const k = actKind(r);
+    const kindOk = !kind.length || kind.some(f =>
+      (f === 'buy' && k === 'buy') || (f === 'sell' && k === 'sell') ||
+      (f === 'dep' && k === 'dep') || (f === 'wd' && k === 'wd') ||
+      (f === 'research' && k === 'res'));
+    return mgmtOk && kindOk;
+  }
+  function setActFilter(f) {
+    if (f === 'all') ACT_SEL.clear();
+    else if (ACT_SEL.has(f)) ACT_SEL.delete(f);
+    else ACT_SEL.add(f);
+    renderActivity();
+  }
+  function renderActivity() {
+    document.getElementById('act-filters').innerHTML = ACT_FILTERS.map(([k, l]) => {
+      const on = k === 'all' ? !ACT_SEL.size : ACT_SEL.has(k);
+      return `<span class="act-chip${on ? ' on' : ''}" onclick="setActFilter('${k}')">${l}</span>`;
+    }).join('');
+    let shown = 0;
+    const html = ACTIVITY.map(sec => {
+      const groups = sec.groups
+        .map(g => ({ date: g.date, rows: g.rows.filter(actMatch) }))
+        .filter(g => g.rows.length);
+      if (!groups.length) return '';
+      return `
+      <div class="act-section">
+        <div class="act-sec-t">${sec.section}</div>
+        ${groups.map(g => `
+          <div class="act-group">
+            <div class="act-date">${g.date}</div>
+            ${g.rows.map(r => { shown++; return `
+              <div class="act-row${r.muted ? ' muted' : ''}">
+                <div class="act-cols">
+                  <div class="act-l">
+                    <div class="act-nm">${r.k === 'res' ? '<span class="res-dot"></span>' : ''}${r.t}${r.ty ? `<span class="ty"> · ${r.ty}</span>` : ''}</div>
+                    ${r.sub ? `<div class="act-sub">${r.sub}</div>` : ''}
+                  </div>
+                  <div class="act-r">
+                    <div class="act-v1">${r.r1}</div>
+                    ${r.r2 ? `<div class="act-v2">${r.r2}</div>` : ''}
+                  </div>
+                </div>
+                ${r.why ? `<div class="act-why">${r.why}</div>` : ''}
+                ${r.conf ? `<div class="act-conf">${r.conf}</div>` : ''}
+              </div>`; }).join('')}
+          </div>`).join('')}
+      </div>`;
+    }).join('');
+    document.getElementById('act-count').textContent = shown + (shown === 1 ? ' record' : ' records');
+    document.getElementById('act-list').innerHTML =
+      html || '<div class="act-empty">No activity matches this filter.</div>';
+  }
+  function openActivity() {
+    renderActivity();
+    const b = document.querySelector('#activity-screen .act-body');
+    if (b) b.scrollTop = 0;
+    document.getElementById('activity-screen').classList.add('open');
+  }
+  function closeActivity() {
+    document.getElementById('activity-screen').classList.remove('open');
+  }
 
   // ══════════ S&P 500 COMPARISON CARD + CALIBRATION FAN ══════════
   // Ported from main-dashboard-states: seeded mulberry32/gaussian noise,
