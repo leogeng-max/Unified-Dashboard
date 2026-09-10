@@ -129,21 +129,17 @@
   }
 
   /* daily-move direction triangle, to the RIGHT of the value (house rule);
-     a |move| >= 10% doubles it into a tight vertical stack */
+     a |move| >= 10% upgrades it to a bigger, fuller triangle */
   .chg-tri {
-    display: inline-flex;
-    flex-direction: column;
-    align-items: center;
-    margin-left: 4px;
-    font-size: 6.5px;
-    line-height: 0.85;
-    vertical-align: 5.5px; /* optically centers the stack on the 13px digits */
-  }
-  .chg-tri.single {
     display: inline;
+    margin-left: 4px;
     font-size: 8px;
     line-height: normal;
     vertical-align: 1.5px;
+  }
+  .chg-tri.big {
+    margin-left: 3px;
+    vertical-align: -0.5px;
   }
 
   .row-divider {
@@ -1090,15 +1086,18 @@
     return parts.join(' ');
   }
 
-  // direction triangle for a daily move — green up / red down, doubled into
-  // a vertical stack once the move reaches ±10%
+  // direction marker for a daily move — green up / red down. Ordinary moves
+  // keep the small solid triangle; a |move| >= 10% upgrades it to an arrow
+  // whose head is the same solid triangle, with a shaft line behind it.
   function chgTriHTML(chg) {
     const up = chg >= 0;
-    const g = up ? '▲' : '▼';
     const col = up ? '#30d158' : '#ff3533';
-    return Math.abs(chg) >= 10
-      ? `<span class="chg-tri" style="color:${col};"><span>${g}</span><span style="margin-top:-2px;">${g}</span></span>`
-      : `<span class="chg-tri single" style="color:${col};">${g}</span>`;
+    if (Math.abs(chg) >= 10) {
+      const head  = up ? 'M4.5 0.4L8.6 5.3H0.4Z' : 'M4.5 10.6L0.4 5.7H8.6Z';
+      const shaft = up ? 'M4.5 5.3V10.4' : 'M4.5 5.7V0.6';
+      return `<svg class="chg-tri big" width="9" height="11" viewBox="0 0 9 11" fill="none"><path d="${head}" fill="${col}"/><path d="${shaft}" stroke="${col}" stroke-width="1.7"/></svg>`;
+    }
+    return `<span class="chg-tri" style="color:${col};">${up ? '▲' : '▼'}</span>`;
   };
 
   const positions = [
@@ -1303,9 +1302,9 @@
     html += `
       <div class="abs" style="left:16px; top:${top + 0.93}px; font-size:13px;"><span style="font-weight:500; text-transform:uppercase;">${r.ticker}</span>${r.treasury ? '' : `<span id="pos-pp-${i}" style="font-size:11.5px; color:#ffffff; margin-left:7px; letter-spacing:-0.1px; font-variant-numeric:tabular-nums;"><span class="pp-num">${ppTxt}</span><span class="pp-tri" style="font-size:8px; vertical-align:1.5px; color:${ppCol}; margin-left:4px;">${ppTri}</span></span>`}</div>
       <div class="abs" style="left:16px; top:${top + 21.95}px; font-size:10px; color:#929292;">${r.category}<span style="color:#c7c7c7; margin-left:6px; text-transform:uppercase;">${r.weight}</span></div>
-      <div id="pos-value-${i}" class="abs" style="left:167px; top:${top}px; font-size:13px; font-weight:300; letter-spacing:-0.28px; text-align:right; width:150px;">${r.value}</div>
+      <div id="pos-value-${i}" class="abs" style="left:161px; top:${top}px; font-size:13px; font-weight:300; letter-spacing:-0.28px; text-align:right; width:150px;">${r.value}</div>
       <div id="pos-pct-${i}" class="abs" style="left:327px; top:${top}px; font-size:13px; color:#929292; letter-spacing:-0.24px; text-align:right; width:50px;">${r.pct}</div>
-      <div id="pos-price-${i}" class="abs" style="left:167px; top:${top + 20.45}px; font-size:13px; font-weight:300; letter-spacing:-0.28px; text-align:right; width:150px;">${r.price}</div>
+      <div id="pos-price-${i}" class="abs" style="left:161px; top:${top + 20.45}px; font-size:13px; font-weight:300; letter-spacing:-0.28px; text-align:right; width:150px;">${r.price}</div>
       <div id="pos-change-${i}" class="abs" style="left:307px; top:${top + 20.45}px; font-size:13px; color:${changePositive ? '#ffffff' : '#929292'}; letter-spacing:-0.24px; text-align:right; width:70px;"><span class="chg-num">${r.change}</span>${chgTriHTML(parsePct(r.change))}</div>
       ${extended && !r.treasury ? `<div class="abs" style="left:167px; top:${top + 41.9}px; width:210px; text-align:right; font-size:12px; color:#ffffff; letter-spacing:-0.24px; font-variant-numeric:tabular-nums;">${extIcon}<span id="pos-ext-${i}">${ahTxt}</span></div>` : ''}
       ${hasDesc ? `<div class="abs" style="left:16px; top:${top + descTop}px; font-size:12px; color:#c7c7c7; letter-spacing:-0.19px; max-width:361px; overflow:hidden; text-overflow:ellipsis;">${r.desc}</div>` : ''}
@@ -1357,7 +1356,7 @@
         <div class="abs" style="left:16px; top:${top + 0.93}px; font-size:13px;"><span style="font-weight:500; text-transform:uppercase;">${r.ticker}</span><span id="rev-pp-${i}" style="font-size:11.5px; color:#ffffff; margin-left:7px; letter-spacing:-0.1px; font-variant-numeric:tabular-nums;"><span class="pp-num">${ppTxt}</span><span class="pp-tri" style="font-size:8px; vertical-align:1.5px; color:${ppCol}; margin-left:4px;">${ppTri}</span></span></div>
         <div class="abs" style="left:16px; top:${top + 21.95}px; font-size:10px; color:#929292;">${hasCat ? r.cat : `Added <span class="num" style="color:#c7c7c7; margin-left:2px;">${r.added}</span><span class="num" style="color:#565b5e; margin-left:6px;">${sinceAddedLabel(r.added)}</span>`}</div>
         ${hasCat ? `<div class="abs" style="left:16px; top:${top + 40.45}px; font-size:10px; color:#929292;">Added <span class="num" style="color:#c7c7c7; margin-left:2px;">${r.added}</span><span class="num" style="color:#565b5e; margin-left:6px;">${sinceAddedLabel(r.added)}</span></div>` : ''}
-        <div id="rev-price-${i}" class="abs" style="left:167px; top:${top}px; font-size:13px; font-weight:300; letter-spacing:-0.28px; text-align:right; width:150px;">${r.price}</div>
+        <div id="rev-price-${i}" class="abs" style="left:161px; top:${top}px; font-size:13px; font-weight:300; letter-spacing:-0.28px; text-align:right; width:150px;">${r.price}</div>
         <div id="rev-change-${i}" class="abs" style="left:307px; top:${top}px; font-size:13px; color:${changePositive ? '#ffffff' : '#929292'}; letter-spacing:-0.24px; text-align:right; width:70px;"><span class="chg-num">${r.change}</span>${chgTriHTML(parsePct(r.change))}</div>
         <div class="abs" style="left:167px; top:${top + 21.2}px; width:210px; text-align:right; font-size:11.5px; letter-spacing:-0.22px; font-variant-numeric:tabular-nums;"><span id="rev-since-${i}" style="color:#ffffff;">${sTxt}</span> <span style="color:#929292; font-size:10px;">since added</span><span id="rev-stri-${i}" style="font-size:8px; vertical-align:1px; color:${sCol}; margin-left:4px;">${sTri}</span></div>
         ${hasThesis ? `<div class="abs" style="left:16px; top:${top + thesisTop}px; font-size:12px; color:#c7c7c7; letter-spacing:-0.19px; max-width:361px; overflow:hidden; text-overflow:ellipsis;">${r.thesis}</div>` : ''}
