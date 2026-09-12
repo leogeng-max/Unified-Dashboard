@@ -129,17 +129,13 @@
   }
 
   /* daily-move direction triangle, to the RIGHT of the value (house rule);
-     a |move| >= 10% upgrades it to a bigger, fuller triangle */
+     one size for every move — a |move| >= 10% colors the NUMBER instead */
   .chg-tri {
     display: inline;
     margin-left: 4px;
     font-size: 8px;
     line-height: normal;
     vertical-align: 1.5px;
-  }
-  .chg-tri.big {
-    margin-left: 3px;
-    vertical-align: -0.5px;
   }
 
   .row-divider {
@@ -344,9 +340,18 @@
     border-radius: 7px; border: 1px solid #1c1c1c; cursor: pointer; user-select: none; }
   .act-chip.on { color: #fff; background: #1c1c1c; }
   .act-chip:active { color: #c7c7c7; }
-  /* calibration / research events carry the record page's seal gold as a dot */
-  .res-dot { display: inline-block; width: 4.65px; height: 4.65px; border-radius: 50%;
-    background: #C9A24B; margin-right: 8px; vertical-align: 2.5px; }
+  /* kind tray — opens under the who-row once Managed / Self-Directed is
+     picked; square corners like every other container in the system */
+  .act-panel { display: flex; flex-wrap: wrap; align-items: center; gap: 8px;
+    padding: 12px; border: 1px solid #1c1c1c; background: #0b0b0b; margin-bottom: 40px; }
+  .act-panel.anim { animation: act-panel-in 180ms ease; }
+  @keyframes act-panel-in { from { opacity: 0; transform: translateY(-4px); } }
+  /* a family the current selection excludes — visible but inert */
+  .act-panel .act-chip.off { color: #3a3f42; border-color: #141414; cursor: default; }
+  .act-panel .act-chip.off:active { color: #3a3f42; }
+  .act-panel-x { margin-left: auto; background: none; border: none; cursor: pointer;
+    padding: 5px; line-height: 0; }
+  .act-panel-x:active path { stroke: #3a3f42; }
   .act-empty { font-size: 13px; color: #565b5e; letter-spacing: -0.26px; padding: 8px 0 40px; }
   .act-section { margin-bottom: 60px; }
   .act-section:last-child { margin-bottom: 0; }
@@ -806,6 +811,7 @@
       <div class="act-title">Activity</div>
       <div class="act-count" id="act-count"></div>
       <div class="act-filters" id="act-filters"></div>
+      <div id="act-panel-slot"></div>
       <div id="act-list"></div>
     </div>
   </div>
@@ -1086,18 +1092,17 @@
     return parts.join(' ');
   }
 
-  // direction marker for a daily move — green up / red down. Ordinary moves
-  // keep the small solid triangle; a |move| >= 10% upgrades it to an arrow
-  // whose head is the same solid triangle, with a shaft line behind it.
+  // direction marker for a daily move — the same small triangle for every
+  // move, green up / red down. Never bold. Severity lives in the NUMBER's
+  // color instead: |move| >= 10% paints the number green/red, otherwise it
+  // stays white (positive) / grey (negative).
   function chgTriHTML(chg) {
-    const up = chg >= 0;
-    const col = up ? '#30d158' : '#ff3533';
-    if (Math.abs(chg) >= 10) {
-      const head  = up ? 'M4.5 0.4L8.6 5.3H0.4Z' : 'M4.5 10.6L0.4 5.7H8.6Z';
-      const shaft = up ? 'M4.5 5.3V10.4' : 'M4.5 5.7V0.6';
-      return `<svg class="chg-tri big" width="9" height="11" viewBox="0 0 9 11" fill="none"><path d="${head}" fill="${col}"/><path d="${shaft}" stroke="${col}" stroke-width="1.7"/></svg>`;
-    }
-    return `<span class="chg-tri" style="color:${col};">${up ? '▲' : '▼'}</span>`;
+    const col = chg >= 0 ? '#30d158' : '#ff3533';
+    return `<span class="chg-tri" style="color:${col};">${chg >= 0 ? '▲' : '▼'}</span>`;
+  }
+  function chgNumColor(chg) {
+    if (Math.abs(chg) >= 10) return chg >= 0 ? '#30d158' : '#ff3533';
+    return chg >= 0 ? '#ffffff' : '#929292';
   };
 
   const positions = [
@@ -1305,7 +1310,7 @@
       <div id="pos-value-${i}" class="abs" style="left:161px; top:${top}px; font-size:13px; font-weight:300; letter-spacing:-0.28px; text-align:right; width:150px;">${r.value}</div>
       <div id="pos-pct-${i}" class="abs" style="left:327px; top:${top}px; font-size:13px; color:#929292; letter-spacing:-0.24px; text-align:right; width:50px;">${r.pct}</div>
       <div id="pos-price-${i}" class="abs" style="left:161px; top:${top + 20.45}px; font-size:13px; font-weight:300; letter-spacing:-0.28px; text-align:right; width:150px;">${r.price}</div>
-      <div id="pos-change-${i}" class="abs" style="left:307px; top:${top + 20.45}px; font-size:13px; color:${changePositive ? '#ffffff' : '#929292'}; letter-spacing:-0.24px; text-align:right; width:70px;"><span class="chg-num">${r.change}</span>${chgTriHTML(parsePct(r.change))}</div>
+      <div id="pos-change-${i}" class="abs" style="left:307px; top:${top + 20.45}px; font-size:13px; color:${chgNumColor(parsePct(r.change))}; letter-spacing:-0.24px; text-align:right; width:70px;"><span class="chg-num">${r.change}</span>${chgTriHTML(parsePct(r.change))}</div>
       ${extended && !r.treasury ? `<div class="abs" style="left:167px; top:${top + 41.9}px; width:210px; text-align:right; font-size:12px; color:#ffffff; letter-spacing:-0.24px; font-variant-numeric:tabular-nums;">${extIcon}<span id="pos-ext-${i}">${ahTxt}</span></div>` : ''}
       ${hasDesc ? `<div class="abs" style="left:16px; top:${top + descTop}px; font-size:12px; color:#c7c7c7; letter-spacing:-0.19px; max-width:361px; overflow:hidden; text-overflow:ellipsis;">${r.desc}</div>` : ''}
       ${hasTags ? `<div class="tags-row" style="left:16px; top:${top + tagsTop}px;">${r.tags.map(label => `<span class="tag"><span class="tag-dot" style="background:${TAG_COLORS[label]};"></span>${label}</span>`).join('')}</div>` : ''}
@@ -1357,7 +1362,7 @@
         <div class="abs" style="left:16px; top:${top + 21.95}px; font-size:10px; color:#929292;">${hasCat ? r.cat : `Added <span class="num" style="color:#c7c7c7; margin-left:2px;">${r.added}</span><span class="num" style="color:#565b5e; margin-left:6px;">${sinceAddedLabel(r.added)}</span>`}</div>
         ${hasCat ? `<div class="abs" style="left:16px; top:${top + 40.45}px; font-size:10px; color:#929292;">Added <span class="num" style="color:#c7c7c7; margin-left:2px;">${r.added}</span><span class="num" style="color:#565b5e; margin-left:6px;">${sinceAddedLabel(r.added)}</span></div>` : ''}
         <div id="rev-price-${i}" class="abs" style="left:161px; top:${top}px; font-size:13px; font-weight:300; letter-spacing:-0.28px; text-align:right; width:150px;">${r.price}</div>
-        <div id="rev-change-${i}" class="abs" style="left:307px; top:${top}px; font-size:13px; color:${changePositive ? '#ffffff' : '#929292'}; letter-spacing:-0.24px; text-align:right; width:70px;"><span class="chg-num">${r.change}</span>${chgTriHTML(parsePct(r.change))}</div>
+        <div id="rev-change-${i}" class="abs" style="left:307px; top:${top}px; font-size:13px; color:${chgNumColor(parsePct(r.change))}; letter-spacing:-0.24px; text-align:right; width:70px;"><span class="chg-num">${r.change}</span>${chgTriHTML(parsePct(r.change))}</div>
         <div class="abs" style="left:167px; top:${top + 21.2}px; width:210px; text-align:right; font-size:11.5px; letter-spacing:-0.22px; font-variant-numeric:tabular-nums;"><span id="rev-since-${i}" style="color:#ffffff;">${sTxt}</span> <span style="color:#929292; font-size:10px;">since added</span><span id="rev-stri-${i}" style="font-size:8px; vertical-align:1px; color:${sCol}; margin-left:4px;">${sTri}</span></div>
         ${hasThesis ? `<div class="abs" style="left:16px; top:${top + thesisTop}px; font-size:12px; color:#c7c7c7; letter-spacing:-0.19px; max-width:361px; overflow:hidden; text-overflow:ellipsis;">${r.thesis}</div>` : ''}
         ${hasNote ? `<div class="rev-note abs" contenteditable="true" spellcheck="false" style="left:16px; top:${top + noteTop}px;" oninput="reviews[${i}].note=this.textContent" onblur="if(!this.textContent.trim()){reviews[${i}].note='';buildPositions();}" onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur();}">${r.note}</div>` : ''}
@@ -1652,12 +1657,11 @@
       // today's move only exists while the market is open
       row.change += deltaFrac * 100;
       row.change += (row.changeBase - row.change) * 0.05;
-      const changePositive = row.change >= 0;
       const numEl = row.changeEl.querySelector('.chg-num');
       if (numEl) numEl.textContent = fmtPct(row.change);
       const triEl = row.changeEl.querySelector('.chg-tri');
       if (triEl) triEl.outerHTML = chgTriHTML(row.change);
-      flash(row.changeEl, up, changePositive ? '#ffffff' : '#929292');
+      flash(row.changeEl, up, chgNumColor(row.change));
     } else if (row.extEl) {
       // ...while pre/post market, the session line is the live number
       row.ext += (Math.random() - 0.5) * 0.05;
@@ -1692,12 +1696,11 @@
     if (!extended) {
       row.change += deltaFrac * 100;
       row.change += (row.changeBase - row.change) * 0.05;
-      const cp = row.change >= 0;
       const numEl = row.changeEl.querySelector('.chg-num');
       if (numEl) numEl.textContent = fmtPct(row.change);
       const triEl = row.changeEl.querySelector('.chg-tri');
       if (triEl) triEl.outerHTML = chgTriHTML(row.change);
-      row.changeEl.style.color = cp ? '#ffffff' : '#929292';
+      row.changeEl.style.color = chgNumColor(row.change);
     }
     row.sinceEl.textContent = fmtPct(row.since);
     if (row.striEl) {
@@ -1983,17 +1986,18 @@
     ]}
   ];
 
-  // multi-select filter over two facets: management (Managed / Self-Directed)
-  // and kind (Buys / Sells / Deposits / Withdrawals / Memos). Selections in
-  // the same facet OR together; across facets they AND ("Managed" +
-  // "Deposits" = managed deposits). Empty selection = All.
-  let ACT_SEL = new Set();
-  const ACT_FILTERS = [
-    ['all', 'All'], ['managed', 'Managed'], ['selfdir', 'Self-Directed'],
-    ['buy', 'Buys'], ['sell', 'Sells'], ['dep', 'Deposits'], ['wd', 'Withdrawals'],
-    ['research', 'Memos']
-  ];
-  const ACT_MGMT_KEYS = ['managed', 'selfdir'];
+  // two-level filter: the top row picks WHO (All / Managed / Self-Directed,
+  // single-select). Picking a side opens a tray with WHAT-kind chips —
+  // Managed has no Memos chip (memos only exist on self-directed research).
+  // Kinds are grouped into families (trade: buys/sells · cash: deposits/
+  // withdrawals · research: memos); multi-select works within one family and
+  // the other families grey out, so nonsense mixes (Withdrawals + Buys)
+  // can't be built. Tray "All" clears kinds; ✕ closes back to top-level All.
+  let ACT_MGMT = 'all';
+  let ACT_KINDS = new Set();
+  let ACT_PANEL_SHOWN = 'all'; // animates the tray only when it first opens
+  const ACT_KIND_FAMILY = { buy: 'trade', sell: 'trade', dep: 'cash', wd: 'cash', research: 'research' };
+  const ACT_KIND_LABELS = [['buy', 'Buys'], ['sell', 'Sells'], ['dep', 'Deposits'], ['wd', 'Withdrawals'], ['research', 'Memos']];
   // deposits and withdrawals live inside the broader `cash` kind — derive the
   // finer kind from the row's action name
   function actKind(r) {
@@ -2001,32 +2005,60 @@
       if (/^(Deposit|2 Scheduled)/.test(r.t)) return 'dep';
       if (/^Withdrawal/.test(r.t)) return 'wd';
     }
-    return r.k;
+    return r.k === 'res' ? 'research' : r.k;
+  }
+  function actFamily() {
+    for (const k of ACT_KINDS) return ACT_KIND_FAMILY[k];
+    return null;
   }
   function actMatch(r) {
-    if (!ACT_SEL.size) return true;
-    const mgmt = [...ACT_SEL].filter(f => ACT_MGMT_KEYS.includes(f));
-    const kind = [...ACT_SEL].filter(f => !ACT_MGMT_KEYS.includes(f));
-    const mgmtOk = !mgmt.length || mgmt.some(f =>
-      (f === 'managed' && r.m === 'M') || (f === 'selfdir' && r.m === 'S'));
-    const k = actKind(r);
-    const kindOk = !kind.length || kind.some(f =>
-      (f === 'buy' && k === 'buy') || (f === 'sell' && k === 'sell') ||
-      (f === 'dep' && k === 'dep') || (f === 'wd' && k === 'wd') ||
-      (f === 'research' && k === 'res'));
-    return mgmtOk && kindOk;
+    if (ACT_MGMT === 'managed' && r.m !== 'M') return false;
+    if (ACT_MGMT === 'selfdir' && r.m !== 'S') return false;
+    if (!ACT_KINDS.size) return true;
+    return ACT_KINDS.has(actKind(r));
   }
-  function setActFilter(f) {
-    if (f === 'all') ACT_SEL.clear();
-    else if (ACT_SEL.has(f)) ACT_SEL.delete(f);
-    else ACT_SEL.add(f);
+  function setActMgmt(m) {
+    ACT_MGMT = (ACT_MGMT === m) ? 'all' : m; // tapping the active side closes it
+    ACT_KINDS.clear();
     renderActivity();
   }
+  function toggleActKind(k) {
+    const fam = actFamily();
+    if (fam && ACT_KIND_FAMILY[k] !== fam) return; // greyed-out family
+    if (ACT_KINDS.has(k)) ACT_KINDS.delete(k); else ACT_KINDS.add(k);
+    renderActivity();
+  }
+  function clearActKinds() { ACT_KINDS.clear(); renderActivity(); }
+  function closeActPanel() { ACT_MGMT = 'all'; ACT_KINDS.clear(); renderActivity(); }
   function renderActivity() {
-    document.getElementById('act-filters').innerHTML = ACT_FILTERS.map(([k, l]) => {
-      const on = k === 'all' ? !ACT_SEL.size : ACT_SEL.has(k);
-      return `<span class="act-chip${on ? ' on' : ''}" onclick="setActFilter('${k}')">${l}</span>`;
-    }).join('');
+    // top row: who
+    document.getElementById('act-filters').innerHTML =
+      [['all', 'All'], ['managed', 'Managed'], ['selfdir', 'Self-Directed']].map(([k, l]) =>
+        `<span class="act-chip${ACT_MGMT === k || (k === 'all' && ACT_MGMT === 'all') ? '' : ''}${(k === 'all' ? ACT_MGMT === 'all' : ACT_MGMT === k) ? ' on' : ''}" onclick="${k === 'all' ? 'closeActPanel()' : `setActMgmt('${k}')`}">${l}</span>`).join('');
+    // tray: what kinds, scoped to the chosen side (Managed has no Memos)
+    const slot = document.getElementById('act-panel-slot');
+    if (ACT_MGMT === 'all') {
+      slot.innerHTML = '';
+      ACT_PANEL_SHOWN = 'all';
+      document.getElementById('act-filters').style.marginBottom = '';
+    } else {
+      const kinds = ACT_KIND_LABELS.filter(([k]) => !(ACT_MGMT === 'managed' && k === 'research'));
+      const fam = actFamily();
+      const anim = ACT_PANEL_SHOWN !== ACT_MGMT;
+      ACT_PANEL_SHOWN = ACT_MGMT;
+      slot.innerHTML = `
+        <div class="act-panel${anim ? ' anim' : ''}">
+          <span class="act-chip${!ACT_KINDS.size ? ' on' : ''}" onclick="clearActKinds()">All</span>
+          ${kinds.map(([k, l]) => {
+            const off = fam && ACT_KIND_FAMILY[k] !== fam;
+            return `<span class="act-chip${ACT_KINDS.has(k) ? ' on' : ''}${off ? ' off' : ''}" onclick="toggleActKind('${k}')">${l}</span>`;
+          }).join('')}
+          <button class="act-panel-x" onclick="closeActPanel()" aria-label="Close">
+            <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M1 1L9 9M9 1L1 9" stroke="#565b5e" stroke-width="1.3" stroke-linecap="round"/></svg>
+          </button>
+        </div>`;
+      document.getElementById('act-filters').style.marginBottom = '12px';
+    }
     let shown = 0;
     const html = ACTIVITY.map(sec => {
       const groups = sec.groups
@@ -2043,7 +2075,7 @@
               <div class="act-row${r.muted ? ' muted' : ''}">
                 <div class="act-cols">
                   <div class="act-l">
-                    <div class="act-nm">${r.k === 'res' ? '<span class="res-dot"></span>' : ''}${r.t}${r.ty ? `<span class="ty"> · ${r.ty}</span>` : ''}</div>
+                    <div class="act-nm">${r.t}${r.ty ? `<span class="ty"> · ${r.ty}</span>` : ''}</div>
                     ${r.sub ? `<div class="act-sub">${r.sub}</div>` : ''}
                   </div>
                   <div class="act-r">
