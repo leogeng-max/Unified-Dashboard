@@ -340,15 +340,20 @@
     border-radius: 7px; border: 1px solid #1c1c1c; cursor: pointer; user-select: none; }
   .act-chip.on { color: #fff; background: #1c1c1c; }
   .act-chip:active { color: #c7c7c7; }
-  /* kind tray — opens under the who-row once Managed / Self-Directed is
-     picked; square corners like every other container in the system */
-  .act-panel { display: flex; flex-wrap: wrap; align-items: center; gap: 8px;
-    padding: 12px; border: 1px solid #1c1c1c; background: #0b0b0b; margin-bottom: 40px; }
-  .act-panel.anim { animation: act-panel-in 180ms ease; }
-  @keyframes act-panel-in { from { opacity: 0; transform: translateY(-4px); } }
+  /* kind tray — a bottom sheet that slides up from the base of the screen
+     once Managed / Self-Directed is picked, covering a slice of the list */
+  #act-sheet { position: absolute; left: 0; right: 0; bottom: 0; z-index: 5;
+    background: #111111; border-top: 1px solid #1c1c1c;
+    border-radius: 0 0 46px 46px; padding: 16px 20px 46px;
+    transform: translateY(105%);
+    transition: transform 280ms cubic-bezier(0.32, 0.72, 0, 1); }
+  #act-sheet.open { transform: none; }
+  .act-sheet-head { display: flex; align-items: center; margin-bottom: 14px; }
+  .act-sheet-t { font-size: 11px; color: #565b5e; letter-spacing: -0.1px; }
+  .act-sheet-chips { display: flex; flex-wrap: wrap; gap: 8px; }
   /* a family the current selection excludes — visible but inert */
-  .act-panel .act-chip.off { color: #3a3f42; border-color: #141414; cursor: default; }
-  .act-panel .act-chip.off:active { color: #3a3f42; }
+  #act-sheet .act-chip.off { color: #3a3f42; border-color: #141414; cursor: default; }
+  #act-sheet .act-chip.off:active { color: #3a3f42; }
   .act-panel-x { margin-left: auto; background: none; border: none; cursor: pointer;
     padding: 5px; line-height: 0; }
   .act-panel-x:active path { stroke: #3a3f42; }
@@ -811,9 +816,9 @@
       <div class="act-title">Activity</div>
       <div class="act-count" id="act-count"></div>
       <div class="act-filters" id="act-filters"></div>
-      <div id="act-panel-slot"></div>
       <div id="act-list"></div>
     </div>
+    <div id="act-sheet"></div>
   </div>
 
   <!-- ══════════ CONNECT TO AI · menu drawer (over the dashboard) ══════════ -->
@@ -1310,7 +1315,7 @@
       <div id="pos-value-${i}" class="abs" style="left:161px; top:${top}px; font-size:13px; font-weight:300; letter-spacing:-0.28px; text-align:right; width:150px;">${r.value}</div>
       <div id="pos-pct-${i}" class="abs" style="left:327px; top:${top}px; font-size:13px; color:#929292; letter-spacing:-0.24px; text-align:right; width:50px;">${r.pct}</div>
       <div id="pos-price-${i}" class="abs" style="left:161px; top:${top + 20.45}px; font-size:13px; font-weight:300; letter-spacing:-0.28px; text-align:right; width:150px;">${r.price}</div>
-      <div id="pos-change-${i}" class="abs" style="left:307px; top:${top + 20.45}px; font-size:13px; color:${chgNumColor(parsePct(r.change))}; letter-spacing:-0.24px; text-align:right; width:70px;"><span class="chg-num">${r.change}</span>${chgTriHTML(parsePct(r.change))}</div>
+      <div id="pos-change-${i}" class="abs" style="left:307px; top:${top + 20.45}px; font-size:13px; font-weight:300; color:${chgNumColor(parsePct(r.change))}; letter-spacing:-0.24px; text-align:right; width:70px;"><span class="chg-num">${r.change}</span>${chgTriHTML(parsePct(r.change))}</div>
       ${extended && !r.treasury ? `<div class="abs" style="left:167px; top:${top + 41.9}px; width:210px; text-align:right; font-size:12px; color:#ffffff; letter-spacing:-0.24px; font-variant-numeric:tabular-nums;">${extIcon}<span id="pos-ext-${i}">${ahTxt}</span></div>` : ''}
       ${hasDesc ? `<div class="abs" style="left:16px; top:${top + descTop}px; font-size:12px; color:#c7c7c7; letter-spacing:-0.19px; max-width:361px; overflow:hidden; text-overflow:ellipsis;">${r.desc}</div>` : ''}
       ${hasTags ? `<div class="tags-row" style="left:16px; top:${top + tagsTop}px;">${r.tags.map(label => `<span class="tag"><span class="tag-dot" style="background:${TAG_COLORS[label]};"></span>${label}</span>`).join('')}</div>` : ''}
@@ -1362,7 +1367,7 @@
         <div class="abs" style="left:16px; top:${top + 21.95}px; font-size:10px; color:#929292;">${hasCat ? r.cat : `Added <span class="num" style="color:#c7c7c7; margin-left:2px;">${r.added}</span><span class="num" style="color:#565b5e; margin-left:6px;">${sinceAddedLabel(r.added)}</span>`}</div>
         ${hasCat ? `<div class="abs" style="left:16px; top:${top + 40.45}px; font-size:10px; color:#929292;">Added <span class="num" style="color:#c7c7c7; margin-left:2px;">${r.added}</span><span class="num" style="color:#565b5e; margin-left:6px;">${sinceAddedLabel(r.added)}</span></div>` : ''}
         <div id="rev-price-${i}" class="abs" style="left:161px; top:${top}px; font-size:13px; font-weight:300; letter-spacing:-0.28px; text-align:right; width:150px;">${r.price}</div>
-        <div id="rev-change-${i}" class="abs" style="left:307px; top:${top}px; font-size:13px; color:${chgNumColor(parsePct(r.change))}; letter-spacing:-0.24px; text-align:right; width:70px;"><span class="chg-num">${r.change}</span>${chgTriHTML(parsePct(r.change))}</div>
+        <div id="rev-change-${i}" class="abs" style="left:307px; top:${top}px; font-size:13px; font-weight:300; color:${chgNumColor(parsePct(r.change))}; letter-spacing:-0.24px; text-align:right; width:70px;"><span class="chg-num">${r.change}</span>${chgTriHTML(parsePct(r.change))}</div>
         <div class="abs" style="left:167px; top:${top + 21.2}px; width:210px; text-align:right; font-size:11.5px; letter-spacing:-0.22px; font-variant-numeric:tabular-nums;"><span id="rev-since-${i}" style="color:#ffffff;">${sTxt}</span> <span style="color:#929292; font-size:10px;">since added</span><span id="rev-stri-${i}" style="font-size:8px; vertical-align:1px; color:${sCol}; margin-left:4px;">${sTri}</span></div>
         ${hasThesis ? `<div class="abs" style="left:16px; top:${top + thesisTop}px; font-size:12px; color:#c7c7c7; letter-spacing:-0.19px; max-width:361px; overflow:hidden; text-overflow:ellipsis;">${r.thesis}</div>` : ''}
         ${hasNote ? `<div class="rev-note abs" contenteditable="true" spellcheck="false" style="left:16px; top:${top + noteTop}px;" oninput="reviews[${i}].note=this.textContent" onblur="if(!this.textContent.trim()){reviews[${i}].note='';buildPositions();}" onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur();}">${r.note}</div>` : ''}
@@ -2035,29 +2040,31 @@
     document.getElementById('act-filters').innerHTML =
       [['all', 'All'], ['managed', 'Managed'], ['selfdir', 'Self-Directed']].map(([k, l]) =>
         `<span class="act-chip${ACT_MGMT === k || (k === 'all' && ACT_MGMT === 'all') ? '' : ''}${(k === 'all' ? ACT_MGMT === 'all' : ACT_MGMT === k) ? ' on' : ''}" onclick="${k === 'all' ? 'closeActPanel()' : `setActMgmt('${k}')`}">${l}</span>`).join('');
-    // tray: what kinds, scoped to the chosen side (Managed has no Memos)
-    const slot = document.getElementById('act-panel-slot');
+    // tray: a bottom sheet with kind chips, scoped to the chosen side
+    // (Managed has no Memos)
+    const sheet = document.getElementById('act-sheet');
     if (ACT_MGMT === 'all') {
-      slot.innerHTML = '';
+      sheet.classList.remove('open');
       ACT_PANEL_SHOWN = 'all';
-      document.getElementById('act-filters').style.marginBottom = '';
     } else {
       const kinds = ACT_KIND_LABELS.filter(([k]) => !(ACT_MGMT === 'managed' && k === 'research'));
       const fam = actFamily();
-      const anim = ACT_PANEL_SHOWN !== ACT_MGMT;
-      ACT_PANEL_SHOWN = ACT_MGMT;
-      slot.innerHTML = `
-        <div class="act-panel${anim ? ' anim' : ''}">
+      sheet.innerHTML = `
+        <div class="act-sheet-head">
+          <span class="act-sheet-t">Filter · ${ACT_MGMT === 'managed' ? 'Managed' : 'Self-Directed'}</span>
+          <button class="act-panel-x" onclick="closeActPanel()" aria-label="Close">
+            <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M1 1L9 9M9 1L1 9" stroke="#565b5e" stroke-width="1.3" stroke-linecap="round"/></svg>
+          </button>
+        </div>
+        <div class="act-sheet-chips">
           <span class="act-chip${!ACT_KINDS.size ? ' on' : ''}" onclick="clearActKinds()">All</span>
           ${kinds.map(([k, l]) => {
             const off = fam && ACT_KIND_FAMILY[k] !== fam;
             return `<span class="act-chip${ACT_KINDS.has(k) ? ' on' : ''}${off ? ' off' : ''}" onclick="toggleActKind('${k}')">${l}</span>`;
           }).join('')}
-          <button class="act-panel-x" onclick="closeActPanel()" aria-label="Close">
-            <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M1 1L9 9M9 1L1 9" stroke="#565b5e" stroke-width="1.3" stroke-linecap="round"/></svg>
-          </button>
         </div>`;
-      document.getElementById('act-filters').style.marginBottom = '12px';
+      sheet.classList.add('open');
+      ACT_PANEL_SHOWN = ACT_MGMT;
     }
     let shown = 0;
     const html = ACTIVITY.map(sec => {
