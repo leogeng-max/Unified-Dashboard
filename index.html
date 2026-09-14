@@ -722,22 +722,23 @@
       <div id="bench-cal-block" style="position:absolute; left:0; top:1442.92px; width:100%; white-space:normal;">
 
         <!-- collapsed state — one summary line (WHOOP "get out of my face"
-             pattern: dismissable, with an obvious way back) -->
+             pattern: dismissable, with an obvious way back). Collapsed
+             Performance shows only the alpha — unlabeled, per the jam. -->
         <div id="bench-collapsed" style="display:none; padding:0 16px; align-items:center; cursor:pointer;" onclick="toggleBench()">
-          <span class="bx-sec-title">S&amp;P 500 Comparison</span>
+          <span class="bx-sec-title">Performance</span>
           <svg style="margin-left:12px; transform:rotate(-90deg);" width="11" height="7" viewBox="0 0 11 7" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M1 1.5L5.5 6L10 1.5" stroke="#929292" stroke-width="1.2"/>
           </svg>
           <span style="margin-left:auto; font-size:13px; font-weight:300; letter-spacing:-0.24px; font-variant-numeric:tabular-nums;">
-            <span id="bench-sum-acct" style="color:#fff;">+39.4%</span>
-            <span style="color:#565b5e; font-size:10px; margin:0 5px;">vs S&amp;P</span>
-            <span id="bench-sum-sp" style="color:#C29A2A;">+45.2%</span>
+            <span id="bench-sum-alpha" style="color:#fff;">&minus;2,373.90</span>
+            <span id="bench-sum-pp" style="color:#929292; font-size:12px; margin-left:7px;">&minus;5.8 pp</span>
+            <span id="bench-sum-arrow" class="bx-trend down" style="margin-left:7px;">&#9660;</span>
           </span>
         </div>
 
         <div id="card-bench">
           <div class="bpad" style="display:flex; align-items:baseline; justify-content:space-between; cursor:pointer;" onclick="toggleBench()">
-            <span class="bx-sec-title">S&amp;P 500 Comparison <span style="color:#929292;">&middot;</span> <span style="color:#565b5e;">All Accounts</span></span>
+            <span class="bx-sec-title">Performance <span style="color:#929292;">&middot;</span> <span style="color:#565b5e;">All Accounts</span></span>
             <svg style="margin-top:3px;" width="11" height="7" viewBox="0 0 11 7" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M1 1.5L5.5 6L10 1.5" stroke="#929292" stroke-width="1.2"/>
             </svg>
@@ -761,25 +762,39 @@
           </div>
           <div class="bpad bx-rows" style="margin-top:20px;">
             <div class="bx-row">
-              <span class="bx-label">Portfolio Value</span>
-              <span class="bx-val" data-portfolio-val>57,142.02</span>
+              <span class="bx-label">Portfolio P/L</span>
+              <span class="bx-val"><span data-pl-acct>+16,142.02</span><span class="bx-pct" data-pl-acct-pct>+39.4%</span></span>
             </div>
             <div class="bx-row">
-              <span class="bx-label">S&amp;P 500 Value</span>
-              <span class="bx-val" data-sp-val>59,515.92</span>
-            </div>
-            <div class="bx-row">
-              <span class="bx-label">Difference</span>
-              <span class="bx-val"><span data-diff>&minus;2,373.90</span><span class="bx-pct" data-diff-pct>&minus;3.99%</span><span class="bx-trend down" data-diff-arrow>&#9660;</span></span>
+              <span class="bx-label">S&amp;P 500 P/L<br>(Same Window)</span>
+              <span class="bx-val"><span data-pl-sp>+18,515.92</span><span class="bx-pct" data-pl-sp-pct>+45.2%</span></span>
             </div>
           </div>
-          <p class="bpad bx-foot">This percentage is the gap between the two values above.<br>Alpha, on the performance page, is a different figure: your return against the index, in percentage points.</p>
+          <div style="height:1px; background:#1c1c1c; margin:18px 16px;"></div>
+          <div class="bpad bx-rows">
+            <div class="bx-row">
+              <span class="bx-label">Alpha</span>
+              <span class="bx-val"><span data-alpha>&minus;2,373.90</span><span class="bx-pct" data-alpha-pp>&minus;5.8 pp</span><span class="bx-trend down" data-alpha-arrow>&#9660;</span></span>
+            </div>
+          </div>
+          <p class="bpad bx-foot">Alpha is your P/L against what the same deposits would have made in the S&amp;P 500 over the same window.</p>
+        </div>
+
+        <!-- collapsed calibration — one line: the count-ahead reading -->
+        <div id="cal-collapsed" style="display:none; margin:57px 16px 0; padding:22px 0; border-top:0.5px solid #232627; border-bottom:0.5px solid #232627; align-items:center; cursor:pointer;" onclick="toggleCal()">
+          <span class="calx-title">Calibration</span>
+          <svg style="margin-left:12px; transform:rotate(-90deg);" width="11" height="7" viewBox="0 0 11 7" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M1 1.5L5.5 6L10 1.5" stroke="#929292" stroke-width="1.2"/>
+          </svg>
+          <span style="margin-left:auto; font-size:13px; letter-spacing:-0.02em; color:#288752; font-variant-numeric:tabular-nums;">6 of 11 ahead of the S&amp;P 500</span>
         </div>
 
         <div class="calx" onclick="openRecords()">
-          <div class="calx-head">
+          <div class="calx-head" onclick="event.stopPropagation(); toggleCal();">
             <span class="calx-title">Calibration <span class="sep">&middot;</span> <span class="win">last 4 months</span></span>
-            <span class="bx-chev">&#8250;</span>
+            <svg style="align-self:center;" width="11" height="7" viewBox="0 0 11 7" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M1 1.5L5.5 6L10 1.5" stroke="#929292" stroke-width="1.2"/>
+            </svg>
           </div>
           <div class="calx-plot">
             <svg id="cal-svg" viewBox="0 0 358 176" preserveAspectRatio="none" aria-hidden="true"></svg>
@@ -1113,11 +1128,11 @@
     return parts.join(' ');
   }
 
-  // direction marker for a daily move — the same small triangle for every
-  // move, green up / red down. Never bold. Severity lives in the NUMBER's
-  // color instead: |move| >= 10% paints the number green/red, otherwise it
-  // stays white (positive) / grey (negative).
+  // direction marker for a daily move — small triangle, green up / red down.
+  // Never bold. A |move| >= 10% paints the NUMBER green/red instead and
+  // drops the triangle entirely — the colored number already carries it.
   function chgTriHTML(chg) {
+    if (Math.abs(chg) >= 10) return '';
     const col = chg >= 0 ? '#30d158' : '#ff3533';
     return `<span class="chg-tri" style="color:${col};">${chg >= 0 ? '▲' : '▼'}</span>`;
   }
@@ -1252,21 +1267,34 @@
     buildPositions();
   }
 
-  // Performance + Calibration block: collapsible to one summary line so the
-  // positions come up faster (default stays expanded). The list below reflows
-  // automatically because buildPositions() reads this block's offsetHeight.
-  let BENCH_COLLAPSED = false;
+  // Performance and Calibration collapse independently, each to one summary
+  // line (defaults stay expanded). Collapsed Performance shows only the alpha
+  // (unlabeled); collapsed Calibration shows the count-ahead reading. The
+  // list below reflows automatically because buildPositions() reads the
+  // block's offsetHeight.
+  let BENCH_COLLAPSED = false, CAL_COLLAPSED = false;
   function toggleBench() {
     BENCH_COLLAPSED = !BENCH_COLLAPSED;
     document.getElementById('card-bench').style.display = BENCH_COLLAPSED ? 'none' : '';
-    document.querySelector('#bench-cal-block .calx').style.display = BENCH_COLLAPSED ? 'none' : '';
     document.getElementById('bench-collapsed').style.display = BENCH_COLLAPSED ? 'flex' : 'none';
     if (BENCH_COLLAPSED) {
-      // pull the current readings into the summary line
-      const a = document.querySelector('[data-pct-acct]'), s = document.querySelector('[data-pct-sp]');
-      if (a) document.getElementById('bench-sum-acct').textContent = a.textContent;
-      if (s) document.getElementById('bench-sum-sp').textContent = s.textContent;
+      // pull the current alpha into the summary line
+      const a = document.querySelector('[data-alpha]'), p = document.querySelector('[data-alpha-pp]');
+      if (a) document.getElementById('bench-sum-alpha').textContent = a.textContent;
+      if (p) {
+        document.getElementById('bench-sum-pp').textContent = p.textContent;
+        const down = p.textContent.trim().startsWith('−');
+        const arr = document.getElementById('bench-sum-arrow');
+        arr.classList.toggle('down', down); arr.classList.toggle('up', !down);
+        arr.textContent = down ? '▼' : '▲';
+      }
     }
+    buildPositions();
+  }
+  function toggleCal() {
+    CAL_COLLAPSED = !CAL_COLLAPSED;
+    document.querySelector('#bench-cal-block .calx').style.display = CAL_COLLAPSED ? 'none' : '';
+    document.getElementById('cal-collapsed').style.display = CAL_COLLAPSED ? 'flex' : 'none';
     buildPositions();
   }
 
@@ -1699,7 +1727,9 @@
       const numEl = row.changeEl.querySelector('.chg-num');
       if (numEl) numEl.textContent = fmtPct(row.change);
       const triEl = row.changeEl.querySelector('.chg-tri');
-      if (triEl) triEl.outerHTML = chgTriHTML(row.change);
+      const triHTML = chgTriHTML(row.change);
+      if (triEl) { if (triHTML) triEl.outerHTML = triHTML; else triEl.remove(); }
+      else if (triHTML) row.changeEl.insertAdjacentHTML('beforeend', triHTML);
       flash(row.changeEl, up, chgNumColor(row.change));
     } else if (row.extEl) {
       // ...while pre/post market, the session line is the live number
@@ -1738,7 +1768,9 @@
       const numEl = row.changeEl.querySelector('.chg-num');
       if (numEl) numEl.textContent = fmtPct(row.change);
       const triEl = row.changeEl.querySelector('.chg-tri');
-      if (triEl) triEl.outerHTML = chgTriHTML(row.change);
+      const triHTML = chgTriHTML(row.change);
+      if (triEl) { if (triHTML) triEl.outerHTML = triHTML; else triEl.remove(); }
+      else if (triHTML) row.changeEl.insertAdjacentHTML('beforeend', triHTML);
       row.changeEl.style.color = chgNumColor(row.change);
     }
     row.sinceEl.textContent = fmtPct(row.since);
@@ -2258,28 +2290,42 @@
       CHART = { av, bv, ap, bp, y };
     }
     const rowEls = {
-      portfolio: document.querySelector('[data-portfolio-val]'),
-      sp: document.querySelector('[data-sp-val]'),
-      diff: document.querySelector('[data-diff]'),
-      diffPct: document.querySelector('[data-diff-pct]'),
-      diffArrow: document.querySelector('[data-diff-arrow]')
+      plAcct: document.querySelector('[data-pl-acct]'),
+      plAcctPct: document.querySelector('[data-pl-acct-pct]'),
+      plSp: document.querySelector('[data-pl-sp]'),
+      plSpPct: document.querySelector('[data-pl-sp-pct]'),
+      alpha: document.querySelector('[data-alpha]'),
+      alphaPp: document.querySelector('[data-alpha-pp]'),
+      alphaArrow: document.querySelector('[data-alpha-arrow]')
     };
-    function writeRows(acct, sp) {
-      const diff = acct - sp;
-      const pct = sp === 0 ? 0 : diff / sp * 100;
-      rowEls.portfolio.textContent = fmtAbs(acct);
-      rowEls.sp.textContent = fmtAbs(sp);
-      rowEls.diff.textContent = fmtSigned(diff);
-      rowEls.diffPct.textContent = fmtPctB(pct);
-      const down = diff < 0;
-      rowEls.diffArrow.classList.toggle('up', !down);
-      rowEls.diffArrow.classList.toggle('down', down);
-      rowEls.diffArrow.textContent = down ? '▼' : '▲';
+    // deposits contributed up to sample i — both curves share the schedule,
+    // so P/L = value − deposits-to-date and alpha is the P/L gap
+    function depositsToDate(i, n) {
+      const month = MONTHS * i / (n - 1);
+      let s = 0;
+      for (const k in DEPOSITS) if (+k <= month) s += DEPOSITS[k];
+      return s;
+    }
+    function writeRows(i) {
+      const acct = CHART.av[i], sp = CHART.bv[i];
+      const dep = depositsToDate(i, CHART.av.length);
+      const plA = acct - dep, plS = sp - dep;
+      const alpha = plA - plS;
+      const pp = dep > 0 ? alpha / dep * 100 : 0;
+      rowEls.plAcct.textContent = fmtSigned(plA);
+      rowEls.plAcctPct.textContent = fmtPct1(dep > 0 ? plA / dep * 100 : 0);
+      rowEls.plSp.textContent = fmtSigned(plS);
+      rowEls.plSpPct.textContent = fmtPct1(dep > 0 ? plS / dep * 100 : 0);
+      rowEls.alpha.textContent = fmtSigned(alpha);
+      rowEls.alphaPp.textContent = (pp < 0 ? '−' : '+') + Math.abs(pp).toFixed(1) + ' pp';
+      const down = alpha < 0;
+      rowEls.alphaArrow.classList.toggle('up', !down);
+      rowEls.alphaArrow.classList.toggle('down', down);
+      rowEls.alphaArrow.textContent = down ? '▼' : '▲';
     }
     function restoreRows() {
       if (!CHART) return;
-      const i = CHART.av.length - 1;
-      writeRows(CHART.av[i], CHART.bv[i]);
+      writeRows(CHART.av.length - 1);
     }
     // ── ported scrub machinery ──
     function svgUnitX(svg, clientX) {
@@ -2320,7 +2366,7 @@
         const ux = Math.max(0, Math.min(320, svgUnitX(svg, ev.clientX)));
         const i = Math.round(ux / 320 * (CHART.av.length - 1));
         const m = MONTHS * i / (CHART.av.length - 1);
-        writeRows(CHART.av[i], CHART.bv[i]);
+        writeRows(i);
         marker(svg, true, ux, CHART.y(CHART.ap[i]), CHART.y(CHART.bp[i]));
         setDateLabel(svg, true, ux, monthLabel(m));
         ev.preventDefault();
