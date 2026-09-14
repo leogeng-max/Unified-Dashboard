@@ -721,10 +721,26 @@
            dollar rows below it, then the calibration fan (11 calls vs the S&P). -->
       <div id="bench-cal-block" style="position:absolute; left:0; top:1442.92px; width:100%; white-space:normal;">
 
+        <!-- collapsed state — one summary line (WHOOP "get out of my face"
+             pattern: dismissable, with an obvious way back) -->
+        <div id="bench-collapsed" style="display:none; padding:0 16px; align-items:center; cursor:pointer;" onclick="toggleBench()">
+          <span class="bx-sec-title">S&amp;P 500 Comparison</span>
+          <svg style="margin-left:12px; transform:rotate(-90deg);" width="11" height="7" viewBox="0 0 11 7" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M1 1.5L5.5 6L10 1.5" stroke="#929292" stroke-width="1.2"/>
+          </svg>
+          <span style="margin-left:auto; font-size:13px; font-weight:300; letter-spacing:-0.24px; font-variant-numeric:tabular-nums;">
+            <span id="bench-sum-acct" style="color:#fff;">+39.4%</span>
+            <span style="color:#565b5e; font-size:10px; margin:0 5px;">vs S&amp;P</span>
+            <span id="bench-sum-sp" style="color:#C29A2A;">+45.2%</span>
+          </span>
+        </div>
+
         <div id="card-bench">
-          <div class="bpad" style="display:flex; align-items:baseline; justify-content:space-between;">
+          <div class="bpad" style="display:flex; align-items:baseline; justify-content:space-between; cursor:pointer;" onclick="toggleBench()">
             <span class="bx-sec-title">S&amp;P 500 Comparison <span style="color:#929292;">&middot;</span> <span style="color:#565b5e;">All Accounts</span></span>
-            <span class="bx-chev">&#8250;</span>
+            <svg style="margin-top:3px;" width="11" height="7" viewBox="0 0 11 7" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M1 1.5L5.5 6L10 1.5" stroke="#929292" stroke-width="1.2"/>
+            </svg>
           </div>
           <div class="bpad" style="margin-top:18px;">
             <div class="chart-plot">
@@ -1233,6 +1249,24 @@
     if (which === 'treasury') TREASURY_COLLAPSED = !TREASURY_COLLAPSED;
     else if (which === 'review') REVIEW_COLLAPSED = !REVIEW_COLLAPSED;
     else ACTIVE_COLLAPSED = !ACTIVE_COLLAPSED;
+    buildPositions();
+  }
+
+  // Performance + Calibration block: collapsible to one summary line so the
+  // positions come up faster (default stays expanded). The list below reflows
+  // automatically because buildPositions() reads this block's offsetHeight.
+  let BENCH_COLLAPSED = false;
+  function toggleBench() {
+    BENCH_COLLAPSED = !BENCH_COLLAPSED;
+    document.getElementById('card-bench').style.display = BENCH_COLLAPSED ? 'none' : '';
+    document.querySelector('#bench-cal-block .calx').style.display = BENCH_COLLAPSED ? 'none' : '';
+    document.getElementById('bench-collapsed').style.display = BENCH_COLLAPSED ? 'flex' : 'none';
+    if (BENCH_COLLAPSED) {
+      // pull the current readings into the summary line
+      const a = document.querySelector('[data-pct-acct]'), s = document.querySelector('[data-pct-sp]');
+      if (a) document.getElementById('bench-sum-acct').textContent = a.textContent;
+      if (s) document.getElementById('bench-sum-sp').textContent = s.textContent;
+    }
     buildPositions();
   }
 
