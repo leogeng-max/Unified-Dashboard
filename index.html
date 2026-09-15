@@ -304,6 +304,15 @@
   .e2-val .u { font-size: 9.5px; color: #565b5e; font-weight: 400; margin-left: 4px; letter-spacing: 0; }
   .e2-sub { font-size: 10px; letter-spacing: 0.05em; }
 
+  /* ---------- new-user account state (transfer pending, no capital) ------
+     funded-only content carries .nu-hide; new-user-only content carries
+     .nu-only; body.newuser flips them all at once */
+  .nu-only { display: none !important; }
+  body.newuser .nu-only { display: block !important; }
+  body.newuser .nu-hide,
+  body.newuser .core-detail,
+  body.newuser .tb-total { display: none !important; }
+
   /* invisible tap target over the Calibration section on the dashboard */
   #cal-link { position: absolute; cursor: pointer; }
   #cal-link:active { background: rgba(255,255,255,0.03); border-radius: 8px; }
@@ -547,6 +556,15 @@
       <span class="ttl">After hours</span>
       <span class="sub">Moon line per position · red dots · daily moves frozen</span>
     </div>
+    <div class="iter-head" style="margin-top:10px;">ACCOUNT · STATES</div>
+    <div class="iter-item on" id="acct-item-funded" onclick="setAccountState('funded')">
+      <span class="ttl">Funded</span>
+      <span class="sub">Full Performance &amp; Calibration sections</span>
+    </div>
+    <div class="iter-item" id="acct-item-new" onclick="setAccountState('new')">
+      <span class="ttl">New user</span>
+      <span class="sub">Transfer pending · both sections show quiet unlock lines</span>
+    </div>
   </div>
 </div>
 
@@ -625,48 +643,55 @@
       <!-- ============ ACTIVITY TICKER 1 (severity order: red > orange > yellow > green) ============ -->
       <!-- urgent alert — a square-cornered card: red outline + faint red tint
            (no corner radius — nothing else in the system is rounded) -->
-      <div class="abs" style="left:16.1px; top:143px; width:360.9px; height:70px; background:rgba(190,60,54,0.09); border:1px solid rgba(255,53,51,0.6); box-sizing:border-box;"></div>
-      <div class="abs" style="left:28.1px; top:155px; font-size:10px; font-weight:600; letter-spacing:0.2px; color:#ff3533;">Kill criteria met</div>
-      <div class="abs" style="left:28.1px; top:171px; width:336px; font-size:10px; font-weight:500; color:#ffffff;">
+      <div class="abs nu-hide" style="left:16.1px; top:143px; width:360.9px; height:70px; background:rgba(190,60,54,0.09); border:1px solid rgba(255,53,51,0.6); box-sizing:border-box;"></div>
+      <div class="abs nu-hide" style="left:28.1px; top:155px; font-size:10px; font-weight:600; letter-spacing:0.2px; color:#ff3533;">Kill criteria met</div>
+      <div class="abs nu-hide" style="left:28.1px; top:171px; width:336px; font-size:10px; font-weight:500; color:#ffffff;">
         Margin below 68% for a second consecutive quarter
       </div>
-      <div class="abs" style="left:28.1px; top:191px; font-size:10px; font-weight:500; color:#929292;">
+      <div class="abs nu-hide" style="left:28.1px; top:191px; font-size:10px; font-weight:500; color:#929292;">
         <span style="color:#c7c7c7;">TSLA</span> <span style="color:#565b5e;">&middot;</span> <span class="num">9,840.00 CAD</span> position <span style="color:#565b5e;">&middot; 1h ago</span>
       </div>
 
-      <div class="dot" style="left:16.1px; top:234.2px; width:4.65px; height:4.65px; background:#fbc308;"></div>
-      <div class="abs" style="left:26.8px; top:231px; font-size:10px; font-weight:500;">
+      <div class="dot nu-hide" style="left:16.1px; top:234.2px; width:4.65px; height:4.65px; background:#fbc308;"></div>
+      <div class="abs nu-hide" style="left:26.8px; top:231px; font-size:10px; font-weight:500;">
         Earnings <span style="color:#929292;">(3)</span>
       </div>
-      <svg class="abs" style="left:88.8px; top:235px;" width="6" height="3" viewBox="0 0 6.70711 4.06066" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <svg class="abs nu-hide" style="left:88.8px; top:235px;" width="6" height="3" viewBox="0 0 6.70711 4.06066" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M0.353553 0.353553L3.35355 3.35355L6.35355 0.353553" stroke="#C7C7C7"/>
       </svg>
-      <div class="abs" style="left:16.1px; top:247px; font-size:10px; font-weight:500; color:#929292;">BWEN</div>
-      <div class="abs" style="left:16.1px; top:263px; font-size:10px; font-weight:500; color:#929292;">MSFT</div>
-      <div class="abs" style="left:16.1px; top:279px; font-size:10px; font-weight:500; color:#929292;">TSLA</div>
+      <div class="abs nu-hide" style="left:16.1px; top:247px; font-size:10px; font-weight:500; color:#929292;">BWEN</div>
+      <div class="abs nu-hide" style="left:16.1px; top:263px; font-size:10px; font-weight:500; color:#929292;">MSFT</div>
+      <div class="abs nu-hide" style="left:16.1px; top:279px; font-size:10px; font-weight:500; color:#929292;">TSLA</div>
 
-      <div class="dot" style="left:16.1px; top:313.2px; width:4.65px; height:4.65px; background:#fbc308;"></div>
-      <div class="abs" style="left:26.8px; top:310px; font-size:10px; font-weight:500;">
+      <div class="dot nu-hide" style="left:16.1px; top:313.2px; width:4.65px; height:4.65px; background:#fbc308;"></div>
+      <div class="abs nu-hide" style="left:26.8px; top:310px; font-size:10px; font-weight:500;">
         Contribution missed: no deposit this cycle <span style="color:#929292;">04.28.26</span>
       </div>
 
-      <div class="dot" style="left:16.1px; top:344.2px; width:4.65px; height:4.65px; background:#30d158;"></div>
-      <div class="abs" style="left:26.8px; top:341px; font-size:10px; font-weight:500;">
+      <div class="dot nu-hide" style="left:16.1px; top:344.2px; width:4.65px; height:4.65px; background:#30d158;"></div>
+      <div class="abs nu-hide" style="left:26.8px; top:341px; font-size:10px; font-weight:500;">
         BWEN Filled <span style="font-weight:500;">1000 @ 87.00</span> <span style="color:#929292;">05.06.26</span>
       </div>
 
-      <div class="dot" style="left:16.1px; top:375.2px; width:4.65px; height:4.65px; background:#30d158;"></div>
-      <div class="abs" style="left:26.8px; top:372px; font-size:10px; font-weight:500;">
+      <div class="dot nu-hide" style="left:16.1px; top:375.2px; width:4.65px; height:4.65px; background:#30d158;"></div>
+      <div class="abs nu-hide" style="left:26.8px; top:372px; font-size:10px; font-weight:500;">
         Contribution processed: $500 <span style="color:#929292;">05.06.26</span>
+      </div>
+
+      <!-- new-user feed: the only thing actually happening on the account -->
+      <div class="dot nu-only" style="left:16.1px; top:138.2px; width:4.65px; height:4.65px; background:#fbc308;"></div>
+      <div class="abs nu-only" style="left:26.8px; top:135px; font-size:10px; font-weight:500;">
+        Transfer pending: <span class="num">5,000.00 CAD</span> <span style="color:#929292;">initiated 09.14.26</span>
       </div>
 
       <div id="shifted-content" style="position:absolute; top:0; left:0; width:100%;">
 
       <!-- ============ TOTAL VALUE ============ -->
       <div class="abs" style="right:16px; top:332.4px; font-size:13px; color:#929292; letter-spacing:-0.22px;">Total Value</div>
-      <div class="abs" style="right:16px; top:356.3px; font-size:28px; letter-spacing:-0.56px;">
+      <div class="abs nu-hide" style="right:16px; top:356.3px; font-size:28px; letter-spacing:-0.56px;">
         <span id="stat-total-value">173,249.00</span> <span style="color:#565b5e;">CAD</span>
       </div>
+      <div class="abs nu-only" style="right:16px; top:356.3px; font-size:28px; letter-spacing:-0.56px;">0.00 <span style="color:#565b5e;">CAD</span></div>
 
       <!-- ============ CORE SECTION (collapsible) ============ -->
       <div class="divider" style="left:14.5px; top:461px; width:366px;"></div>
@@ -679,7 +704,10 @@
       </div>
 
       <div id="core-value-label" class="abs" style="right:16px; top:736px; font-size:13px; color:#929292; letter-spacing:-0.22px; transition:top .35s ease, right .35s ease;">Value</div>
-      <div id="stat-core-value" class="abs" style="right:16px; top:758.3px; font-size:22px; letter-spacing:-0.44px; transition:top .35s ease, right .35s ease;">126,471.77</div>
+      <div id="stat-core-value" class="abs nu-hide" style="right:16px; top:758.3px; font-size:22px; letter-spacing:-0.44px; transition:top .35s ease, right .35s ease;">126,471.77</div>
+      <div class="abs nu-only" style="right:16px; top:758.3px; font-size:22px; letter-spacing:-0.44px;">0.00</div>
+      <div class="abs nu-only" style="right:16px; top:800.3px; font-size:13px; color:#929292; letter-spacing:-0.26px;">No Capital Deployed</div>
+      <div class="abs nu-only" style="right:16px; top:822.3px; font-size:13px; color:#fff; font-weight:500; letter-spacing:-0.26px;">Transfer Pending</div>
       <div class="abs core-detail" style="left:205.8px; top:790.3px; font-size:13px; letter-spacing:-0.26px; color:#929292;">
         All Time <span id="stat-core-allchg" style="color:#c7c7c7;">+6,365.65</span> <span id="stat-core-allpct" style="color:#c7c7c7;">(+5.3%)</span>
       </div>
@@ -707,14 +735,17 @@
       </svg>
 
       <div class="abs" style="right:16px; top:1208.67px; font-size:13px; color:#929292; letter-spacing:-0.22px;">Value</div>
-      <div id="stat-active-value" class="abs" style="right:16px; top:1230.92px; font-size:22px; letter-spacing:-0.44px;">46,777.23</div>
-      <div class="abs" style="left:205.8px; top:1262.92px; font-size:13px; letter-spacing:-0.26px; color:#929292;">
+      <div id="stat-active-value" class="abs nu-hide" style="right:16px; top:1230.92px; font-size:22px; letter-spacing:-0.44px;">46,777.23</div>
+      <div class="abs nu-hide" style="left:205.8px; top:1262.92px; font-size:13px; letter-spacing:-0.26px; color:#929292;">
         All Time <span id="stat-active-allchg" style="color:#c7c7c7;">+2,353.46</span> <span id="stat-active-allpct" style="color:#c7c7c7;">(+5.3%)</span>
       </div>
+      <div class="abs nu-only" style="right:16px; top:1230.92px; font-size:22px; letter-spacing:-0.44px;">0.00</div>
+      <div class="abs nu-only" style="right:16px; top:1272.92px; font-size:13px; color:#929292; letter-spacing:-0.26px;">No Capital Deployed</div>
+      <div class="abs nu-only" style="right:16px; top:1294.92px; font-size:13px; color:#fff; font-weight:500; letter-spacing:-0.26px;">Transfer Pending</div>
 
       <!-- ============ CASH ============ -->
-      <div class="abs" style="left:309.6px; top:1331.92px; font-size:13px; color:#929292; letter-spacing:-0.26px;">Cash (10%)</div>
-      <div class="abs" style="left:317.6px; top:1353.92px; font-size:15px; color:#c7c7c7; letter-spacing:-0.3px;">4,677.72</div>
+      <div class="abs nu-hide" style="left:309.6px; top:1331.92px; font-size:13px; color:#929292; letter-spacing:-0.26px;">Cash (10%)</div>
+      <div class="abs nu-hide" style="left:317.6px; top:1353.92px; font-size:15px; color:#c7c7c7; letter-spacing:-0.3px;">4,677.72</div>
 
       <!-- ============ S&P 500 COMPARISON CARD + CALIBRATION FAN ============
            Ported from main-dashboard-states: percent-growth chart with press-scrub,
@@ -734,6 +765,13 @@
             <span id="bench-sum-pp" style="color:#929292; font-size:12px; margin-left:7px;">&minus;5.8 pp</span>
             <span id="bench-sum-arrow" class="bx-trend down" style="margin-left:7px;">&#9660;</span>
           </span>
+        </div>
+
+        <!-- new-user empty states — the sections keep their place from day
+             one, each pointing at its own unlock condition -->
+        <div id="bench-empty" class="nu-only" style="padding:0 16px;">
+          <div class="bx-sec-title">Performance</div>
+          <div style="margin-top:8px; font-size:13px; color:#565b5e; letter-spacing:-0.1px;">Comparison Starts at First Deposit</div>
         </div>
 
         <div id="card-bench">
@@ -780,8 +818,13 @@
           <p class="bpad bx-foot">Alpha is your P/L against what the same deposits would have made in the S&amp;P 500 over the same window.</p>
         </div>
 
+        <div id="cal-empty" class="nu-only" style="margin:30px 16px 0; padding:16px 0; border-top:0.5px solid #232627; border-bottom:0.5px solid #232627;">
+          <div class="calx-title">Calibration</div>
+          <div style="margin-top:8px; font-size:13px; color:#565b5e; letter-spacing:-0.1px;">Starts With Your First Call</div>
+        </div>
+
         <!-- collapsed calibration — one line: the count-ahead reading -->
-        <div id="cal-collapsed" style="display:none; margin:57px 16px 0; padding:22px 0; border-top:0.5px solid #232627; border-bottom:0.5px solid #232627; align-items:center; cursor:pointer;" onclick="toggleCal()">
+        <div id="cal-collapsed" style="display:none; margin:30px 16px 0; padding:16px 0; border-top:0.5px solid #232627; border-bottom:0.5px solid #232627; align-items:center; cursor:pointer;" onclick="toggleCal()">
           <span class="calx-title">Calibration</span>
           <svg style="margin-left:12px; transform:rotate(-90deg);" width="11" height="7" viewBox="0 0 11 7" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M1 1.5L5.5 6L10 1.5" stroke="#929292" stroke-width="1.2"/>
@@ -1272,8 +1315,27 @@
   // (unlabeled); collapsed Calibration shows the count-ahead reading. The
   // list below reflows automatically because buildPositions() reads the
   // block's offsetHeight.
-  let BENCH_COLLAPSED = false, CAL_COLLAPSED = false;
+  let BENCH_COLLAPSED = false, CAL_COLLAPSED = false, NEW_USER = false;
+  // demo account state: 'new' = no invested capital, transfer pending — both
+  // sections become quiet single lines pointing at their unlock conditions
+  function setAccountState(s) {
+    NEW_USER = s === 'new';
+    // body.newuser drives every .nu-only / .nu-hide swap (feed, totals, the
+    // Core & Active cards, the section empty lines) via CSS
+    document.body.classList.toggle('newuser', NEW_USER);
+    document.getElementById('acct-item-funded').classList.toggle('on', !NEW_USER);
+    document.getElementById('acct-item-new').classList.toggle('on', NEW_USER);
+    document.getElementById('card-bench').style.display = (NEW_USER || BENCH_COLLAPSED) ? 'none' : '';
+    document.getElementById('bench-collapsed').style.display = (!NEW_USER && BENCH_COLLAPSED) ? 'flex' : 'none';
+    document.querySelector('#bench-cal-block .calx').style.display = (NEW_USER || CAL_COLLAPSED) ? 'none' : '';
+    document.getElementById('cal-collapsed').style.display = (!NEW_USER && CAL_COLLAPSED) ? 'flex' : 'none';
+    // the alert feed shrinks to one line — pull everything below up with it
+    document.getElementById('shifted-content').style.transform =
+      `translateY(${NEW_USER ? TOP_SPACING_EXTRA - 227 : TOP_SPACING_EXTRA}px)`;
+    buildPositions();
+  }
   function toggleBench() {
+    if (NEW_USER) return;
     BENCH_COLLAPSED = !BENCH_COLLAPSED;
     document.getElementById('card-bench').style.display = BENCH_COLLAPSED ? 'none' : '';
     document.getElementById('bench-collapsed').style.display = BENCH_COLLAPSED ? 'flex' : 'none';
@@ -1292,6 +1354,7 @@
     buildPositions();
   }
   function toggleCal() {
+    if (NEW_USER) return;
     CAL_COLLAPSED = !CAL_COLLAPSED;
     document.querySelector('#bench-cal-block .calx').style.display = CAL_COLLAPSED ? 'none' : '';
     document.getElementById('cal-collapsed').style.display = CAL_COLLAPSED ? 'flex' : 'none';
@@ -1311,6 +1374,17 @@
   let cursorTop = bcb && bcb.offsetHeight > 0 ? (1442.92 + bcb.offsetHeight + 30) : LIST_TOP;
   const HDR_BLOCK = 53.27; // headline row → first position row (matches the original spacing)
 
+  // new user: no holdings anywhere — no Treasury, no Active Positions, no
+  // Under Review. The screen ends after the section empty lines.
+  if (NEW_USER) {
+    listEl.innerHTML = '';
+    positionLive = [];
+    reviewLive = [];
+    fullMinHeight = Math.max(cursorTop + 30 + (TOP_SPACING_EXTRA - 227), 852);
+    frameEl.style.minHeight = fullMinHeight + 'px';
+    return;
+  }
+
   // ── Treasury headline — the cash-equivalent sleeve sits above everything ──
   const treasuries = positions.filter(p => p.treasury);
   html += `
@@ -1321,7 +1395,7 @@
     </svg>
     <div class="abs" style="left:0; top:${cursorTop - 8}px; width:220px; height:32px; cursor:pointer;" onclick="toggleSection('treasury')"></div>
   `;
-  cursorTop += TREASURY_COLLAPSED ? 34 : HDR_BLOCK;
+  cursorTop += TREASURY_COLLAPSED ? 51 : HDR_BLOCK;
   let activeHdrEmitted = false;
 
   positions.forEach((r, i) => {
@@ -1339,7 +1413,7 @@
         <div class="abs" style="left:367.1px; top:${cursorTop - 0.9}px; font-size:15px; color:#929292; letter-spacing:-0.3px;">2</div>
         <div class="abs" style="left:0; top:${cursorTop - 8}px; width:200px; height:32px; cursor:pointer;" onclick="toggleSection('active')"></div>
       `;
-      cursorTop += ACTIVE_COLLAPSED ? 26 : HDR_BLOCK;
+      cursorTop += ACTIVE_COLLAPSED ? 51 : HDR_BLOCK;
     }
     // collapsed sections render only their headline
     if (r.treasury ? TREASURY_COLLAPSED : ACTIVE_COLLAPSED) return;
@@ -1396,7 +1470,7 @@
     </svg>
     <div class="abs" style="left:0; top:${cursorTop - 8}px; width:220px; height:32px; cursor:pointer;" onclick="toggleSection('review')"></div>
   `;
-  cursorTop += REVIEW_COLLAPSED ? 26 : HDR_BLOCK;
+  cursorTop += REVIEW_COLLAPSED ? 51 : HDR_BLOCK;
   if (!REVIEW_COLLAPSED) {
     reviews.forEach((r, i) => {
       const top = cursorTop;
