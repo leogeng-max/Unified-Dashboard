@@ -565,6 +565,15 @@
       <span class="ttl">New user</span>
       <span class="sub">Transfer pending · both sections show quiet unlock lines</span>
     </div>
+    <div class="iter-head" style="margin-top:10px;">ROW READABILITY · EXPERIMENT</div>
+    <div class="iter-item on" id="row-item-off" onclick="setRowExperiment('off')">
+      <span class="ttl">Current</span>
+      <span class="sub">Rows as designed today</span>
+    </div>
+    <div class="iter-item" id="row-item-on" onclick="setRowExperiment('on')">
+      <span class="ttl">Clearer rows</span>
+      <span class="sub">Tighter rows · wider gaps · one loud line · stronger section seams</span>
+    </div>
   </div>
 </div>
 
@@ -1353,6 +1362,17 @@
     }
     buildPositions();
   }
+  // demo-only readability experiment: №1 tighter rows / wider gaps,
+  // №3 one loud line per row (supporting lines demoted a grey tier),
+  // №5 stronger section seams + quieter watchlist prices
+  let ROW_EXPERIMENT = false;
+  function setRowExperiment(s) {
+    ROW_EXPERIMENT = s === 'on';
+    document.getElementById('row-item-off').classList.toggle('on', !ROW_EXPERIMENT);
+    document.getElementById('row-item-on').classList.toggle('on', ROW_EXPERIMENT);
+    buildPositions();
+  }
+
   function toggleCal() {
     if (NEW_USER) return;
     CAL_COLLAPSED = !CAL_COLLAPSED;
@@ -1368,6 +1388,25 @@
     ? '<svg width="12" height="11" viewBox="0 0 14 12" fill="none" stroke="#fbc308" stroke-width="1.1" stroke-linecap="round" style="vertical-align:-1px; margin-right:5px;"><path d="M3.6 9.2a3.4 3.4 0 0 1 6.8 0"/><path d="M1 9.2h12"/><path d="M7 1.2v1.7"/><path d="M2.9 3.1l1.2 1.2"/><path d="M11.1 3.1l-1.2 1.2"/></svg>'
     : '<svg width="11" height="11" viewBox="0 0 13 13" fill="none" style="vertical-align:-1px; margin-right:5px;"><path d="M11.2 8.3A5 5 0 0 1 4.7 1.8a5.4 5.4 0 1 0 6.5 6.5Z" stroke="#4a7dff" stroke-width="1.1" stroke-linejoin="round"/></svg>';
   let html = '';
+  // readability experiment knobs — №1: blocks hug their own row (11px) while
+  // rows push apart (30px); №3: demoted greys for supporting lines
+  const X = ROW_EXPERIMENT;
+  const SG = X ? 11 : SECTION_GAP;
+  const RG = X ? 30 : ROW_GAP;
+  const DESC_COL = X ? '#929292' : '#c7c7c7';
+  const SUB_NUM = X ? '#c7c7c7' : '#ffffff';
+  const SUB_LBL = X ? '#565b5e' : '#929292';
+  // №5 — zebra rows: within a section, rows alternate deep black and a
+  // slightly lifted ground so each row's extent is visible. Holdings
+  // (Treasury + Active) use a neutral grey lift; Under Review uses a cool
+  // slate lift — a different pairing, so the sections read as different.
+  const STRIPE_HOLD = 'rgba(255,255,255,0.07)';
+  const STRIPE_REVIEW = 'rgba(158,180,203,0.08)';
+  // a stripe matches the divider exactly: same 16px inset and 360.79px width,
+  // running divider-to-divider (from the line above the row to the row's own)
+  const stripeHTML = (col, top, h) => X
+    ? `<div class="abs" style="left:16px; top:${top}px; width:360.79px; height:${h.toFixed(1)}px; background:${col}; pointer-events:none;"></div>`
+    : '';
   // the comparison card + calibration fan block above is normal-flow content of
   // variable height, so the list starts wherever it ends (+30 section seam)
   const bcb = document.getElementById('bench-cal-block');
@@ -1453,11 +1492,17 @@
     const rowHeaderH = HEADER_H + (r.treasury ? 0 : ANN_H) + ((extended && !r.treasury) ? AH_H : 0);
     let localCursor = rowHeaderH;
     let descTop = null, tagsTop = null;
-    if (hasDesc) { localCursor += SECTION_GAP; descTop = localCursor; localCursor += DESC_H; }
-    if (hasTags) { localCursor += SECTION_GAP; tagsTop = localCursor; localCursor += TAGS_H; }
-    localCursor += SECTION_GAP;
+    if (hasDesc) { localCursor += SG; descTop = localCursor; localCursor += DESC_H; }
+    if (hasTags) { localCursor += SG; tagsTop = localCursor; localCursor += TAGS_H; }
+    localCursor += SG;
     const rowHeight = localCursor;
+    // zebra: even rows within the section get the lifted ground; stripes
+    // tile edge-to-edge (half the row gap on each side)
+    const rowIdx = r.treasury ? i : i - treasuries.length;
+    // divider above this row sits at top − RG; the row's own at top + rowHeight
+    const stripe = rowIdx % 2 === 0 ? stripeHTML(STRIPE_HOLD, rowIdx === 0 ? top - 14 : top - RG + 1, rowIdx === 0 ? rowHeight + 14 : rowHeight + RG - 1) : '';
 
+    html += stripe;
     html += `
       <div class="abs" style="left:16px; top:${top + 0.93}px; font-size:13px;"><span style="font-weight:500; text-transform:uppercase;">${r.ticker}</span>${r.treasury ? '' : `<span id="pos-pp-${i}" style="font-size:11.5px; color:#ffffff; margin-left:7px; letter-spacing:-0.1px; font-variant-numeric:tabular-nums;"><span class="pp-num">${ppTxt}</span><span class="pp-tri" style="font-size:8px; vertical-align:1.5px; color:${ppCol}; margin-left:4px;">${ppTri}</span></span>`}</div>
       <div class="abs" style="left:16px; top:${top + 21.95}px; font-size:10px; color:#929292;">${r.category}<span style="color:#c7c7c7; margin-left:6px; text-transform:uppercase;">${r.weight}</span></div>
@@ -1465,13 +1510,13 @@
       <div id="pos-pct-${i}" class="abs" style="left:327px; top:${top}px; font-size:13px; color:#929292; letter-spacing:-0.24px; text-align:right; width:50px;">${r.pct}</div>
       <div id="pos-price-${i}" class="abs" style="left:161px; top:${top + 20.45}px; font-size:13px; font-weight:300; letter-spacing:-0.28px; text-align:right; width:150px;">${r.price}</div>
       <div id="pos-change-${i}" class="abs" style="left:307px; top:${top + 20.45}px; font-size:13px; font-weight:300; color:${chgNumColor(parsePct(r.change))}; letter-spacing:-0.24px; text-align:right; width:70px;"><span class="chg-num">${r.change}</span>${chgTriHTML(parsePct(r.change))}</div>
-      ${r.treasury ? '' : `<div class="abs" style="left:167px; top:${top + 41.9}px; width:210px; text-align:right; font-size:11.5px; letter-spacing:-0.22px; font-variant-numeric:tabular-nums;"><span style="color:#929292; font-size:10px;">${heldLbl}</span> <span id="pos-ann-${i}" style="color:#ffffff; margin-left:2px;">${annTxt}</span> <span style="color:#929292; font-size:10px;">annualized</span><span id="pos-atri-${i}" style="font-size:8px; vertical-align:1px; color:${annCol}; margin-left:4px;">${annTri}</span></div>`}
+      ${r.treasury ? '' : `<div class="abs" style="left:167px; top:${top + 41.9}px; width:210px; text-align:right; font-size:11.5px; letter-spacing:-0.22px; font-variant-numeric:tabular-nums;"><span style="color:${SUB_LBL}; font-size:10px;">${heldLbl}</span> <span id="pos-ann-${i}" style="color:${SUB_NUM}; margin-left:2px;">${annTxt}</span> <span style="color:${SUB_LBL}; font-size:10px;">annualized</span><span id="pos-atri-${i}" style="font-size:8px; vertical-align:1px; color:${annCol}; margin-left:4px;">${annTri}</span></div>`}
       ${extended && !r.treasury ? `<div class="abs" style="left:167px; top:${top + 62.35}px; width:210px; text-align:right; font-size:12px; color:#ffffff; letter-spacing:-0.24px; font-variant-numeric:tabular-nums;">${extIcon}<span id="pos-ext-${i}">${ahTxt}</span></div>` : ''}
-      ${hasDesc ? `<div class="abs" style="left:16px; top:${top + descTop}px; font-size:12px; color:#c7c7c7; letter-spacing:-0.19px; max-width:361px; overflow:hidden; text-overflow:ellipsis;">${r.desc}</div>` : ''}
+      ${hasDesc ? `<div class="abs" style="left:16px; top:${top + descTop}px; font-size:12px; color:${DESC_COL}; letter-spacing:-0.19px; max-width:361px; overflow:hidden; text-overflow:ellipsis;">${r.desc}</div>` : ''}
       ${hasTags ? `<div class="tags-row" style="left:16px; top:${top + tagsTop}px;">${r.tags.map(label => `<span class="tag"><span class="tag-dot" style="background:${TAG_COLORS[label]};"></span>${label}</span>`).join('')}</div>` : ''}
       <div class="row-divider" style="top:${top + rowHeight}px;"></div>
     `;
-    cursorTop += rowHeight + ROW_GAP;
+    cursorTop += rowHeight + RG;
   });
 
   // ── Under Review — the watchlist section, below Active Positions ──
@@ -1507,29 +1552,30 @@
       const hasCat = !!r.cat;
       let localCursor = HEADER_H + (hasCat ? 18.5 : 0);
       let tagsTop = null, noteTop = null, thesisTop = null;
-      if (hasThesis) { localCursor += SECTION_GAP; thesisTop = localCursor; localCursor += DESC_H; }
-      if (hasNote) { localCursor += SECTION_GAP; noteTop = localCursor; localCursor += DESC_H; }
-      if (hasTags) { localCursor += SECTION_GAP; tagsTop = localCursor; localCursor += TAGS_H; }
-      localCursor += SECTION_GAP;
+      if (hasThesis) { localCursor += SG; thesisTop = localCursor; localCursor += DESC_H; }
+      if (hasNote) { localCursor += SG; noteTop = localCursor; localCursor += DESC_H; }
+      if (hasTags) { localCursor += SG; tagsTop = localCursor; localCursor += TAGS_H; }
+      localCursor += SG;
       const rowHeight = localCursor;
+      html += i % 2 === 0 ? stripeHTML(STRIPE_REVIEW, i === 0 ? top - 14 : top - RG + 1, i === 0 ? rowHeight + 14 : rowHeight + RG - 1) : '';
       html += `
         <div class="abs" style="left:16px; top:${top + 0.93}px; font-size:13px;"><span style="font-weight:500; text-transform:uppercase;">${r.ticker}</span><span id="rev-pp-${i}" style="font-size:11.5px; color:#ffffff; margin-left:7px; letter-spacing:-0.1px; font-variant-numeric:tabular-nums;"><span class="pp-num">${ppTxt}</span><span class="pp-tri" style="font-size:8px; vertical-align:1.5px; color:${ppCol}; margin-left:4px;">${ppTri}</span></span></div>
         <div class="abs" style="left:16px; top:${top + 21.95}px; font-size:10px; color:#929292;">${hasCat ? r.cat : `Added <span class="num" style="color:#c7c7c7; margin-left:2px;">${r.added}</span><span class="num" style="color:#565b5e; margin-left:6px;">${sinceAddedLabel(r.added)}</span>`}</div>
         ${hasCat ? `<div class="abs" style="left:16px; top:${top + 40.45}px; font-size:10px; color:#929292;">Added <span class="num" style="color:#c7c7c7; margin-left:2px;">${r.added}</span><span class="num" style="color:#565b5e; margin-left:6px;">${sinceAddedLabel(r.added)}</span></div>` : ''}
-        <div id="rev-price-${i}" class="abs" style="left:161px; top:${top}px; font-size:13px; font-weight:300; letter-spacing:-0.28px; text-align:right; width:150px;">${r.price}</div>
+        <div id="rev-price-${i}" class="abs" style="left:161px; top:${top}px; font-size:13px; font-weight:300; ${X ? 'color:#c7c7c7;' : ''} letter-spacing:-0.28px; text-align:right; width:150px;">${r.price}</div>
         <div id="rev-change-${i}" class="abs" style="left:307px; top:${top}px; font-size:13px; font-weight:300; color:${chgNumColor(parsePct(r.change))}; letter-spacing:-0.24px; text-align:right; width:70px;"><span class="chg-num">${r.change}</span>${chgTriHTML(parsePct(r.change))}</div>
-        <div class="abs" style="left:167px; top:${top + 21.2}px; width:210px; text-align:right; font-size:11.5px; letter-spacing:-0.22px; font-variant-numeric:tabular-nums;"><span id="rev-since-${i}" style="color:#ffffff;">${sTxt}</span> <span style="color:#929292; font-size:10px;">since added</span><span id="rev-stri-${i}" style="font-size:8px; vertical-align:1px; color:${sCol}; margin-left:4px;">${sTri}</span></div>
-        ${hasThesis ? `<div class="abs" style="left:16px; top:${top + thesisTop}px; font-size:12px; color:#c7c7c7; letter-spacing:-0.19px; max-width:361px; overflow:hidden; text-overflow:ellipsis;">${r.thesis}</div>` : ''}
+        <div class="abs" style="left:167px; top:${top + 21.2}px; width:210px; text-align:right; font-size:11.5px; letter-spacing:-0.22px; font-variant-numeric:tabular-nums;"><span id="rev-since-${i}" style="color:${SUB_NUM};">${sTxt}</span> <span style="color:${SUB_LBL}; font-size:10px;">since added</span><span id="rev-stri-${i}" style="font-size:8px; vertical-align:1px; color:${sCol}; margin-left:4px;">${sTri}</span></div>
+        ${hasThesis ? `<div class="abs" style="left:16px; top:${top + thesisTop}px; font-size:12px; color:${DESC_COL}; letter-spacing:-0.19px; max-width:361px; overflow:hidden; text-overflow:ellipsis;">${r.thesis}</div>` : ''}
         ${hasNote ? `<div class="rev-note abs" contenteditable="true" spellcheck="false" style="left:16px; top:${top + noteTop}px;" oninput="reviews[${i}].note=this.textContent" onblur="if(!this.textContent.trim()){reviews[${i}].note='';buildPositions();}" onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur();}">${r.note}</div>` : ''}
         ${hasTags ? `<div class="tags-row" style="left:16px; top:${top + tagsTop}px;">${r.tags.map(label => `<span class="tag"><span class="tag-dot" style="background:${TAG_COLORS[label]};"></span>${label}</span>`).join('')}</div>` : ''}
         <div class="row-divider" style="top:${top + rowHeight}px;"></div>
       `;
-      cursorTop += rowHeight + ROW_GAP;
+      cursorTop += rowHeight + RG;
     });
   }
 
   listEl.innerHTML = html;
-  const lastRowBottom = cursorTop - ROW_GAP;
+  const lastRowBottom = cursorTop - RG;
   fullMinHeight = lastRowBottom + 40 + TOP_SPACING_EXTRA;
   frameEl.style.minHeight = fullMinHeight + 'px';
 
