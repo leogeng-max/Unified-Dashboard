@@ -1436,8 +1436,21 @@
     r._ext = ah;
     const ahTxt = fmtPct(ah, 2);
 
-    // treasuries carry no vs-S&P badge and no extended-session line
-    const rowHeaderH = HEADER_H + ((extended && !r.treasury) ? AH_H : 0);
+    // annualized return — total return spread over the (seeded) holding
+    // period, shown as a third right-column line like Under Review's
+    // "since added". Treasuries skip it — the cash sleeve doesn't need one.
+    const heldY = 0.75 + ((i * 11) % 28) / 10;
+    r._heldY = heldY;
+    const ann = (Math.pow(1 + parsePct(r.pct) / 100, 1 / heldY) - 1) * 100;
+    const annTxt = (ann >= 0 ? '+' : '−') + Math.abs(ann).toFixed(1) + '%';
+    const heldM = Math.round(heldY * 12);
+    const heldLbl = (heldM >= 12 ? Math.floor(heldM / 12) + 'y ' : '') + (heldM % 12 ? (heldM % 12) + 'm' : '');
+    const annTri = ann >= 0 ? '▲' : '▼';
+    const annCol = ann >= 0 ? '#30d158' : '#ff3533';
+
+    // treasuries carry no vs-S&P badge, no annualized line, no session line
+    const ANN_H = 20.45;
+    const rowHeaderH = HEADER_H + (r.treasury ? 0 : ANN_H) + ((extended && !r.treasury) ? AH_H : 0);
     let localCursor = rowHeaderH;
     let descTop = null, tagsTop = null;
     if (hasDesc) { localCursor += SECTION_GAP; descTop = localCursor; localCursor += DESC_H; }
@@ -1452,7 +1465,8 @@
       <div id="pos-pct-${i}" class="abs" style="left:327px; top:${top}px; font-size:13px; color:#929292; letter-spacing:-0.24px; text-align:right; width:50px;">${r.pct}</div>
       <div id="pos-price-${i}" class="abs" style="left:161px; top:${top + 20.45}px; font-size:13px; font-weight:300; letter-spacing:-0.28px; text-align:right; width:150px;">${r.price}</div>
       <div id="pos-change-${i}" class="abs" style="left:307px; top:${top + 20.45}px; font-size:13px; font-weight:300; color:${chgNumColor(parsePct(r.change))}; letter-spacing:-0.24px; text-align:right; width:70px;"><span class="chg-num">${r.change}</span>${chgTriHTML(parsePct(r.change))}</div>
-      ${extended && !r.treasury ? `<div class="abs" style="left:167px; top:${top + 41.9}px; width:210px; text-align:right; font-size:12px; color:#ffffff; letter-spacing:-0.24px; font-variant-numeric:tabular-nums;">${extIcon}<span id="pos-ext-${i}">${ahTxt}</span></div>` : ''}
+      ${r.treasury ? '' : `<div class="abs" style="left:167px; top:${top + 41.9}px; width:210px; text-align:right; font-size:11.5px; letter-spacing:-0.22px; font-variant-numeric:tabular-nums;"><span style="color:#929292; font-size:10px;">${heldLbl}</span> <span id="pos-ann-${i}" style="color:#ffffff; margin-left:2px;">${annTxt}</span> <span style="color:#929292; font-size:10px;">annualized</span><span id="pos-atri-${i}" style="font-size:8px; vertical-align:1px; color:${annCol}; margin-left:4px;">${annTri}</span></div>`}
+      ${extended && !r.treasury ? `<div class="abs" style="left:167px; top:${top + 62.35}px; width:210px; text-align:right; font-size:12px; color:#ffffff; letter-spacing:-0.24px; font-variant-numeric:tabular-nums;">${extIcon}<span id="pos-ext-${i}">${ahTxt}</span></div>` : ''}
       ${hasDesc ? `<div class="abs" style="left:16px; top:${top + descTop}px; font-size:12px; color:#c7c7c7; letter-spacing:-0.19px; max-width:361px; overflow:hidden; text-overflow:ellipsis;">${r.desc}</div>` : ''}
       ${hasTags ? `<div class="tags-row" style="left:16px; top:${top + tagsTop}px;">${r.tags.map(label => `<span class="tag"><span class="tag-dot" style="background:${TAG_COLORS[label]};"></span>${label}</span>`).join('')}</div>` : ''}
       <div class="row-divider" style="top:${top + rowHeight}px;"></div>
@@ -1530,6 +1544,9 @@
       changeEl: document.getElementById(`pos-change-${i}`),
       ppEl: document.getElementById(`pos-pp-${i}`),
       extEl: document.getElementById(`pos-ext-${i}`),
+      annEl: document.getElementById(`pos-ann-${i}`),
+      atriEl: document.getElementById(`pos-atri-${i}`),
+      heldY: r._heldY,
       ext: r._ext,
       spRet: r._spRet,
       treasury: !!r.treasury,
@@ -1822,6 +1839,16 @@
         tri.style.color = pp >= 0 ? '#30d158' : '#ff3533';
       }
       if (numEl) numEl.textContent = (pp >= 0 ? '+' : '−') + Math.abs(pp).toFixed(1) + ' pp vs S&P';
+    }
+
+    // annualized tracks the live all-time return over the holding period
+    if (row.annEl && row.heldY) {
+      const ann = (Math.pow(1 + row.pct / 100, 1 / row.heldY) - 1) * 100;
+      row.annEl.textContent = (ann >= 0 ? '+' : '−') + Math.abs(ann).toFixed(1) + '%';
+      if (row.atriEl) {
+        row.atriEl.textContent = ann >= 0 ? '▲' : '▼';
+        row.atriEl.style.color = ann >= 0 ? '#30d158' : '#ff3533';
+      }
     }
   }
 
