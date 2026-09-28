@@ -668,9 +668,9 @@
       <svg class="abs nu-hide" style="left:88.8px; top:235px;" width="6" height="3" viewBox="0 0 6.70711 4.06066" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M0.353553 0.353553L3.35355 3.35355L6.35355 0.353553" stroke="#C7C7C7"/>
       </svg>
-      <div class="abs nu-hide" style="left:16.1px; top:247px; font-size:10px; font-weight:500; color:#929292;">BWEN</div>
-      <div class="abs nu-hide" style="left:16.1px; top:263px; font-size:10px; font-weight:500; color:#929292;">MSFT</div>
-      <div class="abs nu-hide" style="left:16.1px; top:279px; font-size:10px; font-weight:500; color:#929292;">TSLA</div>
+      <div class="abs nu-hide" style="left:16.1px; top:245px; font-size:10px; font-weight:500; color:#929292; padding:2px 8px 2px 0; cursor:pointer;" onclick="goToTicker('BWEN')">BWEN</div>
+      <div class="abs nu-hide" style="left:16.1px; top:261px; font-size:10px; font-weight:500; color:#929292; padding:2px 8px 2px 0; cursor:pointer;" onclick="goToTicker('MSFT')">MSFT</div>
+      <div class="abs nu-hide" style="left:16.1px; top:277px; font-size:10px; font-weight:500; color:#929292; padding:2px 8px 2px 0; cursor:pointer;" onclick="goToTicker('TSLA')">TSLA</div>
 
       <div class="dot nu-hide" style="left:16.1px; top:313.2px; width:4.65px; height:4.65px; background:#fbc308;"></div>
       <div class="abs nu-hide" style="left:26.8px; top:310px; font-size:10px; font-weight:500;">
@@ -1362,6 +1362,34 @@
     }
     buildPositions();
   }
+  // tapping an earnings alert jumps straight to that ticker's row in Active
+  // Positions / Treasury / Under Review — expanding the section if collapsed,
+  // then flashing the landing row so the eye knows where it arrived
+  function goToTicker(t) {
+    const holding = positions.find(p => p.ticker === t);
+    if (holding) {
+      if (holding.treasury && TREASURY_COLLAPSED) TREASURY_COLLAPSED = false;
+      if (!holding.treasury && ACTIVE_COLLAPSED) ACTIVE_COLLAPSED = false;
+    } else if (reviews.some(r => r.ticker === t) && REVIEW_COLLAPSED) {
+      REVIEW_COLLAPSED = false;
+    }
+    buildPositions();
+    const rowEl = [...listEl.querySelectorAll('.abs')].find(e => {
+      const s = e.querySelector('span');
+      return s && s.style.textTransform === 'uppercase' && s.textContent.trim() === t;
+    });
+    if (!rowEl) return;
+    const sc = document.getElementById('screen');
+    const y = rowEl.getBoundingClientRect().top - sc.getBoundingClientRect().top + sc.scrollTop;
+    sc.scrollTo({ top: Math.max(0, y - 120), behavior: 'smooth' });
+    const hl = document.createElement('div');
+    hl.className = 'abs';
+    hl.style.cssText = `left:16px; top:${parseFloat(rowEl.style.top) - 15}px; width:360.79px; height:76px; background:rgba(255,255,255,0.07); opacity:1; transition:opacity 900ms ease 700ms; pointer-events:none;`;
+    listEl.appendChild(hl);
+    requestAnimationFrame(() => requestAnimationFrame(() => { hl.style.opacity = '0'; }));
+    setTimeout(() => hl.remove(), 2000);
+  }
+
   // demo-only readability experiment: №1 tighter rows / wider gaps,
   // №3 one loud line per row (supporting lines demoted a grey tier),
   // №5 stronger section seams + quieter watchlist prices
