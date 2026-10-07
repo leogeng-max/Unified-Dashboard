@@ -231,12 +231,16 @@
   .iter-burger:hover { border-color: #3a3a3a; }
   .iter-burger span { display: block; width: 16px; height: 1.5px; background: #c7c7c7; border-radius: 1px; }
   .iter-menu {
-    position: absolute; top: 50px; left: 0; min-width: 258px;
+    position: absolute; top: 50px; left: 0; min-width: 258px; width: 276px;
+    max-height: calc(100vh - 90px); overflow-y: auto; overscroll-behavior: contain;
     background: #111; border: 1px solid #262626; border-radius: 10px; padding: 6px;
     opacity: 0; transform: translateY(-6px); pointer-events: none;
     transition: opacity .16s ease, transform .16s ease;
     box-shadow: 0 20px 50px rgba(0,0,0,.6);
+    scrollbar-width: thin; scrollbar-color: #2d2d2d transparent;
   }
+  .iter-menu::-webkit-scrollbar { width: 5px; }
+  .iter-menu::-webkit-scrollbar-thumb { background: #2d2d2d; border-radius: 3px; }
   .iter-menu.open { opacity: 1; transform: translateY(0); pointer-events: all; }
   .iter-head { padding: 9px 12px 7px; font-size: 10px; letter-spacing: .14em; color: #565b5e; font-weight: 500; }
   .iter-item { padding: 10px 12px; border-radius: 7px; cursor: pointer; display: flex; flex-direction: column; gap: 3px; }
@@ -245,6 +249,15 @@
   .iter-item .ttl { font-size: 13px; color: #929292; letter-spacing: -0.01em; }
   .iter-item.on .ttl { color: #fff; }
   .iter-item .sub { font-size: 11px; color: #565b5e; letter-spacing: -0.01em; }
+  /* switch — green when its row is .on */
+  .iter-row { display: flex; align-items: center; gap: 14px; }
+  .iter-sw { margin-left: auto; width: 30px; height: 18px; border-radius: 9px;
+    background: #2d2d2d; position: relative; flex: none; transition: background .2s ease; }
+  .iter-sw::after { content: ''; position: absolute; top: 2px; left: 2px;
+    width: 14px; height: 14px; border-radius: 50%; background: #737373;
+    transition: left .2s ease, background .2s ease; }
+  .iter-item.on .iter-sw { background: #30d158; }
+  .iter-item.on .iter-sw::after { left: 14px; background: #ffffff; }
 
   /* ================= THE RECORD (V2 · elevated list) ================= */
   /* Second in-phone page — slides in over the dashboard when the user taps
@@ -312,6 +325,63 @@
   body.newuser .nu-hide,
   body.newuser .core-detail,
   body.newuser .tb-total { display: none !important; }
+
+  /* ---------- new-user DEMONSTRATION variants (V1–V5) ----------
+     body.nudemo = any demo visible; body.nudemo-N = variant N active */
+  .demo-tag, .demo-foot, .nud5-link { display: none; }
+  body.nudemo .demo-tag { display: inline; }
+  .demo-tag { font-size: 9.5px; font-weight: 600; letter-spacing: 1.2px;
+    text-transform: uppercase; color: #EDCB78; margin-left: 10px; }
+  body.nudemo .demo-foot { display: block; }
+  .demo-foot { font-size: 11px; color: #6b5a33; letter-spacing: -0.02em;
+    line-height: 1.4; margin-top: 10px !important; }
+  /* V1 — ghost preview: the full sections, dimmed and desaturated */
+  body.nudemo-1 #card-bench, body.nudemo-1 #bench-cal-block .calx {
+    opacity: 0.55; filter: saturate(0.45); }
+  /* V2 — "See demonstration" expanders on the quiet lines */
+  body.nudemo-2 .nud5-link { display: block; }
+
+  /* ---------- D-series demo stages ---------- */
+  .nud-wrap { padding: 0 16px; }
+  .nud-tag { font-size: 9.5px; font-weight: 600; letter-spacing: 1.2px;
+    text-transform: uppercase; color: #EDCB78; margin-left: 10px; }
+  .nud-panel { background: #0A0A0A; border: 0.5px solid #232627; padding: 12px; }
+  .nud-foot { margin-top: 14px; font-size: 11px; color: #6b5a33;
+    letter-spacing: -0.02em; line-height: 1.4; }
+  .nud-micro { font-size: 9px; letter-spacing: 1px; text-transform: uppercase; color: #565b5e; }
+  .nud-range { -webkit-appearance: none; appearance: none; width: 100%; height: 2px;
+    background: #2d2d2d; outline: none; }
+  .nud-range::-webkit-slider-thumb { -webkit-appearance: none; width: 14px; height: 14px;
+    border-radius: 50%; background: #C9A24B; cursor: pointer; }
+  .nud-vcard { margin: 0 16px 14px; background: #0b0b0b; border: 0.5px solid #232627;
+    padding: 18px 16px; }
+  @keyframes nud-pulse { 0% { r: 5; opacity: 0.5; } 70% { r: 13; opacity: 0; } 100% { r: 13; opacity: 0; } }
+  .nud-pulse { animation: nud-pulse 2.2s ease-out infinite; }
+  .nud-wipe { position: relative; margin: 0 16px; border: 0.5px solid #232627;
+    overflow: hidden; touch-action: none; cursor: ew-resize;
+    user-select: none; -webkit-user-select: none; }
+  .nud-wipe-handle { position: absolute; top: 0; bottom: 0; width: 1px;
+    background: rgba(201,162,75,0.65); z-index: 4;
+    transition: opacity 0.45s ease; }
+  .nud-wipe-handle::after { content: '\21C4'; position: absolute; top: 50%; left: 50%;
+    transform: translate(-50%, -50%); width: 20px; height: 20px; border-radius: 50%;
+    background: rgba(17,17,17,0.9); border: 1px solid rgba(201,162,75,0.8);
+    color: #EDCB78; font-size: 10px; line-height: 20px; text-align: center; }
+  /* handle rests faint so it stops blocking the view; wakes on touch */
+  .nud-wipe-handle.idle { opacity: 0.28; }
+  /* milestone list rows under the V4 single chart */
+  .nud-ms { display: flex; gap: 12px; padding: 13px 0; border-top: 0.5px solid #1c1c1c;
+    cursor: pointer; align-items: baseline; }
+  .nud-ms .nud-ms-dot { flex: none; width: 7px; height: 7px; border-radius: 50%;
+    background: #2d2d2d; align-self: center; transition: background .2s ease; }
+  .nud-ms.on .nud-ms-dot { background: #C9A24B; }
+  .nud-ms .ttl { font-size: 13px; color: #929292; letter-spacing: -0.2px; transition: color .2s ease; }
+  .nud-ms.on .ttl { color: #fff; }
+  .nud-ms .stat { margin-left: auto; font-size: 10px; color: #565b5e; letter-spacing: 0.5px; }
+  .nud5-link { margin-top: 10px; font-size: 12px; color: #c7c7c7;
+    letter-spacing: -0.1px; cursor: pointer; }
+  .nud5-link:active { color: #8a6f33; }
+  .calx-plot { position: relative; }
 
   /* invisible tap target over the Calibration section on the dashboard */
   #cal-link { position: absolute; cursor: pointer; }
@@ -543,36 +613,72 @@
     <span></span><span></span><span></span>
   </button>
   <div class="iter-menu" id="stateMenuPanel">
-    <div class="iter-head">MARKET · STATES</div>
+    <div class="iter-head">MARKET · STATES <span style="text-transform:none; letter-spacing:0; color:#3f4447;">— one at a time</span></div>
     <div class="iter-item on" id="state-item-market" onclick="setMarketState('market')">
-      <span class="ttl">Market hours</span>
+      <div class="iter-row"><span class="ttl">Market hours</span><span class="iter-sw"></span></div>
       <span class="sub">Everything live · green market dots</span>
     </div>
     <div class="iter-item" id="state-item-pre" onclick="setMarketState('pre')">
-      <span class="ttl">Pre-market</span>
+      <div class="iter-row"><span class="ttl">Pre-market</span><span class="iter-sw"></span></div>
       <span class="sub">Sunrise line per position · red dots · daily moves frozen</span>
     </div>
     <div class="iter-item" id="state-item-after" onclick="setMarketState('after')">
-      <span class="ttl">After hours</span>
+      <div class="iter-row"><span class="ttl">After hours</span><span class="iter-sw"></span></div>
       <span class="sub">Moon line per position · red dots · daily moves frozen</span>
     </div>
-    <div class="iter-head" style="margin-top:10px;">ACCOUNT · STATES</div>
-    <div class="iter-item on" id="acct-item-funded" onclick="setAccountState('funded')">
-      <span class="ttl">Funded</span>
-      <span class="sub">Full Performance &amp; Calibration sections</span>
+    <div class="iter-head" style="margin-top:10px;">ACCOUNT · STATE <span style="text-transform:none; letter-spacing:0; color:#3f4447;">— combines with any market state</span></div>
+    <div class="iter-item" id="acct-item-new" onclick="setAccountState(NEW_USER ? 'funded' : 'new')">
+      <div class="iter-row"><span class="ttl">New user</span><span class="iter-sw"></span></div>
+      <span class="sub">Transfer pending · no capital deployed. Off = funded account.</span>
     </div>
-    <div class="iter-item" id="acct-item-new" onclick="setAccountState('new')">
-      <span class="ttl">New user</span>
-      <span class="sub">Transfer pending · both sections show quiet unlock lines</span>
+    <div class="iter-head" style="margin-top:10px;">NEW-USER DEMO · PERF &amp; CALIBRATION <span style="text-transform:none; letter-spacing:0; color:#3f4447;">— pick one</span></div>
+    <div class="iter-item on" id="nud-item-0" onclick="setNuDemo(0)">
+      <div class="iter-row"><span class="ttl">V0 · Quiet lines</span><span class="iter-sw"></span></div>
+      <span class="sub">Unlock lines only — today's design</span>
     </div>
-    <div class="iter-head" style="margin-top:10px;">ROW READABILITY · EXPERIMENT</div>
-    <div class="iter-item on" id="row-item-off" onclick="setRowExperiment('off')">
-      <span class="ttl">Current</span>
-      <span class="sub">Rows as designed today</span>
+    <div class="iter-item" id="nud-item-1" onclick="setNuDemo(1)">
+      <div class="iter-row"><span class="ttl">V1 · Ghost preview</span><span class="iter-sw"></span></div>
+      <span class="sub">Full sections, dimmed &amp; desaturated · gold Demonstration tag</span>
     </div>
-    <div class="iter-item" id="row-item-on" onclick="setRowExperiment('on')">
-      <span class="ttl">Clearer rows</span>
-      <span class="sub">Tighter rows · wider gaps · one loud line · stronger section seams</span>
+    <div class="iter-item" id="nud-item-2" onclick="setNuDemo(2)">
+      <div class="iter-row"><span class="ttl">V2 · Progressive reveal</span><span class="iter-sw"></span></div>
+      <span class="sub">Quiet lines with "See demonstration" expanders</span>
+    </div>
+    <div class="iter-item" id="nud-item-3" onclick="setNuDemo(3)">
+      <div class="iter-row"><span class="ttl">V3 · Year simulator</span><span class="iter-sw"></span></div>
+      <span class="sub">Auto-plays the year, then you drive it · translucent lines · full data</span>
+    </div>
+    <div class="iter-item" id="nud-item-4" onclick="setNuDemo(4)">
+      <div class="iter-row"><span class="ttl">V4 · Milestone chart</span><span class="iter-sw"></span></div>
+      <span class="sub">One chart, four tappable acts — the chart jumps to each moment</span>
+    </div>
+    <div class="iter-item" id="nud-item-5" onclick="setNuDemo(5)">
+      <div class="iter-row"><span class="ttl">V5 · Today / Year one</span><span class="iter-sw"></span></div>
+      <span class="sub">Split panes — the bare present vs the rich future</span>
+    </div>
+    <div class="iter-item" id="nud-item-7" onclick="setNuDemo(7)">
+      <div class="iter-row"><span class="ttl">V6 · Now ⇄ Year one</span><span class="iter-sw"></span></div>
+      <span class="sub">Drag to wipe between empty now and rich future · handle rests faint</span>
+    </div>
+    <div class="iter-item" id="nud-item-8" onclick="setNuDemo(8)">
+      <div class="iter-row"><span class="ttl">V7 · Demonstration portfolio</span><span class="iter-sw"></span></div>
+      <span class="sub">Dave's spec — one coherent demo account: attention items, positions, calibration</span>
+    </div>
+    <div class="iter-item" id="nud-item-9" onclick="setNuDemo(9)">
+      <div class="iter-row"><span class="ttl">V8 · Paired accounts</span><span class="iter-sw"></span></div>
+      <span class="sub">Your account + a simulated twin (II-D-0001) · only the demo side is marked</span>
+    </div>
+    <div class="iter-item" id="nud-item-11" onclick="setNuDemo(11)">
+      <div class="iter-row"><span class="ttl">V10 · Funding transition</span><span class="iter-sw"></span></div>
+      <span class="sub">Tap fund — the same chart goes live and the demo steps back</span>
+    </div>
+    <div class="iter-item" id="nud-item-12" onclick="setNuDemo(12)">
+      <div class="iter-row"><span class="ttl">V11 · Product film</span><span class="iter-sw"></span></div>
+      <span class="sub">Auto-played sequence — funding, performance, calibration, now ⇄ year one</span>
+    </div>
+    <div class="iter-item" id="nud-item-13" onclick="setNuDemo(13)">
+      <div class="iter-row"><span class="ttl">V12 · The first session</span><span class="iter-sw"></span></div>
+      <span class="sub">Dave's choreography as a film — portfolio reality → what changed → positions → decisions → calibration → fund</span>
     </div>
   </div>
 </div>
@@ -778,14 +884,18 @@
 
         <!-- new-user empty states — the sections keep their place from day
              one, each pointing at its own unlock condition -->
-        <div id="bench-empty" class="nu-only" style="padding:0 16px;">
+        <div id="bench-empty" style="display:none; padding:0 16px;">
           <div class="bx-sec-title">Performance</div>
           <div style="margin-top:8px; font-size:13px; color:#565b5e; letter-spacing:-0.1px;">Comparison Starts at First Deposit</div>
+          <div class="nud5-link" onclick="nuExpand('bench')">See demonstration &#8250;</div>
         </div>
+
+        <!-- stage for the D-series demo variants (replay, split, blueprint…) -->
+        <div id="nud-stage-bench"></div>
 
         <div id="card-bench">
           <div class="bpad" style="display:flex; align-items:baseline; justify-content:space-between; cursor:pointer;" onclick="toggleBench()">
-            <span class="bx-sec-title">Performance <span style="color:#929292;">&middot;</span> <span style="color:#565b5e;">All Accounts</span></span>
+            <span class="bx-sec-title">Performance <span style="color:#929292;">&middot;</span> <span style="color:#565b5e;">All Accounts</span><span class="demo-tag">Demonstration</span></span>
             <svg style="margin-top:3px;" width="11" height="7" viewBox="0 0 11 7" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M1 1.5L5.5 6L10 1.5" stroke="#929292" stroke-width="1.2"/>
             </svg>
@@ -825,11 +935,13 @@
             </div>
           </div>
           <p class="bpad bx-foot">Alpha is your P/L against what the same deposits would have made in the S&amp;P 500 over the same window.</p>
+          <p class="bpad bx-foot demo-foot">Illustrative demonstration &mdash; not your performance and not a recommendation.</p>
         </div>
 
-        <div id="cal-empty" class="nu-only" style="margin:30px 16px 0; padding:16px 0; border-top:0.5px solid #232627; border-bottom:0.5px solid #232627;">
+        <div id="cal-empty" style="display:none; margin:30px 16px 0; padding:16px 0; border-top:0.5px solid #232627; border-bottom:0.5px solid #232627;">
           <div class="calx-title">Calibration</div>
           <div style="margin-top:8px; font-size:13px; color:#565b5e; letter-spacing:-0.1px;">Starts With Your First Call</div>
+          <div class="nud5-link" onclick="nuExpand('cal')">See demonstration &#8250;</div>
         </div>
 
         <!-- collapsed calibration — one line: the count-ahead reading -->
@@ -841,9 +953,12 @@
           <span style="margin-left:auto; font-size:13px; letter-spacing:-0.02em; color:#288752; font-variant-numeric:tabular-nums;">6 of 11 ahead of the S&amp;P 500</span>
         </div>
 
+        <div id="nud-stage-cal"></div>
+        <div id="nud-overlay" style="position:absolute; inset:0; pointer-events:none;"></div>
+
         <div class="calx" onclick="openRecords()">
           <div class="calx-head" onclick="event.stopPropagation(); toggleCal();">
-            <span class="calx-title">Calibration <span class="sep">&middot;</span> <span class="win">last 4 months</span></span>
+            <span class="calx-title">Calibration <span class="sep">&middot;</span> <span class="win">last 4 months</span><span class="demo-tag">Demonstration</span></span>
             <svg style="align-self:center;" width="11" height="7" viewBox="0 0 11 7" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M1 1.5L5.5 6L10 1.5" stroke="#929292" stroke-width="1.2"/>
             </svg>
@@ -854,6 +969,7 @@
           <div class="calx-sum"><span class="ahead">6 of 11 ahead of the S&amp;P 500</span> <span class="avg">avg +1.9 pp</span></div>
           <p class="calx-mid"><span id="cal-horizon">~19%</span> of the way to their horizons<span class="sep">&middot;</span>0 resolved<span class="sep">&middot;</span><span class="forming">verdicts forming</span></p>
           <p class="calx-foot">Each call against the S&amp;P 500, measured from the day you made it.</p>
+          <p class="calx-foot demo-foot">Illustrative demonstration &mdash; not your record and not a recommendation.</p>
         </div>
       </div>
 
@@ -1327,24 +1443,1362 @@
   let BENCH_COLLAPSED = false, CAL_COLLAPSED = false, NEW_USER = false;
   // demo account state: 'new' = no invested capital, transfer pending — both
   // sections become quiet single lines pointing at their unlock conditions
+  // ══════════ NEW-USER DEMO VARIANTS ══════════
+  // 0 quiet lines · 1 ghost · 2 progressive · 3 year simulator · 4 milestone
+  // cards · 5 today/year-one split · 6 fork in the road · 7 now⇄year-one
+  // wipe · 8 projection cone
+  let NU_DEMO = 0;
+  const NU_V5 = { bench: false, cal: false };
+  const NUD_REAL = { 1: 1 }; // variants built on the real sections
+  let NUD_SEQ = 0;
+  const NUD_TIMERS = [];
+  const NUD_DIM = [];
+  function applyBenchCalVisibility() {
+    const vd = NEW_USER ? NU_DEMO : -1;
+    const benchReal = NEW_USER && (!!NUD_REAL[vd] || (vd === 2 && NU_V5.bench));
+    const calReal = NEW_USER && (!!NUD_REAL[vd] || (vd === 2 && NU_V5.cal));
+    document.body.classList.toggle('nudemo', benchReal || calReal);
+    for (let k = 1; k <= 8; k++) document.body.classList.toggle('nudemo-' + k, NEW_USER && vd === k);
+    document.getElementById('card-bench').style.display = (NEW_USER ? benchReal : !BENCH_COLLAPSED) ? '' : 'none';
+    document.querySelector('#bench-cal-block .calx').style.display = (NEW_USER ? calReal : !CAL_COLLAPSED) ? '' : 'none';
+    document.getElementById('bench-collapsed').style.display = (!NEW_USER && BENCH_COLLAPSED) ? 'flex' : 'none';
+    document.getElementById('cal-collapsed').style.display = (!NEW_USER && CAL_COLLAPSED) ? 'flex' : 'none';
+    document.getElementById('bench-empty').style.display =
+      (NEW_USER && (vd === 0 || (vd === 2 && !NU_V5.bench))) ? 'block' : 'none';
+    document.getElementById('cal-empty').style.display =
+      (NEW_USER && (vd === 0 || (vd === 2 && !NU_V5.cal))) ? 'block' : 'none';
+  }
+  function refreshNud() { applyBenchCalVisibility(); renderNuDemo(); buildPositions(); }
+  function setNuDemo(v) {
+    NU_DEMO = v;
+    NU_V5.bench = NU_V5.cal = false;
+    for (let k = 0; k <= 13; k++) {
+      const el = document.getElementById('nud-item-' + k);
+      if (el) el.classList.toggle('on', k === v);
+    }
+    // picking a demo variant only means anything as a new user — switch over
+    if (v > 0 && !NEW_USER) { setAccountState('new'); return; }
+    refreshNud();
+  }
+  function nuExpand(which) { NU_V5[which] = true; refreshNud(); }
+  function nudClear() {
+    NUD_TIMERS.forEach(t => { if (t.raf) cancelAnimationFrame(t.raf); if (t.iv) clearInterval(t.iv); if (t.to) clearTimeout(t.to); });
+    NUD_TIMERS.length = 0;
+    NUD_DIM.forEach(el => { el.style.opacity = ''; });
+    NUD_DIM.length = 0;
+    document.getElementById('nud-stage-bench').innerHTML = '';
+    document.getElementById('nud-stage-cal').innerHTML = '';
+    document.getElementById('nud-overlay').innerHTML = '';
+  }
+  // clone one of the live charts, wrapped in a clip so t ∈ [0,1] reveals the
+  // first t of the timeline — the engine behind replay / scrubber / deck
+  function nudChart(srcId, height) {
+    const src = document.getElementById(srcId);
+    const c = src.cloneNode(true);
+    c.removeAttribute('id'); c.removeAttribute('class');
+    c.querySelectorAll('.scrub-line,.scrub-dot-a,.scrub-dot-b,.scrub-date-label').forEach(e => e.remove());
+    c.querySelectorAll('[id]').forEach(e => e.removeAttribute('id'));
+    c.setAttribute('preserveAspectRatio', 'none');
+    c.style.cssText = 'display:block; width:100%; height:' + height + 'px; overflow:hidden;';
+    const vb = c.viewBox.baseVal;
+    const ns = 'http://www.w3.org/2000/svg';
+    const cpId = 'nudcp' + (++NUD_SEQ);
+    const defs = document.createElementNS(ns, 'defs');
+    const cp = document.createElementNS(ns, 'clipPath'); cp.setAttribute('id', cpId);
+    const rect = document.createElementNS(ns, 'rect');
+    rect.setAttribute('x', 0); rect.setAttribute('y', 0);
+    rect.setAttribute('height', vb.height); rect.setAttribute('width', vb.width);
+    cp.appendChild(rect); defs.appendChild(cp);
+    const g = document.createElementNS(ns, 'g'); g.setAttribute('clip-path', 'url(#' + cpId + ')');
+    while (c.firstChild) g.appendChild(c.firstChild);
+    c.appendChild(defs); c.appendChild(g);
+    return { el: c, setT: t => rect.setAttribute('width', (vb.width * Math.max(0, Math.min(1, t))).toFixed(1)) };
+  }
+  // simulations render in translucent strokes — unmistakably a projection
+  function nudTranslucent(svg) {
+    svg.querySelectorAll('path, polyline, line').forEach(p => { p.style.opacity = '0.5'; });
+    svg.querySelectorAll('ellipse, circle').forEach(e => { e.style.opacity = '0.55'; });
+  }
+  // calibration clones: ticker labels and end dots ride the reveal front —
+  // lifted out of the clip and re-pinned to each line's current endpoint
+  function nudCalFollow(c) {
+    const svg = c.el;
+    const vbW = svg.viewBox.baseVal.width;
+    const g = svg.querySelector('g[clip-path]');
+    if (!g) return;
+    const allTexts = [...g.querySelectorAll('text')].filter(t => parseFloat(t.getAttribute('x')) > 290);
+    const more = allTexts.filter(t => /more/i.test(t.textContent));
+    const labels = allTexts.filter(t => !/more/i.test(t.textContent));
+    const paths = [...g.querySelectorAll('path')].filter(p => {
+      try { return p.getPointAtLength(p.getTotalLength()).x > 280; } catch (e) { return false; }
+    });
+    const circles = [...g.querySelectorAll('circle')].filter(el => parseFloat(el.getAttribute('cx')) > 280);
+    const top = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    svg.appendChild(top);
+    labels.concat(more).forEach(t => top.appendChild(t));
+    circles.forEach(el => top.appendChild(el));
+    const endY = p => p.getPointAtLength(p.getTotalLength()).y;
+    const pairs = labels.map(t => {
+      const ty = parseFloat(t.getAttribute('y'));
+      let p = null, bd = 1e9;
+      paths.forEach(cand => { const d = Math.abs(endY(cand) - ty); if (d < bd) { bd = d; p = cand; } });
+      let circ = null; bd = 1e9;
+      if (p) circles.forEach(cc => { const d = Math.abs(parseFloat(cc.getAttribute('cy')) - endY(p)); if (d < bd) { bd = d; circ = cc; } });
+      return { t, p, c: circ, ox: t.getAttribute('x'), oy: t.getAttribute('y'),
+               ocx: circ && circ.getAttribute('cx'), ocy: circ && circ.getAttribute('cy') };
+    });
+    const yAt = (p, x) => {
+      let lo = 0, hi = p.getTotalLength();
+      for (let i = 0; i < 18; i++) { const m = (lo + hi) / 2; if (p.getPointAtLength(m).x < x) lo = m; else hi = m; }
+      return p.getPointAtLength((lo + hi) / 2).y;
+    };
+    const matched = new Set(pairs.map(pr => pr.c).filter(Boolean));
+    const strays = circles.filter(el => !matched.has(el));
+    const base = c.setT;
+    c.setT = t => {
+      base(t);
+      const e = vbW * Math.max(0, Math.min(1, t));
+      const full = e >= 288, faint = e < 44;
+      more.forEach(m => { m.style.opacity = full ? '' : '0'; });
+      strays.forEach(el => { el.style.opacity = full ? '0.55' : '0'; });
+      pairs.forEach(pr => {
+        pr.t.style.opacity = faint ? '0' : '';
+        if (pr.c) pr.c.style.opacity = faint ? '0' : '0.55';
+        if (full) {
+          pr.t.setAttribute('x', pr.ox); pr.t.setAttribute('y', pr.oy);
+          if (pr.c) { pr.c.setAttribute('cx', pr.ocx); pr.c.setAttribute('cy', pr.ocy); }
+          return;
+        }
+        const xF = Math.max(32, Math.min(e, 288));
+        const y = pr.p ? yAt(pr.p, xF) : parseFloat(pr.oy);
+        pr.t.setAttribute('x', (xF + 6).toFixed(1));
+        pr.t.setAttribute('y', (y + 3.5).toFixed(1));
+        if (pr.c) { pr.c.setAttribute('cx', xF.toFixed(1)); pr.c.setAttribute('cy', y.toFixed(1)); }
+      });
+    };
+  }
+  const NUD_FOOT = '<div class="nud-foot">Illustrative demonstration &mdash; not your performance and not a recommendation.</div>';
+  function renderNuDemo() {
+    nudClear();
+    if (!NEW_USER) return;
+    const sb = document.getElementById('nud-stage-bench');
+    const scal = document.getElementById('nud-stage-cal');
+    const ov = document.getElementById('nud-overlay');
+    if (NU_DEMO === 3) nudSim(sb);
+    else if (NU_DEMO === 4) nudCards(sb);
+    else if (NU_DEMO === 5) nudSplit(sb);
+    else if (NU_DEMO === 7) nudWipe(sb);
+    else if (NU_DEMO === 8) nudDave(sb);
+    else if (NU_DEMO === 9) nudPair(sb);
+    else if (NU_DEMO === 11) nudFund(sb);
+    else if (NU_DEMO === 12) nudFilm(sb);
+    else if (NU_DEMO === 13) nudFilm2(sb);
+  }
+
+  // V3 — year simulator: auto-plays the first year, then hands you the wheel
+  function nudSim(sb) {
+    sb.innerHTML = `<div class="nud-wrap">
+      <div class="bx-sec-title">Your first year, simulated<span class="nud-tag">Demonstration</span></div>
+      <div style="margin-top:16px; display:flex; align-items:center; gap:10px;">
+        <span class="nud-micro">M0</span>
+        <input type="range" class="nud-range" id="nud-sim-r" min="0" max="120" value="0">
+        <span class="nud-micro">M12</span>
+      </div>
+      <div id="nud-sim-m" class="num" style="margin-top:8px; text-align:center; font-size:11px; color:#929292;">Month 0</div>
+      <div class="nud-panel" id="nud-sim-b" style="margin-top:14px;"></div>
+      <div class="bx-rows" style="margin-top:16px;">
+        <div class="bx-row"><span class="bx-label" style="font-size:13px;">Portfolio P/L</span><span class="bx-val" style="font-size:13px;"><span class="num" id="nud-sim-p1"></span><span class="bx-pct" id="nud-sim-p1p"></span></span></div>
+        <div class="bx-row"><span class="bx-label" style="font-size:13px;">S&amp;P 500 P/L</span><span class="bx-val" style="font-size:13px;"><span class="num" id="nud-sim-p2"></span><span class="bx-pct" id="nud-sim-p2p"></span></span></div>
+        <div class="bx-row"><span class="bx-label" style="font-size:13px;">Alpha</span><span class="bx-val" style="font-size:13px;"><span class="num" id="nud-sim-pa"></span><span class="bx-pct" id="nud-sim-pap"></span></span></div>
+      </div>
+      <div class="bx-sec-title" style="margin-top:30px;">Calibration<span class="nud-tag">Demonstration</span></div>
+      <div class="nud-panel" id="nud-sim-c" style="margin-top:14px;"></div>
+      <div style="margin-top:12px; font-size:13px;"><span style="color:#288752;" id="nud-sim-s1"></span> <span style="color:#c7c7c7;" class="num" id="nud-sim-s2"></span></div>
+      <div style="margin-top:6px; font-size:11px; color:#565b5e;" id="nud-sim-s3"></div>
+      <div id="nud-sim-go" style="margin-top:16px; font-size:12px; color:#c7c7c7; cursor:pointer;">&#8635; Replay the year</div>
+      ${NUD_FOOT}
+    </div>`;
+    const b = nudChart('bench-svg', 150); nudTranslucent(b.el); document.getElementById('nud-sim-b').appendChild(b.el);
+    const c = nudChart('cal-svg', 150); nudTranslucent(c.el); nudCalFollow(c); document.getElementById('nud-sim-c').appendChild(c.el);
+    const r = document.getElementById('nud-sim-r');
+    const money = v => (v < 0 ? '\u2212' : '+') + Math.abs(v).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    const upd = t => {
+      b.setT(t); c.setT(t);
+      r.value = Math.round(t * 120);
+      document.getElementById('nud-sim-m').textContent = t < 0.04 ? 'Month 0' : 'Month ' + Math.max(1, Math.round(t * 12));
+      document.getElementById('nud-sim-p1').textContent = money(t * 16142.02);
+      document.getElementById('nud-sim-p1p').textContent = '+' + (t * 39.4).toFixed(1) + '%';
+      document.getElementById('nud-sim-p2').textContent = money(t * 18515.92);
+      document.getElementById('nud-sim-p2p').textContent = '+' + (t * 45.2).toFixed(1) + '%';
+      document.getElementById('nud-sim-pa').textContent = money(t * -2373.90);
+      document.getElementById('nud-sim-pap').textContent = '\u2212' + (t * 5.8).toFixed(1) + ' pp';
+      document.getElementById('nud-sim-s1').textContent = Math.round(t * 6) + ' of ' + Math.round(t * 11) + ' ahead of the S&P 500';
+      document.getElementById('nud-sim-s2').textContent = 'avg +' + (t * 1.9).toFixed(1) + ' pp';
+      document.getElementById('nud-sim-s3').textContent = '~' + Math.round(t * 19) + '% of the way to their horizons \u00b7 0 resolved \u00b7 verdicts forming';
+    };
+    const h = { raf: 0 };
+    NUD_TIMERS.push(h);
+    let driving = false;
+    const play = () => {
+      cancelAnimationFrame(h.raf);
+      driving = false;
+      const t0 = performance.now(), D = 3600;
+      const step = now => {
+        if (driving) return;
+        const t = Math.min(1, (now - t0) / D);
+        upd(1 - Math.pow(1 - t, 2));
+        if (t < 1) h.raf = requestAnimationFrame(step);
+      };
+      h.raf = requestAnimationFrame(step);
+    };
+    r.addEventListener('pointerdown', () => { driving = true; cancelAnimationFrame(h.raf); });
+    r.addEventListener('input', () => { driving = true; cancelAnimationFrame(h.raf); upd(r.value / 120); });
+    document.getElementById('nud-sim-go').onclick = play;
+    upd(0);
+    play();
+  }
+
+  // V4 — both sections, four acts: tapping a milestone jumps BOTH charts
+  function nudCards(sb) {
+    const row = (i, t, title, stat) => `<div class="nud-ms" id="nud-ms-${i}" onclick="window.__nudMs && window.__nudMs(${i}, ${t})">
+      <span class="nud-ms-dot"></span>
+      <span class="ttl">${title}</span>
+      <span class="stat num">${stat}</span>
+    </div>`;
+    sb.innerHTML = `<div class="nud-wrap">
+      <div class="bx-sec-title">Performance<span class="nud-tag">Demonstration</span></div>
+      <div style="margin-top:6px; font-size:11px; color:#565b5e;">Your first year &middot; tap a milestone &mdash; the charts jump to that moment</div>
+      <div class="nud-panel" style="margin-top:14px;">
+        <div style="display:flex; justify-content:space-between; font-size:10px; color:#565b5e; margin-bottom:8px;"><span id="nud-ca-lbl">Year one</span><span class="num" id="nud-ca-stat">+39.4% vs +45.2%</span></div>
+        <div id="nud-ca-chart"></div>
+      </div>
+      <div class="bx-sec-title" style="margin-top:26px;">Calibration<span class="nud-tag">Demonstration</span></div>
+      <div class="nud-panel" style="margin-top:12px;">
+        <div style="display:flex; justify-content:space-between; font-size:10px; color:#565b5e; margin-bottom:8px;"><span>Calls vs the S&amp;P 500</span><span class="num" id="nud-ca-cstat" style="color:#288752;">6 of 11 ahead &middot; avg +1.9 pp</span></div>
+        <div id="nud-ca-cal"></div>
+      </div>
+      <div id="nud-ca-sub" style="margin-top:12px; font-size:12px; color:#929292; line-height:1.55; min-height:36px;">A record nobody can argue with &mdash; every call measured against the S&amp;P 500.</div>
+      <div style="margin-top:12px;">
+        ${row(1, 0.04, 'First deposit', 'DAY 1')}
+        ${row(2, 0.2, 'First call', '1 CALL')}
+        ${row(3, 0.55, 'Month six', '6 OF 11 AHEAD')}
+        ${row(4, 1, 'Year one', '+39.4% VS +45.2%')}
+      </div>
+      ${NUD_FOOT}
+    </div>`;
+    const ch = nudChart('bench-svg', 140); nudTranslucent(ch.el);
+    document.getElementById('nud-ca-chart').appendChild(ch.el);
+    const cc = nudChart('cal-svg', 140); nudTranslucent(cc.el); nudCalFollow(cc);
+    document.getElementById('nud-ca-cal').appendChild(cc.el);
+    const SUBS = {
+      1: ['Day 1', 'DAY 1 \u00b7 FUNDED', '0 calls yet', 'Performance starts the day money lands \u2014 measured against the S&P from hour one.'],
+      2: ['Month 2', '1 CALL \u00b7 TRACKING', '1 call \u00b7 tracking', 'Your first buy carries a forecast \u2014 calibration begins, and the record starts keeping itself.'],
+      3: ['Month 6', '6 OF 11 AHEAD', '6 of 11 ahead', 'Half a year of evidence on the books \u2014 each call judged against the index, not your memory.'],
+      4: ['Year one', '+39.4% VS +45.2%', '6 of 11 ahead \u00b7 avg +1.9 pp', 'A record nobody can argue with \u2014 every call measured against the S&P 500.']
+    };
+    let curT = 0;
+    const anim = { raf: 0 };
+    NUD_TIMERS.push(anim);
+    const goTo = target => {
+      cancelAnimationFrame(anim.raf);
+      const from = curT, t0 = performance.now(), D = 320;
+      const step = now => {
+        const k = Math.min(1, (now - t0) / D);
+        curT = from + (target - from) * (1 - Math.pow(1 - k, 2));
+        ch.setT(curT); cc.setT(curT);
+        if (k < 1) anim.raf = requestAnimationFrame(step);
+      };
+      anim.raf = requestAnimationFrame(step);
+    };
+    window.__nudMs = (i, t) => {
+      for (let k = 1; k <= 4; k++) document.getElementById('nud-ms-' + k).classList.toggle('on', k === i);
+      document.getElementById('nud-ca-lbl').textContent = SUBS[i][0];
+      document.getElementById('nud-ca-stat').textContent = SUBS[i][1];
+      document.getElementById('nud-ca-cstat').textContent = SUBS[i][2];
+      document.getElementById('nud-ca-sub').textContent = SUBS[i][3];
+      goTo(t);
+    };
+    window.__nudMs(4, 1);
+  }
+
+  // D2 — the bare present beside the rich future, arrow between
+  function nudSplit(sb) {
+    sb.innerHTML = `<div class="nud-wrap">
+      <div class="bx-sec-title">Performance<span class="nud-tag">Demonstration</span></div>
+      <div style="display:flex; margin-top:16px; position:relative;">
+        <div style="flex:1; padding-right:16px;">
+          <div class="nud-micro">Today</div>
+          <div class="num" style="margin-top:10px; font-size:20px; font-weight:300;">0.00</div>
+          <svg width="100%" height="44" viewBox="0 0 140 44" preserveAspectRatio="none" style="margin-top:12px;"><line x1="0" y1="34" x2="140" y2="34" stroke="#2d2d2d" stroke-width="1"/><circle cx="4" cy="34" r="2.5" fill="#565b5e"/></svg>
+          <div style="margin-top:10px; font-size:11px; color:#565b5e;">No capital deployed</div>
+        </div>
+        <div style="flex:1; padding-left:16px; border-left:0.5px solid #232627;">
+          <div class="nud-micro" style="color:#929292;">Year one</div>
+          <div id="nud-spl-b" style="margin-top:10px;"></div>
+          <div style="margin-top:10px; font-size:11px;"><span class="num" style="color:#fff;">+39.4%</span> <span style="color:#565b5e;">vs S&amp;P</span> <span class="num" style="color:#C29A2A;">+45.2%</span></div>
+        </div>
+        <div style="position:absolute; left:50%; top:40%; transform:translateX(-50%); color:#565b5e; font-size:15px;">&#8594;</div>
+      </div>
+      <div class="bx-sec-title" style="margin-top:36px;">Calibration<span class="nud-tag">Demonstration</span></div>
+      <div style="display:flex; margin-top:16px; position:relative;">
+        <div style="flex:1; padding-right:16px;">
+          <div class="nud-micro">Today</div>
+          <div style="margin-top:10px; font-size:13px; color:#929292;">No calls yet</div>
+          <svg width="100%" height="44" viewBox="0 0 140 44" preserveAspectRatio="none" style="margin-top:12px;"><line x1="0" y1="22" x2="140" y2="22" stroke="#2d2d2d" stroke-width="1"/><circle cx="4" cy="22" r="2.5" fill="#565b5e"/></svg>
+        </div>
+        <div style="flex:1; padding-left:16px; border-left:0.5px solid #232627;">
+          <div class="nud-micro" style="color:#929292;">Year one</div>
+          <div id="nud-spl-c" style="margin-top:10px;"></div>
+          <div style="margin-top:10px; font-size:11px; color:#288752;">6 of 11 ahead of the S&amp;P 500</div>
+        </div>
+        <div style="position:absolute; left:50%; top:40%; transform:translateX(-50%); color:#565b5e; font-size:15px;">&#8594;</div>
+      </div>
+      ${NUD_FOOT}
+    </div>`;
+    const b = nudChart('bench-svg', 64); b.setT(1); document.getElementById('nud-spl-b').appendChild(b.el);
+    const c = nudChart('cal-svg', 64); c.setT(1); document.getElementById('nud-spl-c').appendChild(c.el);
+  }
+
+  // V6 — drag to wipe between the empty present and year one; the handle
+  // rests faint so it never blocks the view, and wakes on touch
+  function nudWipe(sb) {
+    sb.innerHTML = `<div class="nud-wrap" style="display:flex; justify-content:space-between; margin-bottom:10px;">
+        <span class="nud-micro">Today</span><span class="nud-micro" style="color:#929292;">Year one &middot; demonstration</span>
+      </div>
+      <div class="nud-wipe" id="nud-wp" style="height:508px;">
+        <div style="position:absolute; inset:0; padding:18px 16px;">
+          <div style="font-size:13px; color:#fff;">Performance<span class="nud-tag">Demonstration</span></div>
+          <div id="nud-wp-b" style="margin-top:10px;"></div>
+          <div style="display:flex; justify-content:space-between; margin-top:10px; font-size:12px;"><span style="color:#929292;">Portfolio P/L</span><span><span class="num" style="color:#fff;">+16,142.02</span> <span class="num" style="font-size:11px; color:#929292;">+39.4%</span></span></div>
+          <div style="display:flex; justify-content:space-between; margin-top:7px; font-size:12px;"><span style="color:#929292;">S&amp;P 500 P/L</span><span><span class="num" style="color:#fff;">+18,515.92</span> <span class="num" style="font-size:11px; color:#929292;">+45.2%</span></span></div>
+          <div style="display:flex; justify-content:space-between; margin-top:7px; font-size:12px;"><span style="color:#929292;">Alpha</span><span><span class="num" style="color:#fff;">&minus;2,373.90</span> <span class="num" style="font-size:11px; color:#929292;">&minus;5.8 pp</span></span></div>
+          <div style="font-size:13px; color:#fff; margin-top:22px;">Calibration<span class="nud-tag">Demonstration</span></div>
+          <div id="nud-wp-c" style="margin-top:10px;"></div>
+          <div style="margin-top:10px; font-size:12px;"><span style="color:#288752;">6 of 11 ahead of the S&amp;P 500</span> <span class="num" style="color:#c7c7c7;">avg +1.9 pp</span></div>
+          <div style="margin-top:6px; font-size:11px; color:#565b5e;">~19% of the way to their horizons &middot; 0 resolved</div>
+        </div>
+        <div id="nud-wp-now" style="position:absolute; inset:0; background:#000; padding:18px 16px; z-index:2;">
+          <div style="font-size:13px; color:#fff;">Performance</div>
+          <div style="margin-top:10px; height:118px; border:1px dashed #232627; display:flex; align-items:center; justify-content:center; font-size:10px; letter-spacing:0.5px; color:#3f4447;">AWAITING FIRST DEPOSIT</div>
+          <div style="display:flex; justify-content:space-between; margin-top:10px; font-size:12px;"><span style="color:#565b5e;">Portfolio P/L</span><span class="num" style="color:#565b5e;">0.00</span></div>
+          <div style="display:flex; justify-content:space-between; margin-top:7px; font-size:12px;"><span style="color:#565b5e;">S&amp;P 500 P/L</span><span class="num" style="color:#565b5e;">&mdash;</span></div>
+          <div style="display:flex; justify-content:space-between; margin-top:7px; font-size:12px;"><span style="color:#565b5e;">Alpha</span><span class="num" style="color:#565b5e;">&mdash;</span></div>
+          <div style="font-size:13px; color:#fff; margin-top:22px;">Calibration</div>
+          <div style="margin-top:10px; height:118px; border:1px dashed #232627; display:flex; align-items:center; justify-content:center; font-size:10px; letter-spacing:0.5px; color:#3f4447;">AWAITING FIRST CALL</div>
+          <div style="margin-top:10px; font-size:12px; color:#565b5e;">No calls yet</div>
+          <div style="margin-top:6px; font-size:11px; color:#3f4447;">Transfer pending &middot; 0.00 deployed</div>
+        </div>
+        <div class="nud-wipe-handle" id="nud-wp-h"></div>
+      </div>
+      <div class="nud-wrap"><div class="nud-foot">Slide anywhere on the card &mdash; your present on the left, a demonstrated year one on the right.</div></div>`;
+    const b = nudChart('bench-svg', 118); b.setT(1); nudTranslucent(b.el); document.getElementById('nud-wp-b').appendChild(b.el);
+    const c = nudChart('cal-svg', 118); c.setT(1); nudTranslucent(c.el); document.getElementById('nud-wp-c').appendChild(c.el);
+    const wp = document.getElementById('nud-wp');
+    const now = document.getElementById('nud-wp-now');
+    const hd = document.getElementById('nud-wp-h');
+    let p = 0.42;
+    const setP = v => {
+      p = Math.max(0.06, Math.min(0.94, v));
+      now.style.clipPath = 'inset(0 ' + ((1 - p) * 100).toFixed(2) + '% 0 0)';
+      hd.style.left = (p * 100).toFixed(2) + '%';
+    };
+    // the handle sleeps when idle so it stops blocking both panes
+    const idle = { to: 0 };
+    NUD_TIMERS.push(idle);
+    const wake = () => {
+      hd.classList.remove('idle');
+      clearTimeout(idle.to);
+      idle.to = setTimeout(() => hd.classList.add('idle'), 1600);
+    };
+    let drag = false;
+    wp.addEventListener('pointerdown', e => { drag = true; try { wp.setPointerCapture(e.pointerId); } catch (x) {} wake(); setP((e.clientX - wp.getBoundingClientRect().left) / wp.getBoundingClientRect().width); });
+    wp.addEventListener('pointermove', e => { if (drag) { wake(); setP((e.clientX - wp.getBoundingClientRect().left) / wp.getBoundingClientRect().width); } });
+    wp.addEventListener('pointerup', () => { drag = false; });
+    wp.addEventListener('pointercancel', () => { drag = false; });
+    setP(0.42);
+    // a one-time nudge so the gesture is discoverable, then the handle fades
+    const t0 = performance.now(), nudge = { raf: 0 };
+    NUD_TIMERS.push(nudge);
+    const sway = nowT => {
+      const k = (nowT - t0) / 900;
+      if (k >= 1 || drag) { if (!drag) setP(0.42); wake(); return; }
+      setP(0.42 + Math.sin(k * Math.PI * 2) * 0.05);
+      nudge.raf = requestAnimationFrame(sway);
+    };
+    nudge.raf = requestAnimationFrame(sway);
+  }
+
+  // V7 — Dave's spec, in full: one coherent demonstration portfolio with the
+  // real charts alive, What Changed, Positions, Decision Record, Calibration,
+  // and the choreographed path down to the funding CTA
+  function nudDave(sb) {
+    const hairline = `<div style="height:1px; background:#1c1c1c; margin:24px 0 0;"></div>`;
+    const secHead = (t) => `<div style="margin-top:24px; display:flex; align-items:baseline; justify-content:space-between;">
+      <span style="font-size:15px; letter-spacing:-0.3px;">${t}</span><span class="nud-tag" style="margin:0;">Demonstration</span></div>`;
+    const att = (tick, tag, tagCol, line, note) => `<div style="margin-top:12px; padding:12px 14px; background:#0b0b0b; border:0.5px solid #232627;">
+      <div style="display:flex; justify-content:space-between; align-items:baseline;">
+        <span style="font-size:13px; font-weight:500;">${tick}</span>
+        <span style="font-size:8.5px; letter-spacing:1.1px; color:${tagCol};">${tag}</span>
+      </div>
+      <div style="margin-top:7px; font-size:12px; color:#c7c7c7; line-height:1.5;">${line}</div>
+      <div style="margin-top:5px; font-size:11px; color:#565b5e; line-height:1.5;">${note}</div>
+    </div>`;
+    const pos = (tick, ret, retCol, pp, ppCol, thesis, thCol, status, stCol) => `<div style="display:flex; align-items:baseline; padding:11px 0; border-top:0.5px solid #1c1c1c; font-size:11.5px;">
+      <span style="flex:1.1; font-weight:500; font-size:12px;">${tick}</span>
+      <span class="num" style="flex:1; text-align:right; color:${retCol};">${ret}</span>
+      <span class="num" style="flex:1.1; text-align:right; color:${ppCol};">${pp}</span>
+      <span style="flex:1; text-align:right; color:${thCol};">${thesis}</span>
+      <span style="flex:1.1; text-align:right; color:${stCol};">${status}</span>
+    </div>`;
+    const segBtn = (id, label, view) => `<span id="${id}" onclick="window.__nudDv && window.__nudDv('${view}')" style="padding:6px 14px; font-size:9.5px; font-weight:500; letter-spacing:0.9px; text-transform:uppercase; cursor:pointer; transition:color 200ms ease, background 200ms ease;">${label}</span>`;
+    sb.innerHTML = `<div class="nud-wrap">
+      <div style="border-top:1px solid #2a2d2e; border-bottom:1px solid #2a2d2e; padding:16px 0 20px;">
+        <div style="display:flex; align-items:center; justify-content:space-between;">
+          <span style="font-size:9.5px; font-weight:600; letter-spacing:1.2px; text-transform:uppercase; color:#EDCB78;">Demonstration</span>
+          <span style="display:inline-flex; border:0.5px solid #2a2d2e; border-radius:7px; overflow:hidden;">
+            ${segBtn('nud-dv-tgl-now', 'Today', 'now')}
+            ${segBtn('nud-dv-tgl-demo', 'Year one', 'demo')}
+          </span>
+        </div>
+        <div id="nud-dv-sub" style="margin-top:7px; font-size:11px; color:#565b5e; line-height:1.5;">One portfolio, a full year inside the system &mdash; switch to Today to compare.</div>
+
+        <div id="nud-dv-now" style="display:none;">
+          <div style="margin-top:24px; font-size:10px; letter-spacing:1.4px; color:#565b5e;">GOOD MORNING</div>
+          <div style="margin-top:12px; font-size:9.5px; font-weight:600; letter-spacing:1.2px; text-transform:uppercase; color:#929292;">Your account</div>
+          <div class="num" style="margin-top:8px; font-size:28px; letter-spacing:-0.56px;">$0.00</div>
+          <div style="margin-top:6px; font-size:12px; color:#929292;">Transfer pending &middot; <span class="num">$5,000.00 CAD</span></div>
+          ${hairline}
+          <div style="margin-top:22px; font-size:12px; color:#565b5e; line-height:2.2;">
+            Performance starts at your first deposit.<br>
+            Evidence starts at your first position.<br>
+            Calibration starts with your first call.
+          </div>
+          ${hairline}
+          <div style="margin-top:20px; font-size:12px; color:#c7c7c7; line-height:1.5;">Fund your account &mdash; II starts building your record &#8250;</div>
+        </div>
+
+        <div id="nud-dv-demo">
+          <div style="margin-top:24px; font-size:10px; letter-spacing:1.4px; color:#565b5e;">GOOD MORNING</div>
+          <div style="margin-top:12px; font-size:9.5px; font-weight:600; letter-spacing:1.2px; text-transform:uppercase; color:#929292;">Demonstration portfolio</div>
+          <div class="num" style="margin-top:8px; font-size:28px; letter-spacing:-0.56px;">$247,840</div>
+          <div style="margin-top:6px; font-size:12px; color:#929292;">+$18,420 since inception <span style="font-size:8px; vertical-align:1.5px; color:#30d158; margin-left:4px;">&#9650;</span></div>
+
+          <div class="nud-panel" style="margin-top:18px;">
+            <div style="display:flex; justify-content:space-between; font-size:10px; color:#565b5e; margin-bottom:8px;"><span>vs S&amp;P 500 &middot; since inception</span><span class="num">&minus;3.8 pp</span></div>
+            <div id="nud-dv-b"></div>
+          </div>
+          <div style="display:flex; gap:22px; margin-top:12px; font-size:12px;">
+            <span><span style="color:#929292;">Portfolio</span> <span class="num" style="color:#fff;">+7.4%</span></span>
+            <span><span style="color:#929292;">S&amp;P 500</span> <span class="num" style="color:#C29A2A;">+11.2%</span></span>
+            <span><span style="color:#929292;">Alpha</span> <span class="num" style="color:#fff;">&minus;3.8 pp</span><span style="font-size:8px; vertical-align:1.5px; color:#ff3533; margin-left:4px;">&#9660;</span></span>
+          </div>
+
+          ${hairline}
+          <div style="margin-top:24px; font-size:15px; letter-spacing:-0.3px;">3 things require attention</div>
+          ${att('NVDA', 'EXPECTATIONS CHANGED', '#C9A24B', 'Revenue outlook increased following earnings.', 'Your original thesis remains intact.')}
+          ${att('GOOGL', 'TRAILING BENCHMARK', '#BE3C36', '&minus;12.4 pp vs S&amp;P since purchase.', 'Thesis remains intact &middot; next review Nov 4.')}
+          ${att('META', 'PRICE MOVEMENT', '#565b5e', '+6.8% today.', 'No material change detected in underlying expectations.')}
+
+          ${hairline}
+          ${secHead('What changed')}
+          <div style="margin-top:12px; padding:14px; background:#0b0b0b; border:0.5px solid #232627;">
+            <div style="display:flex; justify-content:space-between; align-items:baseline;">
+              <span style="font-size:13px; font-weight:500;">GOOGL <span style="color:#929292; font-weight:400;">&middot; Earnings</span></span>
+            </div>
+            <div style="margin-top:8px; font-size:12px; color:#c7c7c7; line-height:1.55;">Revenue exceeded expectations by 4%. Cloud growth accelerated. Management increased capex expectations.</div>
+            <div style="display:flex; justify-content:space-between; margin-top:12px; font-size:11px;"><span style="color:#565b5e;">Impact on thesis</span><span style="color:#288752;">Positive</span></div>
+            <div style="margin-top:9px; font-size:11px; color:#565b5e;">What hasn't changed</div>
+            <div style="margin-top:4px; font-size:11px; color:#929292; line-height:1.5;">Advertising growth remains within the range assumed in the investment case.</div>
+            <div style="display:flex; justify-content:space-between; margin-top:12px; font-size:11px;"><span style="color:#565b5e;">AI assessment</span><span style="color:#c7c7c7;">Expected return: unchanged</span></div>
+            <div style="margin-top:12px; font-size:12px; color:#c7c7c7;">Review position &#8250;</div>
+          </div>
+
+          ${hairline}
+          ${secHead('Positions')}
+          <div style="display:flex; margin-top:12px; font-size:9px; letter-spacing:0.7px; color:#565b5e;">
+            <span style="flex:1.1;">TICK</span><span style="flex:1; text-align:right;">RETURN</span><span style="flex:1.1; text-align:right;">VS S&amp;P</span><span style="flex:1; text-align:right;">THESIS</span><span style="flex:1.1; text-align:right;">STATUS</span>
+          </div>
+          <div style="margin-top:8px;">
+            ${pos('META', '+32.4%', '#fff', '+17.8 pp', '#30d158', 'Intact', '#929292', 'On track', '#288752')}
+            ${pos('AMZN', '+18.2%', '#fff', '+3.1 pp', '#30d158', 'Intact', '#929292', 'On track', '#288752')}
+            ${pos('GOOGL', '+2.7%', '#fff', '&minus;12.4 pp', '#ff3533', 'Intact', '#929292', 'Review', '#C9A24B')}
+            ${pos('XYZ', '&minus;16.8%', '#929292', '&minus;29.2 pp', '#ff3533', 'Weakening', '#C9A24B', 'Attention', '#BE3C36')}
+          </div>
+
+          ${hairline}
+          ${secHead('Decision record')}
+          <div style="margin-top:12px; padding:13px 14px; background:#0b0b0b; border:0.5px solid #232627;">
+            <div style="display:flex; justify-content:space-between; align-items:baseline;">
+              <span style="font-size:13px; font-weight:500;">META <span style="color:#929292; font-weight:400;">&middot; Added 14 shares</span></span>
+              <span class="num" style="font-size:10px; color:#565b5e;">Mar 18</span>
+            </div>
+            <div style="margin-top:7px; font-size:11.5px; color:#929292; line-height:1.5;">Reason: expected return remained attractive after the earnings decline.</div>
+            <div style="display:flex; justify-content:space-between; margin-top:10px; font-size:11.5px;">
+              <span style="color:#565b5e;">Price at decision <span class="num" style="color:#c7c7c7;">$482</span> &middot; today <span class="num" style="color:#c7c7c7;">$571</span></span>
+              <span class="num" style="color:#30d158;">+13.7 pp vs S&amp;P</span>
+            </div>
+          </div>
+          <div style="margin-top:12px; padding:13px 14px; background:#0b0b0b; border:0.5px solid #232627;">
+            <div style="display:flex; justify-content:space-between; align-items:baseline;">
+              <span style="font-size:13px; font-weight:500;">TSLA <span style="color:#929292; font-weight:400;">&middot; Bought</span></span>
+              <span class="num" style="font-size:10px; color:#565b5e;">Jan 12</span>
+            </div>
+            <div style="margin-top:7px; font-size:11.5px; color:#929292; line-height:1.5;">Reason: revenue growth expected to reaccelerate.</div>
+            <div style="display:flex; justify-content:space-between; margin-top:10px; font-size:11.5px;">
+              <span style="color:#565b5e;">What happened: growth kept decelerating.</span>
+              <span class="num" style="color:#ff3533;">&minus;21.4 pp vs S&amp;P</span>
+            </div>
+          </div>
+
+          ${hairline}
+          ${secHead('Calibration')}
+          <div class="nud-panel" style="margin-top:12px;">
+            <div style="display:flex; justify-content:space-between; font-size:10px; color:#565b5e; margin-bottom:8px;"><span>Calls vs the S&amp;P 500</span><span class="num" style="color:#288752;">12 resolved</span></div>
+            <div id="nud-dv-c"></div>
+          </div>
+          <div style="margin-top:12px; font-size:12px; color:#c7c7c7;">12 forecasts resolved &mdash; <span style="color:#288752;">7 correct</span> &middot; <span style="color:#BE3C36;">5 incorrect</span></div>
+          <div style="margin-top:12px; padding:12px 14px; background:#0b0b0b; border:0.5px solid #232627;">
+            <div style="font-size:11px; color:#929292;">Confidence vs reality</div>
+            <div style="display:flex; justify-content:space-between; margin-top:8px; font-size:12px;"><span style="color:#c7c7c7;">70&ndash;79% confidence</span><span class="num" style="color:#fff;">actual 58%</span></div>
+            <div style="margin-top:8px; font-size:11px; color:#C9A24B; line-height:1.5;">You were more confident than the evidence justified.</div>
+          </div>
+          <div style="display:flex; gap:12px; margin-top:12px;">
+            <div style="flex:1; padding:11px 13px; background:#0b0b0b; border:0.5px solid #232627;">
+              <div style="font-size:10px; color:#565b5e;">Strongest</div>
+              <div style="margin-top:5px; font-size:12px; color:#288752;">Business quality</div>
+            </div>
+            <div style="flex:1; padding:11px 13px; background:#0b0b0b; border:0.5px solid #232627;">
+              <div style="font-size:10px; color:#565b5e;">Weakest</div>
+              <div style="margin-top:5px; font-size:12px; color:#BE3C36;">Timing &middot; sizing</div>
+            </div>
+          </div>
+          <div style="margin-top:10px; font-size:11px; color:#565b5e; line-height:1.5;">Your largest positions produced less excess return than your smaller ones.</div>
+
+          ${hairline}
+          <div style="margin-top:20px; font-size:12px; color:#c7c7c7; line-height:1.5;">Fund your account &mdash; II starts replacing this demonstration with your reality &#8250;</div>
+        </div>
+        ${NUD_FOOT}
+      </div>
+    </div>`;
+    const b = nudChart('bench-svg', 130); b.setT(1); nudTranslucent(b.el); document.getElementById('nud-dv-b').appendChild(b.el);
+    const c = nudChart('cal-svg', 130); c.setT(1); nudTranslucent(c.el); document.getElementById('nud-dv-c').appendChild(c.el);
+    window.__nudDv = v => {
+      const demo = v === 'demo';
+      document.getElementById('nud-dv-demo').style.display = demo ? '' : 'none';
+      document.getElementById('nud-dv-now').style.display = demo ? 'none' : '';
+      const tN = document.getElementById('nud-dv-tgl-now'), tD = document.getElementById('nud-dv-tgl-demo');
+      tD.style.background = demo ? '#171717' : 'transparent';
+      tD.style.color = demo ? '#fff' : '#565b5e';
+      tN.style.background = demo ? 'transparent' : '#171717';
+      tN.style.color = demo ? '#565b5e' : '#fff';
+      document.getElementById('nud-dv-sub').textContent = demo
+        ? 'One portfolio, a full year inside the system — switch to Today to compare.'
+        : 'Your account as it stands — switch to Year one to see the system at work.';
+      buildPositions(); // the stage height changed — recompute the page height
+    };
+    window.__nudDv('demo');
+  }
+  // V8 — paired accounts: a real account and a numbered simulated twin.
+  // Only the demo side carries a marker (IBKR rule: no marker means real),
+  // and inside the demo a persistent gold bar signs every screen (Stripe rule)
+  function nudPair(sb) {
+    const hairline = `<div style="height:1px; background:#1c1c1c; margin:24px 0 0;"></div>`;
+    const secHead = (t) => `<div style="margin-top:24px; display:flex; align-items:baseline; justify-content:space-between;">
+      <span style="font-size:15px; letter-spacing:-0.3px;">${t}</span><span class="nud-tag" style="margin:0;">Demonstration</span></div>`;
+    const att = (tick, tag, tagCol, line, note) => `<div style="margin-top:12px; padding:12px 14px; background:#0b0b0b; border:0.5px solid #232627;">
+      <div style="display:flex; justify-content:space-between; align-items:baseline;">
+        <span style="font-size:13px; font-weight:500;">${tick}</span>
+        <span style="font-size:8.5px; letter-spacing:1.1px; color:${tagCol};">${tag}</span>
+      </div>
+      <div style="margin-top:7px; font-size:12px; color:#c7c7c7; line-height:1.5;">${line}</div>
+      <div style="margin-top:5px; font-size:11px; color:#565b5e; line-height:1.5;">${note}</div>
+    </div>`;
+    const pos = (tick, ret, retCol, pp, ppCol, thesis, thCol, status, stCol) => `<div style="display:flex; align-items:baseline; padding:11px 0; border-top:0.5px solid #1c1c1c; font-size:11.5px;">
+      <span style="flex:1.1; font-weight:500; font-size:12px;">${tick}</span>
+      <span class="num" style="flex:1; text-align:right; color:${retCol};">${ret}</span>
+      <span class="num" style="flex:1.1; text-align:right; color:${ppCol};">${pp}</span>
+      <span style="flex:1; text-align:right; color:${thCol};">${thesis}</span>
+      <span style="flex:1.1; text-align:right; color:${stCol};">${status}</span>
+    </div>`;
+    sb.innerHTML = `<div class="nud-wrap">
+      <div style="font-size:10px; letter-spacing:1.4px; color:#565b5e;">ACCOUNTS</div>
+      <div id="nud-pa-r0" onclick="window.__nudPa && window.__nudPa(0)" style="margin-top:12px; padding:13px 14px; background:#0b0b0b; border:0.5px solid #232627; border-left:2px solid #fff; cursor:pointer;">
+        <div style="display:flex; justify-content:space-between; align-items:baseline;">
+          <span style="font-size:12px; font-weight:500; letter-spacing:0.3px;">YOUR PORTFOLIO</span>
+          <span class="num" style="font-size:13px;">$0.00</span>
+        </div>
+        <div style="margin-top:5px; font-size:11px; color:#565b5e;">Transfer pending &middot; <span class="num">$5,000.00 CAD</span></div>
+      </div>
+      <div id="nud-pa-r1" onclick="window.__nudPa && window.__nudPa(1)" style="margin-top:10px; padding:13px 14px; background:#0b0b0b; border:0.5px solid #232627; border-left:2px solid transparent; cursor:pointer;">
+        <div style="display:flex; justify-content:space-between; align-items:baseline;">
+          <span style="font-size:12px; font-weight:500; letter-spacing:0.3px; color:#929292;">DEMONSTRATION <span class="num" style="font-size:10px; color:#565b5e;">II-D-0001</span><span class="nud-tag" style="margin-left:8px;">Simulated</span></span>
+          <span class="num" style="font-size:13px; color:#929292;">$247,840</span>
+        </div>
+        <div style="margin-top:5px; font-size:11px; color:#565b5e;">+7.4% since inception &middot; vs S&amp;P 500 <span class="num">&minus;3.8 pp</span></div>
+      </div>
+
+      <div id="nud-pa-real" style="display:none;">
+        ${hairline}
+        <div style="margin-top:22px; font-size:12px; color:#565b5e; line-height:2.2;">
+          Performance starts at your first deposit.<br>
+          Evidence starts at your first position.<br>
+          Calibration starts with your first call.
+        </div>
+        <div style="margin-top:20px; font-size:12px; color:#c7c7c7; line-height:1.5;">Fund your account &#8250;</div>
+      </div>
+
+      <div id="nud-pa-demo" style="display:none;">
+        <div class="nud-panel" style="margin-top:16px;">
+          <div style="display:flex; justify-content:space-between; font-size:10px; color:#565b5e; margin-bottom:8px;"><span>vs S&amp;P 500 &middot; since inception</span><span class="num">&minus;3.8 pp</span></div>
+          <div id="nud-pa-b"></div>
+        </div>
+        <div style="display:flex; gap:22px; margin-top:12px; font-size:12px;">
+          <span><span style="color:#929292;">Portfolio</span> <span class="num" style="color:#fff;">+7.4%</span></span>
+          <span><span style="color:#929292;">S&amp;P 500</span> <span class="num" style="color:#C29A2A;">+11.2%</span></span>
+          <span><span style="color:#929292;">Alpha</span> <span class="num" style="color:#fff;">&minus;3.8 pp</span><span style="font-size:8px; vertical-align:1.5px; color:#ff3533; margin-left:4px;">&#9660;</span></span>
+        </div>
+
+        ${hairline}
+        <div style="margin-top:24px; font-size:15px; letter-spacing:-0.3px;">3 things require attention</div>
+        ${att('NVDA', 'EXPECTATIONS CHANGED', '#C9A24B', 'Revenue outlook increased following earnings.', 'Your original thesis remains intact.')}
+        ${att('GOOGL', 'TRAILING BENCHMARK', '#BE3C36', '&minus;12.4 pp vs S&amp;P since purchase.', 'Thesis remains intact &middot; next review Nov 4.')}
+        ${att('META', 'PRICE MOVEMENT', '#565b5e', '+6.8% today.', 'No material change detected in underlying expectations.')}
+
+        ${hairline}
+        ${secHead('What changed')}
+        <div style="margin-top:12px; padding:14px; background:#0b0b0b; border:0.5px solid #232627;">
+          <div style="display:flex; justify-content:space-between; align-items:baseline;">
+            <span style="font-size:13px; font-weight:500;">GOOGL <span style="color:#929292; font-weight:400;">&middot; Earnings</span></span>
+          </div>
+          <div style="margin-top:8px; font-size:12px; color:#c7c7c7; line-height:1.55;">Revenue exceeded expectations by 4%. Cloud growth accelerated. Management increased capex expectations.</div>
+          <div style="display:flex; justify-content:space-between; margin-top:12px; font-size:11px;"><span style="color:#565b5e;">Impact on thesis</span><span style="color:#288752;">Positive</span></div>
+          <div style="margin-top:9px; font-size:11px; color:#565b5e;">What hasn't changed</div>
+          <div style="margin-top:4px; font-size:11px; color:#929292; line-height:1.5;">Advertising growth remains within the range assumed in the investment case.</div>
+          <div style="display:flex; justify-content:space-between; margin-top:12px; font-size:11px;"><span style="color:#565b5e;">AI assessment</span><span style="color:#c7c7c7;">Expected return: unchanged</span></div>
+          <div style="margin-top:12px; font-size:12px; color:#c7c7c7;">Review position &#8250;</div>
+        </div>
+
+        ${hairline}
+        ${secHead('Positions')}
+        <div style="display:flex; margin-top:12px; font-size:9px; letter-spacing:0.7px; color:#565b5e;">
+          <span style="flex:1.1;">TICK</span><span style="flex:1; text-align:right;">RETURN</span><span style="flex:1.1; text-align:right;">VS S&amp;P</span><span style="flex:1; text-align:right;">THESIS</span><span style="flex:1.1; text-align:right;">STATUS</span>
+        </div>
+        <div style="margin-top:8px;">
+          ${pos('META', '+32.4%', '#fff', '+17.8 pp', '#30d158', 'Intact', '#929292', 'On track', '#288752')}
+          ${pos('AMZN', '+18.2%', '#fff', '+3.1 pp', '#30d158', 'Intact', '#929292', 'On track', '#288752')}
+          ${pos('GOOGL', '+2.7%', '#fff', '&minus;12.4 pp', '#ff3533', 'Intact', '#929292', 'Review', '#C9A24B')}
+          ${pos('XYZ', '&minus;16.8%', '#929292', '&minus;29.2 pp', '#ff3533', 'Weakening', '#C9A24B', 'Attention', '#BE3C36')}
+        </div>
+
+        ${hairline}
+        ${secHead('Decision record')}
+        <div style="margin-top:12px; padding:13px 14px; background:#0b0b0b; border:0.5px solid #232627;">
+          <div style="display:flex; justify-content:space-between; align-items:baseline;">
+            <span style="font-size:13px; font-weight:500;">META <span style="color:#929292; font-weight:400;">&middot; Added 14 shares</span></span>
+            <span class="num" style="font-size:10px; color:#565b5e;">Mar 18</span>
+          </div>
+          <div style="margin-top:7px; font-size:11.5px; color:#929292; line-height:1.5;">Reason: expected return remained attractive after the earnings decline.</div>
+          <div style="display:flex; justify-content:space-between; margin-top:10px; font-size:11.5px;">
+            <span style="color:#565b5e;">Price at decision <span class="num" style="color:#c7c7c7;">$482</span> &middot; today <span class="num" style="color:#c7c7c7;">$571</span></span>
+            <span class="num" style="color:#30d158;">+13.7 pp vs S&amp;P</span>
+          </div>
+        </div>
+        <div style="margin-top:12px; padding:13px 14px; background:#0b0b0b; border:0.5px solid #232627;">
+          <div style="display:flex; justify-content:space-between; align-items:baseline;">
+            <span style="font-size:13px; font-weight:500;">TSLA <span style="color:#929292; font-weight:400;">&middot; Bought</span></span>
+            <span class="num" style="font-size:10px; color:#565b5e;">Jan 12</span>
+          </div>
+          <div style="margin-top:7px; font-size:11.5px; color:#929292; line-height:1.5;">Reason: revenue growth expected to reaccelerate.</div>
+          <div style="display:flex; justify-content:space-between; margin-top:10px; font-size:11.5px;">
+            <span style="color:#565b5e;">What happened: growth kept decelerating.</span>
+            <span class="num" style="color:#ff3533;">&minus;21.4 pp vs S&amp;P</span>
+          </div>
+        </div>
+
+        ${hairline}
+        ${secHead('Calibration')}
+        <div class="nud-panel" style="margin-top:12px;">
+          <div style="display:flex; justify-content:space-between; font-size:10px; color:#565b5e; margin-bottom:8px;"><span>Calls vs the S&amp;P 500</span><span class="num" style="color:#288752;">12 resolved</span></div>
+          <div id="nud-pa-c"></div>
+        </div>
+        <div style="margin-top:12px; font-size:12px; color:#c7c7c7;">12 forecasts resolved &mdash; <span style="color:#288752;">7 correct</span> &middot; <span style="color:#BE3C36;">5 incorrect</span></div>
+        <div style="margin-top:12px; padding:12px 14px; background:#0b0b0b; border:0.5px solid #232627;">
+          <div style="font-size:11px; color:#929292;">Confidence vs reality</div>
+          <div style="display:flex; justify-content:space-between; margin-top:8px; font-size:12px;"><span style="color:#c7c7c7;">70&ndash;79% confidence</span><span class="num" style="color:#fff;">actual 58%</span></div>
+          <div style="margin-top:8px; font-size:11px; color:#C9A24B; line-height:1.5;">You were more confident than the evidence justified.</div>
+        </div>
+        <div style="display:flex; gap:12px; margin-top:12px;">
+          <div style="flex:1; padding:11px 13px; background:#0b0b0b; border:0.5px solid #232627;">
+            <div style="font-size:10px; color:#565b5e;">Strongest</div>
+            <div style="margin-top:5px; font-size:12px; color:#288752;">Business quality</div>
+          </div>
+          <div style="flex:1; padding:11px 13px; background:#0b0b0b; border:0.5px solid #232627;">
+            <div style="font-size:10px; color:#565b5e;">Weakest</div>
+            <div style="margin-top:5px; font-size:12px; color:#BE3C36;">Timing &middot; sizing</div>
+          </div>
+        </div>
+        <div style="margin-top:10px; font-size:11px; color:#565b5e; line-height:1.5;">Your largest positions produced less excess return than your smaller ones.</div>
+
+        ${hairline}
+        <div style="margin-top:20px; font-size:12px; color:#c7c7c7; line-height:1.5;">Fund your account &mdash; II starts building your record &#8250;</div>
+      </div>
+      ${NUD_FOOT}
+    </div>`;
+    const b = nudChart('bench-svg', 130); b.setT(1); nudTranslucent(b.el); document.getElementById('nud-pa-b').appendChild(b.el);
+    const c = nudChart('cal-svg', 120); c.setT(1); nudTranslucent(c.el); document.getElementById('nud-pa-c').appendChild(c.el);
+    window.__nudPa = i => {
+      const demo = i === 1;
+      document.getElementById('nud-pa-demo').style.display = demo ? '' : 'none';
+      document.getElementById('nud-pa-real').style.display = demo ? 'none' : '';
+      const r0 = document.getElementById('nud-pa-r0'), r1 = document.getElementById('nud-pa-r1');
+      r0.style.borderLeftColor = demo ? 'transparent' : '#fff';
+      r1.style.borderLeftColor = demo ? '#C9A24B' : 'transparent';
+      r0.querySelector('span').style.color = demo ? '#929292' : '#fff';
+      r1.querySelector('span').style.color = demo ? '#fff' : '#929292';
+      buildPositions(); // the stage height changed — recompute the page height
+    };
+    window.__nudPa(0);
+  }
+
+  // V10 — the funding moment itself: both instruments shown full as the
+  // demonstration, then one tap funds the account and the same two frames
+  // flip to the user's day one while the demo steps back to a secondary row
+  function nudFund(sb) {
+    sb.innerHTML = `<div class="nud-wrap">
+      <div id="nud-fu-h">
+        <div style="font-size:9.5px; font-weight:600; letter-spacing:1.2px; text-transform:uppercase; color:#929292;">Demonstration portfolio</div>
+        <div class="num" style="margin-top:8px; font-size:28px; letter-spacing:-0.56px;">$247,840</div>
+        <div style="margin-top:6px; font-size:12px; color:#929292;">+7.4% since inception &middot; vs S&amp;P 500 <span class="num">&minus;3.8 pp</span></div>
+      </div>
+
+      <div style="margin-top:20px; display:flex; justify-content:space-between; align-items:baseline;">
+        <span style="font-size:14px; letter-spacing:-0.2px;">Performance</span>
+        <span class="nud-tag" id="nud-fu-t1" style="margin:0;">Demonstration</span>
+      </div>
+      <div class="nud-panel" style="margin-top:10px; position:relative;">
+        <div style="display:flex; justify-content:space-between; font-size:10px; color:#565b5e; margin-bottom:8px;"><span id="nud-fu-cl">vs S&amp;P 500 &middot; since inception</span><span class="num" id="nud-fu-cr">&minus;3.8 pp</span></div>
+        <div id="nud-fu-b" style="transition:opacity 900ms ease;"></div>
+        <div id="nud-fu-dot" class="nud-pulse" style="display:none; position:absolute; left:14px; bottom:22px; width:7px; height:7px; border-radius:50%; background:#30d158;"></div>
+      </div>
+      <div id="nud-fu-prow" style="display:flex; gap:22px; margin-top:10px; font-size:12px;">
+        <span><span style="color:#929292;">Portfolio</span> <span class="num" style="color:#fff;">+7.4%</span></span>
+        <span><span style="color:#929292;">S&amp;P 500</span> <span class="num" style="color:#C29A2A;">+11.2%</span></span>
+        <span><span style="color:#929292;">Alpha</span> <span class="num" style="color:#fff;">&minus;3.8 pp</span><span style="font-size:8px; vertical-align:1.5px; color:#ff3533; margin-left:4px;">&#9660;</span></span>
+      </div>
+
+      <div style="margin-top:24px; display:flex; justify-content:space-between; align-items:baseline;">
+        <span style="font-size:14px; letter-spacing:-0.2px;">Calibration</span>
+        <span class="nud-tag" id="nud-fu-t2" style="margin:0;">Demonstration</span>
+      </div>
+      <div class="nud-panel" style="margin-top:10px;">
+        <div style="display:flex; justify-content:space-between; font-size:10px; color:#565b5e; margin-bottom:8px;"><span>Calls vs the S&amp;P 500</span><span class="num" id="nud-fu-ccr" style="color:#288752;">12 resolved</span></div>
+        <div id="nud-fu-c" style="transition:opacity 900ms ease;"></div>
+      </div>
+      <div id="nud-fu-crow" style="margin-top:10px; font-size:12px; color:#c7c7c7;">12 forecasts resolved &mdash; <span style="color:#288752;">7 correct</span> &middot; <span style="color:#BE3C36;">5 incorrect</span> &middot; avg <span class="num">+1.9 pp</span></div>
+
+      <div id="nud-fu-cta" onclick="window.__nudFuGo && window.__nudFuGo()" style="margin-top:22px; padding:12px 14px; border:0.5px solid #2a2d2e; text-align:center; font-size:12px; letter-spacing:0.4px; color:#fff; cursor:pointer;">Fund $5,000 &mdash; see your day one &#8250;</div>
+      <div id="nud-fu-demo" style="display:none; margin-top:16px; padding:12px 14px; background:#0b0b0b; border:0.5px solid #232627; cursor:pointer;">
+        <div style="display:flex; justify-content:space-between; align-items:baseline;">
+          <span style="font-size:11px; font-weight:500; letter-spacing:0.3px; color:#929292;">DEMONSTRATION PORTFOLIO<span class="nud-tag" style="margin-left:8px;">Simulated</span></span>
+          <span class="num" style="font-size:11px; color:#565b5e;">$247,840</span>
+        </div>
+        <div style="margin-top:4px; font-size:11px; color:#c7c7c7;">Explore how II works &#8594;</div>
+      </div>
+      <div id="nud-fu-re" onclick="window.__nudFuRe && window.__nudFuRe()" style="display:none; margin-top:16px; font-size:12px; color:#c7c7c7; cursor:pointer;">&#8635; Replay</div>
+      ${NUD_FOOT}
+    </div>`;
+    const b = nudChart('bench-svg', 130); b.setT(1); nudTranslucent(b.el);
+    document.getElementById('nud-fu-b').appendChild(b.el);
+    const c = nudChart('cal-svg', 120); c.setT(1); nudTranslucent(c.el);
+    document.getElementById('nud-fu-c').appendChild(c.el);
+    window.__nudFuGo = () => {
+      const after = (ms, fn) => { const h = { to: setTimeout(fn, ms) }; NUD_TIMERS.push(h); };
+      // beat 1 — the account goes live
+      document.getElementById('nud-fu-cta').style.display = 'none';
+      document.getElementById('nud-fu-h').innerHTML = `
+        <div style="font-size:9.5px; font-weight:600; letter-spacing:1.2px; text-transform:uppercase; color:#929292;">Your portfolio</div>
+        <div class="num" style="margin-top:8px; font-size:28px; letter-spacing:-0.56px;">$5,000.00</div>
+        <div style="margin-top:6px; font-size:12px; color:#929292;"><span style="display:inline-block; width:6px; height:6px; border-radius:50%; background:#30d158; margin-right:6px; vertical-align:1px;"></span>Live &middot; benchmark comparison started</div>`;
+      // beat 2 — the performance frame flips to day one: the benchmark layer
+      // is real market data so it stays live; the demo's personal line drains
+      after(250, () => {
+        document.getElementById('nud-fu-t1').style.display = 'none';
+        b.el.querySelectorAll('path, polyline').forEach(p => {
+          const live = (p.getAttribute('stroke') || '') === '#C29A2A';
+          p.style.transition = 'opacity 900ms ease';
+          p.style.opacity = live ? '0.35' : '0.06';
+        });
+        b.el.querySelectorAll('ellipse, circle').forEach(e => { e.style.transition = 'opacity 900ms ease'; e.style.opacity = '0.06'; });
+        document.getElementById('nud-fu-cl').textContent = 'vs S&P 500 · since first deposit';
+        document.getElementById('nud-fu-cr').textContent = 'Day 1';
+        document.getElementById('nud-fu-dot').style.display = '';
+        document.getElementById('nud-fu-prow').innerHTML = `
+          <span><span style="color:#929292;">Portfolio</span> <span class="num" style="color:#fff;">+0.0%</span></span>
+          <span><span style="color:#929292;">S&amp;P 500</span> <span class="num" style="color:#C29A2A;">+0.0%</span></span>
+          <span><span style="color:#929292;">Alpha</span> <span class="num" style="color:#fff;">0.0 pp</span></span>`;
+      });
+      // beat 3 — the calibration frame empties: the record opens at first call
+      after(650, () => {
+        document.getElementById('nud-fu-t2').style.display = 'none';
+        document.getElementById('nud-fu-c').style.opacity = '0.12';
+        document.getElementById('nud-fu-ccr').style.color = '#565b5e';
+        document.getElementById('nud-fu-ccr').innerHTML = '<span style="font-size:9px; letter-spacing:1px;">SCORING BEGINS &middot; FIRST CALL</span>';
+        document.getElementById('nud-fu-crow').innerHTML = '0 forecasts resolved &mdash; <span style="color:#565b5e;">your first call opens the record</span>';
+      });
+      // beat 4 — the demonstration steps back to a secondary row
+      after(1100, () => {
+        const d = document.getElementById('nud-fu-demo'), r = document.getElementById('nud-fu-re');
+        [d, r].forEach(el => { el.style.opacity = '0'; el.style.transition = 'opacity 500ms ease'; el.style.display = ''; });
+        requestAnimationFrame(() => { d.style.opacity = '1'; r.style.opacity = '1'; });
+        buildPositions(); // the stage height changed — recompute the page height
+      });
+    };
+    window.__nudFuRe = () => { renderNuDemo(); buildPositions(); };
+  }
+
+  // V11 — the product film: four acts, each opened by a title card, played
+  // over a narration line that explains what the animation is showing.
+  // Funding, performance drawing itself, calibration resolving call by call,
+  // and the today ⇄ year-one contrast. Tap advances; the last act holds.
+  function nudFilm(sb) {
+    sb.innerHTML = `<div class="nud-wrap">
+      <div style="display:flex; align-items:center; justify-content:space-between;">
+        <span style="font-size:9.5px; font-weight:600; letter-spacing:1.2px; text-transform:uppercase; color:#EDCB78;">Demonstration</span>
+        <span style="font-size:10px; color:#565b5e;">Tap to skip</span>
+      </div>
+      <div style="display:flex; gap:5px; margin-top:12px;">
+        ${[0, 1, 2, 3].map(i => `<div style="flex:1; height:2px; background:#1c1c1c;"><div id="nud-fm-pr${i}" style="height:2px; width:0%; background:#929292;"></div></div>`).join('')}
+      </div>
+      <div id="nud-fm-stage" style="margin-top:18px; height:424px; position:relative; cursor:pointer;" onclick="window.__nudFmSkip && window.__nudFmSkip()">
+        <div id="nud-fm-l" style="opacity:0; transform:translateY(10px); transition:opacity 650ms cubic-bezier(0.22,1,0.36,1), transform 650ms cubic-bezier(0.22,1,0.36,1);"></div>
+        <div id="nud-fm-t" style="position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; opacity:0; transition:opacity 500ms ease; pointer-events:none;"></div>
+        <div id="nud-fm-n" style="position:absolute; left:0; right:0; bottom:2px; font-size:12.5px; color:#929292; line-height:1.65; opacity:0; transform:translateY(6px); transition:opacity 600ms ease, transform 600ms ease;"></div>
+      </div>
+      ${NUD_FOOT}
+    </div>`;
+    const L = document.getElementById('nud-fm-l');
+    const FT = [];
+    const reg = h => { FT.push(h); NUD_TIMERS.push(h); };
+    const after = (ms, fn) => { const h = { to: setTimeout(fn, ms) }; reg(h); };
+    const clearFT = () => {
+      FT.forEach(t => { if (t.to) clearTimeout(t.to); if (t.raf) cancelAnimationFrame(t.raf); });
+      FT.length = 0;
+    };
+    const ease = k => (k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2);
+    const tween = (dur, fn, done) => {
+      const h = { raf: 0 }; reg(h);
+      const t0 = performance.now();
+      const step = now => {
+        const k = Math.min(1, (now - t0) / dur);
+        fn(ease(k));
+        if (k < 1) h.raf = requestAnimationFrame(step); else if (done) done();
+      };
+      h.raf = requestAnimationFrame(step);
+    };
+    const money = v => (v < 0 ? '−' : '+') + Math.abs(v).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    // title card: a thin numeral and a letterspaced act name, held then released
+    const titleCard = (num, word) => {
+      const t = document.getElementById('nud-fm-t');
+      t.innerHTML = `<div class="num" style="font-size:30px; font-weight:200; letter-spacing:2px; color:#565b5e;">${num}</div>
+        <div style="font-size:12px; letter-spacing:4px; text-transform:uppercase; color:#c7c7c7;">${word}</div>`;
+      t.style.opacity = '1';
+      after(1150, () => { t.style.opacity = '0'; });
+    };
+    const contentIn = () => { L.style.opacity = '1'; L.style.transform = 'none'; };
+    // the narration line — one quiet sentence riding under the animation
+    const narr = html => {
+      const n = document.getElementById('nud-fm-n');
+      n.style.opacity = '0'; n.style.transform = 'translateY(6px)';
+      after(320, () => { n.innerHTML = html; n.style.opacity = '1'; n.style.transform = 'none'; });
+    };
+    const s1 = () => {
+      titleCard('01', 'Today');
+      L.innerHTML = `
+        <div style="margin-top:30px; font-size:9.5px; font-weight:600; letter-spacing:1.2px; text-transform:uppercase; color:#929292;">Your account</div>
+        <div class="num" id="nud-fm-v" style="margin-top:12px; font-size:34px; letter-spacing:-0.68px;">$0.00</div>
+        <div id="nud-fm-s1s" style="margin-top:10px; font-size:12px; color:#929292;">Transfer pending &middot; <span class="num">$5,000.00 CAD</span></div>`;
+      after(1250, () => {
+        contentIn();
+        narr('An account before capital &mdash; there is nothing to measure yet.');
+      });
+      after(3700, () => {
+        const v = document.getElementById('nud-fm-v');
+        tween(1100, k => { v.textContent = '$' + (5000 * k).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); });
+        document.getElementById('nud-fm-s1s').innerHTML = '<span style="display:inline-block; width:6px; height:6px; border-radius:50%; background:#30d158; margin-right:6px; vertical-align:1px;"></span>First deposit received &middot; live';
+        narr('The moment money lands, measurement begins.');
+      });
+    };
+    const s2 = () => {
+      titleCard('02', 'Performance');
+      L.innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:baseline;">
+          <span style="font-size:10px; letter-spacing:1.4px; color:#565b5e;">02 &middot; PERFORMANCE</span>
+          <span class="nud-tag" style="margin:0;">Demonstration</span>
+        </div>
+        <div class="nud-panel" style="margin-top:16px;">
+          <div style="display:flex; justify-content:space-between; font-size:10px; color:#565b5e; margin-bottom:8px;"><span>vs S&amp;P 500 &middot; one year</span><span class="num" id="nud-fm-mo">Month 0</span></div>
+          <div id="nud-fm-bc"></div>
+        </div>
+        <div class="bx-rows" style="margin-top:14px;">
+          <div class="bx-row"><span class="bx-label" style="font-size:13px;">Portfolio P/L</span><span class="bx-val" style="font-size:13px;"><span class="num" id="nud-fm-p1"></span><span class="bx-pct" id="nud-fm-p1p"></span></span></div>
+          <div class="bx-row"><span class="bx-label" style="font-size:13px;">S&amp;P 500 P/L</span><span class="bx-val" style="font-size:13px;"><span class="num" id="nud-fm-p2"></span><span class="bx-pct" id="nud-fm-p2p"></span></span></div>
+          <div class="bx-row" id="nud-fm-par" style="opacity:0; transition:opacity 600ms ease;"><span class="bx-label" style="font-size:13px;">Alpha</span><span class="bx-val" style="font-size:13px;"><span class="num">&minus;2,373.90</span><span class="bx-pct">&minus;5.8 pp</span><span style="font-size:8px; color:#ff3533; margin-left:6px;">&#9660;</span></span></div>
+        </div>`;
+      const b = nudChart('bench-svg', 150); nudTranslucent(b.el);
+      document.getElementById('nud-fm-bc').appendChild(b.el);
+      b.setT(0);
+      // plotter heads: one dot per line riding the draw front
+      const vb = b.el.viewBox.baseVal;
+      const ns = 'http://www.w3.org/2000/svg';
+      const heads = [...b.el.querySelectorAll('path')]
+        .filter(p => { const s = p.getAttribute('stroke') || ''; return s === '#FFFFFF' || s === '#C29A2A'; })
+        .map(p => {
+          const d = document.createElementNS(ns, 'circle');
+          d.setAttribute('r', '2.4'); d.setAttribute('fill', p.getAttribute('stroke'));
+          d.style.opacity = '0'; b.el.appendChild(d);
+          return { p, d };
+        });
+      const yAt = (p, x) => {
+        let lo = 0, hi = p.getTotalLength();
+        for (let i = 0; i < 16; i++) { const m = (lo + hi) / 2; if (p.getPointAtLength(m).x < x) lo = m; else hi = m; }
+        return p.getPointAtLength((lo + hi) / 2).y;
+      };
+      after(1250, () => {
+        contentIn();
+        narr('Every day is scored against one question &mdash; did this beat the S&amp;P 500?');
+      });
+      after(1600, () => tween(3800, k => {
+        b.setT(k);
+        const fx = Math.min(vb.width * k, vb.width - 0.5);
+        heads.forEach(h => {
+          h.d.style.opacity = (k > 0.02 && k < 0.99) ? '0.95' : '0';
+          h.d.setAttribute('cx', fx.toFixed(1));
+          h.d.setAttribute('cy', yAt(h.p, fx).toFixed(1));
+        });
+        document.getElementById('nud-fm-mo').textContent = 'Month ' + Math.round(k * 12);
+        document.getElementById('nud-fm-p1').textContent = money(16142.02 * k);
+        document.getElementById('nud-fm-p1p').textContent = '+' + (39.4 * k).toFixed(1) + '%';
+        document.getElementById('nud-fm-p2').textContent = money(18515.92 * k);
+        document.getElementById('nud-fm-p2p').textContent = '+' + (45.2 * k).toFixed(1) + '%';
+      }, () => {
+        document.getElementById('nud-fm-par').style.opacity = '1';
+        narr('The difference is alpha &mdash; and it is never hidden.');
+      }));
+    };
+    const s3 = () => {
+      titleCard('03', 'Calibration');
+      L.innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:baseline;">
+          <span style="font-size:10px; letter-spacing:1.4px; color:#565b5e;">03 &middot; CALIBRATION</span>
+          <span class="nud-tag" style="margin:0;">Demonstration</span>
+        </div>
+        <div class="nud-panel" style="margin-top:16px;">
+          <div style="display:flex; justify-content:space-between; font-size:10px; color:#565b5e; margin-bottom:8px;"><span>Calls vs the S&amp;P 500</span><span class="num" id="nud-fm-cr"></span></div>
+          <div id="nud-fm-cc"></div>
+        </div>
+        <div id="nud-fm-cs" style="margin-top:14px; font-size:13px; color:#c7c7c7; min-height:20px;"></div>
+        <div id="nud-fm-ci" style="margin-top:10px; font-size:12px; color:#565b5e; opacity:0; transition:opacity 600ms ease;">6 of 11 ahead of the S&amp;P 500 &middot; avg <span class="num" style="color:#c7c7c7;">+1.9 pp</span></div>`;
+      const c = nudChart('cal-svg', 150); nudTranslucent(c.el); nudCalFollow(c);
+      document.getElementById('nud-fm-cc').appendChild(c.el);
+      c.setT(0);
+      after(1250, () => {
+        contentIn();
+        narr('Each call carries a forecast. The market resolves it &mdash; win or lose.');
+      });
+      after(1600, () => tween(3800, k => {
+        c.setT(k);
+        const n = Math.round(12 * k);
+        document.getElementById('nud-fm-cr').textContent = n + ' resolved';
+        document.getElementById('nud-fm-cs').innerHTML = n + ' forecasts resolved' + (k > 0.98 ? ' &mdash; <span style="color:#288752;">7 correct</span> &middot; <span style="color:#BE3C36;">5 incorrect</span>' : '');
+      }, () => {
+        document.getElementById('nud-fm-ci').style.opacity = '1';
+        narr('Confidence is compared with reality, call by call.');
+      }));
+    };
+    const s4 = () => {
+      titleCard('04', 'Today &#8644; Year one');
+      L.innerHTML = `
+        <div style="display:flex; gap:12px; margin-top:26px;">
+          <div id="nud-fm-ca" style="flex:1; padding:14px; background:#0b0b0b; border:0.5px solid #232627; opacity:0; transform:translateX(-10px); transition:opacity 500ms ease, transform 500ms ease;">
+            <div style="font-size:9px; letter-spacing:1px; color:#565b5e;">TODAY</div>
+            <div class="num" style="margin-top:10px; font-size:20px;">$0.00</div>
+            <div style="margin-top:8px; font-size:10px; color:#565b5e;">No capital deployed</div>
+            <div style="margin-top:14px; height:1px; background:#1c1c1c;"></div>
+            <div style="margin-top:10px; font-size:10px; color:#565b5e;">0 calls &middot; no record</div>
+          </div>
+          <div id="nud-fm-cb" style="flex:1; padding:14px; background:#0b0b0b; border:0.5px solid #232627; opacity:0; transform:translateX(10px); transition:opacity 500ms ease 250ms, transform 500ms ease 250ms;">
+            <div style="font-size:9px; letter-spacing:1px; color:#565b5e;">YEAR ONE<span class="nud-tag" style="margin-left:6px;">Demo</span></div>
+            <div class="num" style="margin-top:10px; font-size:20px;">$247,840</div>
+            <div style="margin-top:8px; font-size:10px; color:#929292;">+39.4% <span style="color:#565b5e;">vs S&amp;P</span> <span class="num" style="color:#C29A2A;">+45.2%</span></div>
+            <div style="margin-top:14px; height:1px; background:#1c1c1c;"></div>
+            <div style="margin-top:10px; font-size:10px; color:#929292;">12 calls resolved &middot; <span style="color:#288752;">6 of 11 ahead</span></div>
+          </div>
+        </div>
+        <div id="nud-fm-cta" style="margin-top:26px; padding:12px 14px; border:0.5px solid #2a2d2e; text-align:center; font-size:12px; letter-spacing:0.4px; color:#fff; opacity:0; transition:opacity 600ms ease;">Fund your account &#8250;</div>
+        <div id="nud-fm-rp" onclick="event.stopPropagation(); window.__nudFmRe && window.__nudFmRe()" style="margin-top:14px; text-align:center; font-size:12px; color:#c7c7c7; cursor:pointer; opacity:0; transition:opacity 600ms ease;">&#8635; Replay</div>`;
+      after(1250, () => {
+        contentIn();
+        const a = document.getElementById('nud-fm-ca'), bb = document.getElementById('nud-fm-cb');
+        requestAnimationFrame(() => {
+          a.style.opacity = '1'; a.style.transform = 'none';
+          bb.style.opacity = '1'; bb.style.transform = 'none';
+        });
+        narr('The system is already built &mdash; it starts measuring you the day you fund.');
+      });
+      after(2800, () => {
+        document.getElementById('nud-fm-cta').style.opacity = '1';
+        document.getElementById('nud-fm-rp').style.opacity = '1';
+      });
+    };
+    const SCENES = [{ d: 6800, build: s1 }, { d: 8000, build: s2 }, { d: 8000, build: s3 }, { d: 7200, build: s4 }];
+    let idx = -1;
+    const setProg = (i, ms) => {
+      for (let k = 0; k < 4; k++) {
+        const p = document.getElementById('nud-fm-pr' + k);
+        p.style.transition = 'none';
+        p.style.width = k < i ? '100%' : '0%';
+      }
+      const p = document.getElementById('nud-fm-pr' + i);
+      requestAnimationFrame(() => { p.style.transition = 'width ' + ms + 'ms linear'; p.style.width = '100%'; });
+    };
+    const show = i => {
+      clearFT();
+      idx = i;
+      L.style.opacity = '0'; L.style.transform = 'translateY(10px)';
+      const n = document.getElementById('nud-fm-n');
+      n.style.opacity = '0'; n.style.transform = 'translateY(6px)';
+      document.getElementById('nud-fm-t').style.opacity = '0';
+      after(300, () => {
+        SCENES[i].build();
+        setProg(i, SCENES[i].d);
+        if (i < SCENES.length - 1) after(SCENES[i].d, () => show(i + 1));
+      });
+    };
+    window.__nudFmSkip = () => { show(idx < SCENES.length - 1 ? idx + 1 : 0); };
+    window.__nudFmRe = () => show(0);
+    show(0);
+  }
+
+  // V12 — Dave's choreographed first session as a six-act film. His caption
+  // for each step is the narration; each act animates its own surface:
+  // portfolio reality → what changed → positions → decision record →
+  // calibration → fund. The demonstration label never leaves the frame.
+  function nudFilm2(sb) {
+    sb.innerHTML = `<div class="nud-wrap">
+      <div style="display:flex; align-items:center; justify-content:space-between;">
+        <span style="font-size:9.5px; font-weight:600; letter-spacing:1.2px; text-transform:uppercase; color:#EDCB78;">Demonstration</span>
+        <span style="font-size:10px; color:#565b5e;">Tap to skip</span>
+      </div>
+      <div style="display:flex; gap:5px; margin-top:12px;">
+        ${[0, 1, 2, 3, 4, 5].map(i => `<div style="flex:1; height:2px; background:#1c1c1c;"><div id="nud-f2-pr${i}" style="height:2px; width:0%; background:#929292;"></div></div>`).join('')}
+      </div>
+      <div id="nud-f2-stage" style="margin-top:18px; height:424px; position:relative; cursor:pointer;" onclick="window.__nudF2Skip && window.__nudF2Skip()">
+        <div id="nud-f2-l" style="opacity:0; transform:translateY(10px); transition:opacity 650ms cubic-bezier(0.22,1,0.36,1), transform 650ms cubic-bezier(0.22,1,0.36,1);"></div>
+        <div id="nud-f2-t" style="position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; opacity:0; transition:opacity 500ms ease; pointer-events:none;"></div>
+        <div id="nud-f2-n" style="position:absolute; left:0; right:0; bottom:2px; font-size:12.5px; color:#929292; line-height:1.65; opacity:0; transform:translateY(6px); transition:opacity 600ms ease, transform 600ms ease;"></div>
+      </div>
+      ${NUD_FOOT}
+    </div>`;
+    const L = document.getElementById('nud-f2-l');
+    const FT = [];
+    const reg = h => { FT.push(h); NUD_TIMERS.push(h); };
+    const after = (ms, fn) => { const h = { to: setTimeout(fn, ms) }; reg(h); };
+    const clearFT = () => {
+      FT.forEach(t => { if (t.to) clearTimeout(t.to); if (t.raf) cancelAnimationFrame(t.raf); });
+      FT.length = 0;
+    };
+    const ease = k => (k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2);
+    const tween = (dur, fn, done) => {
+      const h = { raf: 0 }; reg(h);
+      const t0 = performance.now();
+      const step = now => {
+        const k = Math.min(1, (now - t0) / dur);
+        fn(ease(k));
+        if (k < 1) h.raf = requestAnimationFrame(step); else if (done) done();
+      };
+      h.raf = requestAnimationFrame(step);
+    };
+    const money = v => (v < 0 ? '−' : '+') + Math.abs(v).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    const titleCard = (num, word) => {
+      const t = document.getElementById('nud-f2-t');
+      t.innerHTML = `<div class="num" style="font-size:30px; font-weight:200; letter-spacing:2px; color:#565b5e;">${num}</div>
+        <div style="font-size:12px; letter-spacing:4px; text-transform:uppercase; color:#c7c7c7;">${word}</div>`;
+      t.style.opacity = '1';
+      after(1150, () => { t.style.opacity = '0'; });
+    };
+    const contentIn = () => { L.style.opacity = '1'; L.style.transform = 'none'; };
+    const narr = html => {
+      const n = document.getElementById('nud-f2-n');
+      n.style.opacity = '0'; n.style.transform = 'translateY(6px)';
+      after(320, () => { n.innerHTML = html; n.style.opacity = '1'; n.style.transform = 'none'; });
+    };
+    // staggered reveal for a list of element ids
+    const rise = (id, ms) => after(ms, () => {
+      const el = document.getElementById(id);
+      if (el) { el.style.opacity = '1'; el.style.transform = 'none'; }
+    });
+    const HID = 'opacity:0; transform:translateY(8px); transition:opacity 500ms cubic-bezier(0.22,1,0.36,1), transform 500ms cubic-bezier(0.22,1,0.36,1);';
+    const cap = t => `<div style="font-size:10px; letter-spacing:1.4px; color:#565b5e;">${t}</div>`;
+    const tag = `<span class="nud-tag" style="margin:0;">Demonstration</span>`;
+    // act 1 — portfolio reality
+    const s1 = () => {
+      titleCard('01', 'Portfolio reality');
+      L.innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:baseline;">${cap('01 &middot; PORTFOLIO REALITY')}${tag}</div>
+        <div style="margin-top:18px; font-size:10px; letter-spacing:1.4px; color:#565b5e;">GOOD MORNING</div>
+        <div class="num" id="nud-f2-v" style="margin-top:10px; font-size:30px; letter-spacing:-0.6px;">$0</div>
+        <div id="nud-f2-vs" style="margin-top:6px; font-size:12px; color:#929292; opacity:0; transition:opacity 500ms ease;">+$18,420 since inception <span style="font-size:8px; vertical-align:1.5px; color:#30d158; margin-left:4px;">&#9650;</span></div>
+        <div class="nud-panel" style="margin-top:14px;">
+          <div style="display:flex; justify-content:space-between; font-size:10px; color:#565b5e; margin-bottom:8px;"><span>vs S&amp;P 500 &middot; since inception</span><span class="num" id="nud-f2-mo"></span></div>
+          <div id="nud-f2-bc"></div>
+        </div>
+        <div id="nud-f2-trio" style="display:flex; gap:22px; margin-top:10px; font-size:12px;">
+          <span><span style="color:#929292;">Portfolio</span> <span class="num" id="nud-f2-t1" style="color:#fff;"></span></span>
+          <span><span style="color:#929292;">S&amp;P 500</span> <span class="num" id="nud-f2-t2" style="color:#C29A2A;"></span></span>
+          <span id="nud-f2-t3w" style="opacity:0; transition:opacity 500ms ease;"><span style="color:#929292;">Alpha</span> <span class="num" style="color:#fff;">&minus;3.8 pp</span><span style="font-size:8px; vertical-align:1.5px; color:#ff3533; margin-left:4px;">&#9660;</span></span>
+        </div>`;
+      const b = nudChart('bench-svg', 128); nudTranslucent(b.el);
+      document.getElementById('nud-f2-bc').appendChild(b.el);
+      b.setT(0);
+      const vb = b.el.viewBox.baseVal, ns = 'http://www.w3.org/2000/svg';
+      const heads = [...b.el.querySelectorAll('path')]
+        .filter(p => { const s = p.getAttribute('stroke') || ''; return s === '#FFFFFF' || s === '#C29A2A'; })
+        .map(p => {
+          const d = document.createElementNS(ns, 'circle');
+          d.setAttribute('r', '2.4'); d.setAttribute('fill', p.getAttribute('stroke'));
+          d.style.opacity = '0'; b.el.appendChild(d);
+          return { p, d };
+        });
+      const yAt = (p, x) => {
+        let lo = 0, hi = p.getTotalLength();
+        for (let i = 0; i < 16; i++) { const m = (lo + hi) / 2; if (p.getPointAtLength(m).x < x) lo = m; else hi = m; }
+        return p.getPointAtLength((lo + hi) / 2).y;
+      };
+      after(1250, () => {
+        contentIn();
+        narr('See exactly how this portfolio is performing against the S&amp;P 500.');
+      });
+      after(1400, () => tween(1200, k => {
+        document.getElementById('nud-f2-v').textContent = '$' + Math.round(247840 * k).toLocaleString('en-US');
+      }, () => { document.getElementById('nud-f2-vs').style.opacity = '1'; }));
+      after(2900, () => tween(3400, k => {
+        b.setT(k);
+        const fx = Math.min(vb.width * k, vb.width - 0.5);
+        heads.forEach(h => {
+          h.d.style.opacity = (k > 0.02 && k < 0.99) ? '0.95' : '0';
+          h.d.setAttribute('cx', fx.toFixed(1));
+          h.d.setAttribute('cy', yAt(h.p, fx).toFixed(1));
+        });
+        document.getElementById('nud-f2-mo').textContent = 'Month ' + Math.round(k * 12);
+        document.getElementById('nud-f2-t1').textContent = '+' + (7.4 * k).toFixed(1) + '%';
+        document.getElementById('nud-f2-t2').textContent = '+' + (11.2 * k).toFixed(1) + '%';
+      }, () => { document.getElementById('nud-f2-t3w').style.opacity = '1'; }));
+    };
+    // act 2 — what changed: the three developments arrive one by one
+    const s2 = () => {
+      titleCard('02', 'What changed');
+      const card = (id, tick, tg, tgCol, line, note) => `<div id="${id}" style="margin-top:12px; padding:12px 14px; background:#0b0b0b; border:0.5px solid #232627; ${HID}">
+        <div style="display:flex; justify-content:space-between; align-items:baseline;">
+          <span style="font-size:13px; font-weight:500;">${tick}</span>
+          <span style="font-size:8.5px; letter-spacing:1.1px; color:${tgCol};">${tg}</span>
+        </div>
+        <div style="margin-top:7px; font-size:12px; color:#c7c7c7; line-height:1.5;">${line}</div>
+        <div style="margin-top:5px; font-size:11px; color:#565b5e; line-height:1.5;">${note}</div>
+      </div>`;
+      L.innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:baseline;">${cap('02 &middot; WHAT CHANGED')}${tag}</div>
+        <div style="margin-top:16px; font-size:15px; letter-spacing:-0.3px;">3 developments matter to this portfolio</div>
+        ${card('nud-f2-c1', 'NVDA', 'EXPECTATIONS CHANGED', '#C9A24B', 'Revenue outlook increased following earnings.', 'Your original thesis remains intact.')}
+        ${card('nud-f2-c2', 'GOOGL', 'EARNINGS', '#288752', 'Revenue exceeded expectations by 4%. Cloud growth accelerated.', 'Impact on thesis: positive &middot; expected return unchanged.')}
+        ${card('nud-f2-c3', 'META', 'PRICE MOVEMENT', '#565b5e', '+6.8% today.', 'No material change detected in underlying expectations.')}`;
+      after(1250, () => {
+        contentIn();
+        narr('See what changed in the companies you own.');
+      });
+      rise('nud-f2-c1', 1700); rise('nud-f2-c2', 2250); rise('nud-f2-c3', 2800);
+      after(5400, () => narr("II is watching the portfolio even when you're not."));
+    };
+    // act 3 — positions: the table assembles row by row
+    const s3 = () => {
+      titleCard('03', 'Positions');
+      const row = (id, tick, ret, retCol, pp, ppCol, thesis, thCol, status, stCol) => `<div id="${id}" style="display:flex; align-items:baseline; padding:11px 0; border-top:0.5px solid #1c1c1c; font-size:11.5px; ${HID}">
+        <span style="flex:1.1; font-weight:500; font-size:12px;">${tick}</span>
+        <span class="num" style="flex:1; text-align:right; color:${retCol};">${ret}</span>
+        <span class="num" style="flex:1.1; text-align:right; color:${ppCol};">${pp}</span>
+        <span style="flex:1; text-align:right; color:${thCol};">${thesis}</span>
+        <span style="flex:1.1; text-align:right; color:${stCol};">${status}</span>
+      </div>`;
+      L.innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:baseline;">${cap('03 &middot; POSITIONS')}${tag}</div>
+        <div style="display:flex; margin-top:18px; font-size:9px; letter-spacing:0.7px; color:#565b5e;">
+          <span style="flex:1.1;">TICK</span><span style="flex:1; text-align:right;">RETURN</span><span style="flex:1.1; text-align:right;">VS S&amp;P</span><span style="flex:1; text-align:right;">THESIS</span><span style="flex:1.1; text-align:right;">STATUS</span>
+        </div>
+        <div style="margin-top:8px;">
+          ${row('nud-f2-r1', 'META', '+32.4%', '#fff', '+17.8 pp', '#30d158', 'Intact', '#929292', 'On track', '#288752')}
+          ${row('nud-f2-r2', 'AMZN', '+18.2%', '#fff', '+3.1 pp', '#30d158', 'Intact', '#929292', 'On track', '#288752')}
+          ${row('nud-f2-r3', 'GOOGL', '+2.7%', '#fff', '&minus;12.4 pp', '#ff3533', 'Intact', '#929292', 'Review', '#C9A24B')}
+          ${row('nud-f2-r4', 'XYZ', '&minus;16.8%', '#929292', '&minus;29.2 pp', '#ff3533', 'Weakening', '#C9A24B', 'Attention', '#BE3C36')}
+        </div>`;
+      after(1250, () => {
+        contentIn();
+        narr('See what each investment depends on.');
+      });
+      rise('nud-f2-r1', 1700); rise('nud-f2-r2', 2000); rise('nud-f2-r3', 2300); rise('nud-f2-r4', 2600);
+      after(5200, () => narr('Position &#8594; expectations &#8594; evidence &#8594; benchmark &#8594; decision.'));
+    };
+    // act 4 — decision record: a win lands, then a loss. both stay.
+    const s4 = () => {
+      titleCard('04', 'Decision record');
+      L.innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:baseline;">${cap('04 &middot; DECISION RECORD')}${tag}</div>
+        <div id="nud-f2-d1" style="margin-top:18px; padding:13px 14px; background:#0b0b0b; border:0.5px solid #232627; ${HID}">
+          <div style="display:flex; justify-content:space-between; align-items:baseline;">
+            <span style="font-size:13px; font-weight:500;">META <span style="color:#929292; font-weight:400;">&middot; Added 14 shares</span></span>
+            <span class="num" style="font-size:10px; color:#565b5e;">Mar 18</span>
+          </div>
+          <div style="margin-top:7px; font-size:11.5px; color:#929292; line-height:1.5;">Reason: expected return remained attractive after the earnings decline.</div>
+          <div style="display:flex; justify-content:space-between; margin-top:10px; font-size:11.5px;">
+            <span style="color:#565b5e;">Price at decision <span class="num" style="color:#c7c7c7;">$482</span> &middot; today <span class="num" id="nud-f2-px" style="color:#c7c7c7;">$482</span></span>
+            <span class="num" id="nud-f2-pp1" style="color:#30d158;"></span>
+          </div>
+        </div>
+        <div id="nud-f2-d2" style="margin-top:12px; padding:13px 14px; background:#0b0b0b; border:0.5px solid #232627; ${HID}">
+          <div style="display:flex; justify-content:space-between; align-items:baseline;">
+            <span style="font-size:13px; font-weight:500;">TSLA <span style="color:#929292; font-weight:400;">&middot; Bought</span></span>
+            <span class="num" style="font-size:10px; color:#565b5e;">Jan 12</span>
+          </div>
+          <div style="margin-top:7px; font-size:11.5px; color:#929292; line-height:1.5;">Reason: revenue growth expected to reaccelerate.</div>
+          <div style="display:flex; justify-content:space-between; margin-top:10px; font-size:11.5px;">
+            <span style="color:#565b5e;">What happened: growth kept decelerating.</span>
+            <span class="num" id="nud-f2-pp2" style="color:#ff3533;"></span>
+          </div>
+        </div>`;
+      after(1250, () => {
+        contentIn();
+        narr('Every important decision becomes evidence.');
+      });
+      rise('nud-f2-d1', 1700);
+      after(1900, () => tween(1400, k => {
+        document.getElementById('nud-f2-px').textContent = '$' + Math.round(482 + 89 * k);
+        document.getElementById('nud-f2-pp1').textContent = '+' + (13.7 * k).toFixed(1) + ' pp vs S&P';
+      }));
+      rise('nud-f2-d2', 3800);
+      after(4000, () => tween(1200, k => {
+        document.getElementById('nud-f2-pp2').textContent = '−' + (21.4 * k).toFixed(1) + ' pp vs S&P';
+      }));
+      after(6200, () => narr('The market remembers every decision. II does too &mdash; wins and losses alike.'));
+    };
+    // act 5 — calibration: the record resolves call by call
+    const s5 = () => {
+      titleCard('05', 'Calibration');
+      L.innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:baseline;">${cap('05 &middot; CALIBRATION')}${tag}</div>
+        <div class="nud-panel" style="margin-top:16px;">
+          <div style="display:flex; justify-content:space-between; font-size:10px; color:#565b5e; margin-bottom:8px;"><span>Calls vs the S&amp;P 500</span><span class="num" id="nud-f2-cr"></span></div>
+          <div id="nud-f2-cc"></div>
+        </div>
+        <div id="nud-f2-cs" style="margin-top:12px; font-size:13px; color:#c7c7c7; min-height:20px;"></div>
+        <div id="nud-f2-conf" style="margin-top:10px; padding:11px 13px; background:#0b0b0b; border:0.5px solid #232627; ${HID}">
+          <div style="display:flex; justify-content:space-between; font-size:12px;"><span style="color:#c7c7c7;">70&ndash;79% confidence</span><span class="num" style="color:#fff;">actual 58%</span></div>
+          <div style="margin-top:6px; font-size:11px; color:#C9A24B; line-height:1.5;">You were more confident than the evidence justified.</div>
+        </div>`;
+      const c = nudChart('cal-svg', 136); nudTranslucent(c.el); nudCalFollow(c);
+      document.getElementById('nud-f2-cc').appendChild(c.el);
+      c.setT(0);
+      after(1250, () => {
+        contentIn();
+        narr('Over time, II shows you where your judgment actually adds value.');
+      });
+      after(1600, () => tween(3600, k => {
+        c.setT(k);
+        const n = Math.round(12 * k);
+        document.getElementById('nud-f2-cr').textContent = n + ' resolved';
+        document.getElementById('nud-f2-cs').innerHTML = n + ' forecasts resolved' + (k > 0.98 ? ' &mdash; <span style="color:#288752;">7 correct</span> &middot; <span style="color:#BE3C36;">5 incorrect</span>' : '');
+      }, () => { rise('nud-f2-conf', 150); }));
+    };
+    // act 6 — fund: reality takes the front, the demonstration steps back
+    const s6 = () => {
+      titleCard('06', 'Fund your account');
+      L.innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:baseline;">${cap('06 &middot; FUND')}</div>
+        <div style="margin-top:22px; font-size:9.5px; font-weight:600; letter-spacing:1.2px; text-transform:uppercase; color:#929292;">Your portfolio</div>
+        <div class="num" id="nud-f2-fv" style="margin-top:10px; font-size:30px; letter-spacing:-0.6px;">$0.00</div>
+        <div id="nud-f2-fs" style="margin-top:8px; font-size:12px; color:#929292;">Transfer pending</div>
+        <div id="nud-f2-fd" style="margin-top:26px; padding:12px 14px; background:#0b0b0b; border:0.5px solid #232627; ${HID}">
+          <div style="display:flex; justify-content:space-between; align-items:baseline;">
+            <span style="font-size:11px; font-weight:500; letter-spacing:0.3px; color:#929292;">DEMONSTRATION PORTFOLIO<span class="nud-tag" style="margin-left:8px;">Simulated</span></span>
+            <span class="num" style="font-size:11px; color:#565b5e;">$247,840</span>
+          </div>
+          <div style="margin-top:4px; font-size:11px; color:#c7c7c7;">Explore how II works &#8594;</div>
+        </div>
+        <div id="nud-f2-cta" style="margin-top:24px; padding:12px 14px; border:0.5px solid #2a2d2e; text-align:center; font-size:12px; letter-spacing:0.4px; color:#fff; opacity:0; transition:opacity 600ms ease;">Fund your account &#8250;</div>
+        <div id="nud-f2-rp" onclick="event.stopPropagation(); window.__nudF2Re && window.__nudF2Re()" style="margin-top:14px; text-align:center; font-size:12px; color:#c7c7c7; cursor:pointer; opacity:0; transition:opacity 600ms ease;">&#8635; Replay</div>`;
+      after(1250, () => {
+        contentIn();
+        narr('Put your capital inside the system &mdash; II begins replacing the demonstration with your reality.');
+      });
+      after(1800, () => {
+        tween(1100, k => { document.getElementById('nud-f2-fv').textContent = '$' + (5000 * k).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); });
+        document.getElementById('nud-f2-fs').innerHTML = '<span style="display:inline-block; width:6px; height:6px; border-radius:50%; background:#30d158; margin-right:6px; vertical-align:1px;"></span>Live &middot; measurement begins';
+      });
+      rise('nud-f2-fd', 3200);
+      after(4200, () => {
+        document.getElementById('nud-f2-cta').style.opacity = '1';
+        document.getElementById('nud-f2-rp').style.opacity = '1';
+      });
+    };
+    const SCENES = [
+      { d: 8600, build: s1 }, { d: 8600, build: s2 }, { d: 8400, build: s3 },
+      { d: 9000, build: s4 }, { d: 8600, build: s5 }, { d: 8000, build: s6 }
+    ];
+    let idx = -1;
+    const setProg = (i, ms) => {
+      for (let k = 0; k < SCENES.length; k++) {
+        const p = document.getElementById('nud-f2-pr' + k);
+        p.style.transition = 'none';
+        p.style.width = k < i ? '100%' : '0%';
+      }
+      const p = document.getElementById('nud-f2-pr' + i);
+      requestAnimationFrame(() => { p.style.transition = 'width ' + ms + 'ms linear'; p.style.width = '100%'; });
+    };
+    const show = i => {
+      clearFT();
+      idx = i;
+      L.style.opacity = '0'; L.style.transform = 'translateY(10px)';
+      const n = document.getElementById('nud-f2-n');
+      n.style.opacity = '0'; n.style.transform = 'translateY(6px)';
+      document.getElementById('nud-f2-t').style.opacity = '0';
+      after(300, () => {
+        SCENES[i].build();
+        setProg(i, SCENES[i].d);
+        if (i < SCENES.length - 1) after(SCENES[i].d, () => show(i + 1));
+      });
+    };
+    window.__nudF2Skip = () => { show(idx < SCENES.length - 1 ? idx + 1 : 0); };
+    window.__nudF2Re = () => show(0);
+    show(0);
+  }
+
   function setAccountState(s) {
     NEW_USER = s === 'new';
     // body.newuser drives every .nu-only / .nu-hide swap (feed, totals, the
-    // Core & Active cards, the section empty lines) via CSS
+    // Core & Active cards) via CSS
     document.body.classList.toggle('newuser', NEW_USER);
-    document.getElementById('acct-item-funded').classList.toggle('on', !NEW_USER);
     document.getElementById('acct-item-new').classList.toggle('on', NEW_USER);
-    document.getElementById('card-bench').style.display = (NEW_USER || BENCH_COLLAPSED) ? 'none' : '';
-    document.getElementById('bench-collapsed').style.display = (!NEW_USER && BENCH_COLLAPSED) ? 'flex' : 'none';
-    document.querySelector('#bench-cal-block .calx').style.display = (NEW_USER || CAL_COLLAPSED) ? 'none' : '';
-    document.getElementById('cal-collapsed').style.display = (!NEW_USER && CAL_COLLAPSED) ? 'flex' : 'none';
+    NU_V5.bench = NU_V5.cal = false;
+    applyBenchCalVisibility();
+    renderNuDemo();
     // the alert feed shrinks to one line — pull everything below up with it
     document.getElementById('shifted-content').style.transform =
       `translateY(${NEW_USER ? TOP_SPACING_EXTRA - 227 : TOP_SPACING_EXTRA}px)`;
     buildPositions();
   }
   function toggleBench() {
-    if (NEW_USER) return;
+    if (NEW_USER) {
+      // V2: tapping the demo's header folds it back to the quiet line
+      if (NU_DEMO === 2 && NU_V5.bench) { NU_V5.bench = false; refreshNud(); }
+      return;
+    }
     BENCH_COLLAPSED = !BENCH_COLLAPSED;
     document.getElementById('card-bench').style.display = BENCH_COLLAPSED ? 'none' : '';
     document.getElementById('bench-collapsed').style.display = BENCH_COLLAPSED ? 'flex' : 'none';
@@ -1390,19 +2844,11 @@
     setTimeout(() => hl.remove(), 2000);
   }
 
-  // demo-only readability experiment: №1 tighter rows / wider gaps,
-  // №3 one loud line per row (supporting lines demoted a grey tier),
-  // №5 stronger section seams + quieter watchlist prices
-  let ROW_EXPERIMENT = false;
-  function setRowExperiment(s) {
-    ROW_EXPERIMENT = s === 'on';
-    document.getElementById('row-item-off').classList.toggle('on', !ROW_EXPERIMENT);
-    document.getElementById('row-item-on').classList.toggle('on', ROW_EXPERIMENT);
-    buildPositions();
-  }
-
   function toggleCal() {
-    if (NEW_USER) return;
+    if (NEW_USER) {
+      if (NU_DEMO === 2 && NU_V5.cal) { NU_V5.cal = false; refreshNud(); }
+      return;
+    }
     CAL_COLLAPSED = !CAL_COLLAPSED;
     document.querySelector('#bench-cal-block .calx').style.display = CAL_COLLAPSED ? 'none' : '';
     document.getElementById('cal-collapsed').style.display = CAL_COLLAPSED ? 'flex' : 'none';
@@ -1416,25 +2862,11 @@
     ? '<svg width="12" height="11" viewBox="0 0 14 12" fill="none" stroke="#fbc308" stroke-width="1.1" stroke-linecap="round" style="vertical-align:-1px; margin-right:5px;"><path d="M3.6 9.2a3.4 3.4 0 0 1 6.8 0"/><path d="M1 9.2h12"/><path d="M7 1.2v1.7"/><path d="M2.9 3.1l1.2 1.2"/><path d="M11.1 3.1l-1.2 1.2"/></svg>'
     : '<svg width="11" height="11" viewBox="0 0 13 13" fill="none" style="vertical-align:-1px; margin-right:5px;"><path d="M11.2 8.3A5 5 0 0 1 4.7 1.8a5.4 5.4 0 1 0 6.5 6.5Z" stroke="#4a7dff" stroke-width="1.1" stroke-linejoin="round"/></svg>';
   let html = '';
-  // readability experiment knobs — №1: blocks hug their own row (11px) while
-  // rows push apart (30px); №3: demoted greys for supporting lines
-  const X = ROW_EXPERIMENT;
-  const SG = X ? 11 : SECTION_GAP;
-  const RG = X ? 30 : ROW_GAP;
-  const DESC_COL = X ? '#929292' : '#c7c7c7';
-  const SUB_NUM = X ? '#c7c7c7' : '#ffffff';
-  const SUB_LBL = X ? '#565b5e' : '#929292';
-  // №5 — zebra rows: within a section, rows alternate deep black and a
-  // slightly lifted ground so each row's extent is visible. Holdings
-  // (Treasury + Active) use a neutral grey lift; Under Review uses a cool
-  // slate lift — a different pairing, so the sections read as different.
-  const STRIPE_HOLD = 'rgba(255,255,255,0.07)';
-  const STRIPE_REVIEW = 'rgba(158,180,203,0.08)';
-  // a stripe matches the divider exactly: same 16px inset and 360.79px width,
-  // running divider-to-divider (from the line above the row to the row's own)
-  const stripeHTML = (col, top, h) => X
-    ? `<div class="abs" style="left:16px; top:${top}px; width:360.79px; height:${h.toFixed(1)}px; background:${col}; pointer-events:none;"></div>`
-    : '';
+  const SG = SECTION_GAP;
+  const RG = ROW_GAP;
+  const DESC_COL = '#c7c7c7';
+  const SUB_NUM = '#ffffff';
+  const SUB_LBL = '#929292';
   // the comparison card + calibration fan block above is normal-flow content of
   // variable height, so the list starts wherever it ends (+30 section seam)
   const bcb = document.getElementById('bench-cal-block');
@@ -1526,11 +2958,7 @@
     const rowHeight = localCursor;
     // zebra: even rows within the section get the lifted ground; stripes
     // tile edge-to-edge (half the row gap on each side)
-    const rowIdx = r.treasury ? i : i - treasuries.length;
-    // divider above this row sits at top − RG; the row's own at top + rowHeight
-    const stripe = rowIdx % 2 === 0 ? stripeHTML(STRIPE_HOLD, rowIdx === 0 ? top - 14 : top - RG + 1, rowIdx === 0 ? rowHeight + 14 : rowHeight + RG - 1) : '';
 
-    html += stripe;
     html += `
       <div class="abs" style="left:16px; top:${top + 0.93}px; font-size:13px;"><span style="font-weight:500; text-transform:uppercase;">${r.ticker}</span>${r.treasury ? '' : `<span id="pos-pp-${i}" style="font-size:11.5px; color:#ffffff; margin-left:7px; letter-spacing:-0.1px; font-variant-numeric:tabular-nums;"><span class="pp-num">${ppTxt}</span><span class="pp-tri" style="font-size:8px; vertical-align:1.5px; color:${ppCol}; margin-left:4px;">${ppTri}</span></span>`}</div>
       <div class="abs" style="left:16px; top:${top + 21.95}px; font-size:10px; color:#929292;">${r.category}<span style="color:#c7c7c7; margin-left:6px; text-transform:uppercase;">${r.weight}</span></div>
@@ -1585,12 +3013,11 @@
       if (hasTags) { localCursor += SG; tagsTop = localCursor; localCursor += TAGS_H; }
       localCursor += SG;
       const rowHeight = localCursor;
-      html += i % 2 === 0 ? stripeHTML(STRIPE_REVIEW, i === 0 ? top - 14 : top - RG + 1, i === 0 ? rowHeight + 14 : rowHeight + RG - 1) : '';
       html += `
         <div class="abs" style="left:16px; top:${top + 0.93}px; font-size:13px;"><span style="font-weight:500; text-transform:uppercase;">${r.ticker}</span><span id="rev-pp-${i}" style="font-size:11.5px; color:#ffffff; margin-left:7px; letter-spacing:-0.1px; font-variant-numeric:tabular-nums;"><span class="pp-num">${ppTxt}</span><span class="pp-tri" style="font-size:8px; vertical-align:1.5px; color:${ppCol}; margin-left:4px;">${ppTri}</span></span></div>
         <div class="abs" style="left:16px; top:${top + 21.95}px; font-size:10px; color:#929292;">${hasCat ? r.cat : `Added <span class="num" style="color:#c7c7c7; margin-left:2px;">${r.added}</span><span class="num" style="color:#565b5e; margin-left:6px;">${sinceAddedLabel(r.added)}</span>`}</div>
         ${hasCat ? `<div class="abs" style="left:16px; top:${top + 40.45}px; font-size:10px; color:#929292;">Added <span class="num" style="color:#c7c7c7; margin-left:2px;">${r.added}</span><span class="num" style="color:#565b5e; margin-left:6px;">${sinceAddedLabel(r.added)}</span></div>` : ''}
-        <div id="rev-price-${i}" class="abs" style="left:161px; top:${top}px; font-size:13px; font-weight:300; ${X ? 'color:#c7c7c7;' : ''} letter-spacing:-0.28px; text-align:right; width:150px;">${r.price}</div>
+        <div id="rev-price-${i}" class="abs" style="left:161px; top:${top}px; font-size:13px; font-weight:300; letter-spacing:-0.28px; text-align:right; width:150px;">${r.price}</div>
         <div id="rev-change-${i}" class="abs" style="left:307px; top:${top}px; font-size:13px; font-weight:300; color:${chgNumColor(parsePct(r.change))}; letter-spacing:-0.24px; text-align:right; width:70px;"><span class="chg-num">${r.change}</span>${chgTriHTML(parsePct(r.change))}</div>
         <div class="abs" style="left:167px; top:${top + 21.2}px; width:210px; text-align:right; font-size:11.5px; letter-spacing:-0.22px; font-variant-numeric:tabular-nums;"><span id="rev-since-${i}" style="color:${SUB_NUM};">${sTxt}</span> <span style="color:${SUB_LBL}; font-size:10px;">since added</span><span id="rev-stri-${i}" style="font-size:8px; vertical-align:1px; color:${sCol}; margin-left:4px;">${sTri}</span></div>
         ${hasThesis ? `<div class="abs" style="left:16px; top:${top + thesisTop}px; font-size:12px; color:${DESC_COL}; letter-spacing:-0.19px; max-width:361px; overflow:hidden; text-overflow:ellipsis;">${r.thesis}</div>` : ''}
