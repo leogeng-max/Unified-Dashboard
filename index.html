@@ -668,10 +668,6 @@
       <div class="iter-row"><span class="ttl">V8 · Paired accounts</span><span class="iter-sw"></span></div>
       <span class="sub">Your account + a simulated twin (II-D-0001) · only the demo side is marked</span>
     </div>
-    <div class="iter-item" id="nud-item-11" onclick="setNuDemo(11)">
-      <div class="iter-row"><span class="ttl">V10 · Funding transition</span><span class="iter-sw"></span></div>
-      <span class="sub">Tap fund — the same chart goes live and the demo steps back</span>
-    </div>
     <div class="iter-item" id="nud-item-12" onclick="setNuDemo(12)">
       <div class="iter-row"><span class="ttl">V11 · Product film</span><span class="iter-sw"></span></div>
       <span class="sub">Auto-played sequence — funding, performance, calibration, now ⇄ year one</span>
@@ -1590,7 +1586,6 @@
     else if (NU_DEMO === 7) nudWipe(sb);
     else if (NU_DEMO === 8) nudDave(sb);
     else if (NU_DEMO === 9) nudPair(sb);
-    else if (NU_DEMO === 11) nudFund(sb);
     else if (NU_DEMO === 12) nudFilm(sb);
     else if (NU_DEMO === 13) nudFilm2(sb);
   }
@@ -2158,102 +2153,6 @@
       buildPositions(); // the stage height changed — recompute the page height
     };
     window.__nudPa(0);
-  }
-
-  // V10 — the funding moment itself: both instruments shown full as the
-  // demonstration, then one tap funds the account and the same two frames
-  // flip to the user's day one while the demo steps back to a secondary row
-  function nudFund(sb) {
-    sb.innerHTML = `<div class="nud-wrap">
-      <div id="nud-fu-h">
-        <div style="font-size:9.5px; font-weight:600; letter-spacing:1.2px; text-transform:uppercase; color:#929292;">Demonstration portfolio</div>
-        <div class="num" style="margin-top:8px; font-size:28px; letter-spacing:-0.56px;">$247,840</div>
-        <div style="margin-top:6px; font-size:12px; color:#929292;">+7.4% since inception &middot; vs S&amp;P 500 <span class="num">&minus;3.8 pp</span></div>
-      </div>
-
-      <div style="margin-top:20px; display:flex; justify-content:space-between; align-items:baseline;">
-        <span style="font-size:14px; letter-spacing:-0.2px;">Performance</span>
-        <span class="nud-tag" id="nud-fu-t1" style="margin:0;">Demonstration</span>
-      </div>
-      <div class="nud-panel" style="margin-top:10px; position:relative;">
-        <div style="display:flex; justify-content:space-between; font-size:10px; color:#565b5e; margin-bottom:8px;"><span id="nud-fu-cl">vs S&amp;P 500 &middot; since inception</span><span class="num" id="nud-fu-cr">&minus;3.8 pp</span></div>
-        <div id="nud-fu-b" style="transition:opacity 900ms ease;"></div>
-        <div id="nud-fu-dot" class="nud-pulse" style="display:none; position:absolute; left:14px; bottom:22px; width:7px; height:7px; border-radius:50%; background:#30d158;"></div>
-      </div>
-      <div id="nud-fu-prow" style="display:flex; gap:22px; margin-top:10px; font-size:12px;">
-        <span><span style="color:#929292;">Portfolio</span> <span class="num" style="color:#fff;">+7.4%</span></span>
-        <span><span style="color:#929292;">S&amp;P 500</span> <span class="num" style="color:#C29A2A;">+11.2%</span></span>
-        <span><span style="color:#929292;">Alpha</span> <span class="num" style="color:#fff;">&minus;3.8 pp</span><span style="font-size:8px; vertical-align:1.5px; color:#ff3533; margin-left:4px;">&#9660;</span></span>
-      </div>
-
-      <div style="margin-top:24px; display:flex; justify-content:space-between; align-items:baseline;">
-        <span style="font-size:14px; letter-spacing:-0.2px;">Calibration</span>
-        <span class="nud-tag" id="nud-fu-t2" style="margin:0;">Demonstration</span>
-      </div>
-      <div class="nud-panel" style="margin-top:10px;">
-        <div style="display:flex; justify-content:space-between; font-size:10px; color:#565b5e; margin-bottom:8px;"><span>Calls vs the S&amp;P 500</span><span class="num" id="nud-fu-ccr" style="color:#288752;">12 resolved</span></div>
-        <div id="nud-fu-c" style="transition:opacity 900ms ease;"></div>
-      </div>
-      <div id="nud-fu-crow" style="margin-top:10px; font-size:12px; color:#c7c7c7;">12 forecasts resolved &mdash; <span style="color:#288752;">7 correct</span> &middot; <span style="color:#BE3C36;">5 incorrect</span> &middot; avg <span class="num">+1.9 pp</span></div>
-
-      <div id="nud-fu-cta" onclick="window.__nudFuGo && window.__nudFuGo()" style="margin-top:22px; padding:12px 14px; border:0.5px solid #2a2d2e; text-align:center; font-size:12px; letter-spacing:0.4px; color:#fff; cursor:pointer;">Fund $5,000 &mdash; see your day one &#8250;</div>
-      <div id="nud-fu-demo" style="display:none; margin-top:16px; padding:12px 14px; background:#0b0b0b; border:0.5px solid #232627; cursor:pointer;">
-        <div style="display:flex; justify-content:space-between; align-items:baseline;">
-          <span style="font-size:11px; font-weight:500; letter-spacing:0.3px; color:#929292;">DEMONSTRATION PORTFOLIO<span class="nud-tag" style="margin-left:8px;">Simulated</span></span>
-          <span class="num" style="font-size:11px; color:#565b5e;">$247,840</span>
-        </div>
-        <div style="margin-top:4px; font-size:11px; color:#c7c7c7;">Explore how II works &#8594;</div>
-      </div>
-      <div id="nud-fu-re" onclick="window.__nudFuRe && window.__nudFuRe()" style="display:none; margin-top:16px; font-size:12px; color:#c7c7c7; cursor:pointer;">&#8635; Replay</div>
-      ${NUD_FOOT}
-    </div>`;
-    const b = nudChart('bench-svg', 130); b.setT(1); nudTranslucent(b.el);
-    document.getElementById('nud-fu-b').appendChild(b.el);
-    const c = nudChart('cal-svg', 120); c.setT(1); nudTranslucent(c.el);
-    document.getElementById('nud-fu-c').appendChild(c.el);
-    window.__nudFuGo = () => {
-      const after = (ms, fn) => { const h = { to: setTimeout(fn, ms) }; NUD_TIMERS.push(h); };
-      // beat 1 — the account goes live
-      document.getElementById('nud-fu-cta').style.display = 'none';
-      document.getElementById('nud-fu-h').innerHTML = `
-        <div style="font-size:9.5px; font-weight:600; letter-spacing:1.2px; text-transform:uppercase; color:#929292;">Your portfolio</div>
-        <div class="num" style="margin-top:8px; font-size:28px; letter-spacing:-0.56px;">$5,000.00</div>
-        <div style="margin-top:6px; font-size:12px; color:#929292;"><span style="display:inline-block; width:6px; height:6px; border-radius:50%; background:#30d158; margin-right:6px; vertical-align:1px;"></span>Live &middot; benchmark comparison started</div>`;
-      // beat 2 — the performance frame flips to day one: the benchmark layer
-      // is real market data so it stays live; the demo's personal line drains
-      after(250, () => {
-        document.getElementById('nud-fu-t1').style.display = 'none';
-        b.el.querySelectorAll('path, polyline').forEach(p => {
-          const live = (p.getAttribute('stroke') || '') === '#C29A2A';
-          p.style.transition = 'opacity 900ms ease';
-          p.style.opacity = live ? '0.35' : '0.06';
-        });
-        b.el.querySelectorAll('ellipse, circle').forEach(e => { e.style.transition = 'opacity 900ms ease'; e.style.opacity = '0.06'; });
-        document.getElementById('nud-fu-cl').textContent = 'vs S&P 500 · since first deposit';
-        document.getElementById('nud-fu-cr').textContent = 'Day 1';
-        document.getElementById('nud-fu-dot').style.display = '';
-        document.getElementById('nud-fu-prow').innerHTML = `
-          <span><span style="color:#929292;">Portfolio</span> <span class="num" style="color:#fff;">+0.0%</span></span>
-          <span><span style="color:#929292;">S&amp;P 500</span> <span class="num" style="color:#C29A2A;">+0.0%</span></span>
-          <span><span style="color:#929292;">Alpha</span> <span class="num" style="color:#fff;">0.0 pp</span></span>`;
-      });
-      // beat 3 — the calibration frame empties: the record opens at first call
-      after(650, () => {
-        document.getElementById('nud-fu-t2').style.display = 'none';
-        document.getElementById('nud-fu-c').style.opacity = '0.12';
-        document.getElementById('nud-fu-ccr').style.color = '#565b5e';
-        document.getElementById('nud-fu-ccr').innerHTML = '<span style="font-size:9px; letter-spacing:1px;">SCORING BEGINS &middot; FIRST CALL</span>';
-        document.getElementById('nud-fu-crow').innerHTML = '0 forecasts resolved &mdash; <span style="color:#565b5e;">your first call opens the record</span>';
-      });
-      // beat 4 — the demonstration steps back to a secondary row
-      after(1100, () => {
-        const d = document.getElementById('nud-fu-demo'), r = document.getElementById('nud-fu-re');
-        [d, r].forEach(el => { el.style.opacity = '0'; el.style.transition = 'opacity 500ms ease'; el.style.display = ''; });
-        requestAnimationFrame(() => { d.style.opacity = '1'; r.style.opacity = '1'; });
-        buildPositions(); // the stage height changed — recompute the page height
-      });
-    };
-    window.__nudFuRe = () => { renderNuDemo(); buildPositions(); };
   }
 
   // V11 — the product film: four acts, each opened by a title card, played
