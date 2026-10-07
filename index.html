@@ -1463,6 +1463,17 @@
       (NEW_USER && (vd === 0 || (vd === 2 && !NU_V5.bench))) ? 'block' : 'none';
     document.getElementById('cal-empty').style.display =
       (NEW_USER && (vd === 0 || (vd === 2 && !NU_V5.cal))) ? 'block' : 'none';
+    // every demo state funnels to the same single action (V3+ carry their
+    // own line inside the stage; V0–V2 share this one below the sections)
+    let fl = document.getElementById('nud-fund-line');
+    if (!fl) {
+      fl = document.createElement('div');
+      fl.id = 'nud-fund-line';
+      fl.style.cssText = 'display:none; padding:0 16px; margin-top:24px; font-size:12px; color:#c7c7c7; line-height:1.5;';
+      fl.innerHTML = 'Fund your account ›';
+      document.getElementById('bench-cal-block').appendChild(fl);
+    }
+    fl.style.display = (NEW_USER && (vd === 0 || vd === 1 || vd === 2)) ? 'block' : 'none';
   }
   function refreshNud() { applyBenchCalVisibility(); renderNuDemo(); buildPositions(); }
   function setNuDemo(v) {
@@ -1611,6 +1622,7 @@
       <div style="margin-top:12px; font-size:13px;"><span style="color:#288752;" id="nud-sim-s1"></span> <span style="color:#c7c7c7;" class="num" id="nud-sim-s2"></span></div>
       <div style="margin-top:6px; font-size:11px; color:#565b5e;" id="nud-sim-s3"></div>
       <div id="nud-sim-go" style="margin-top:16px; font-size:12px; color:#c7c7c7; cursor:pointer;">&#8635; Replay the year</div>
+      <div style="margin-top:20px; font-size:12px; color:#c7c7c7; line-height:1.5;">Fund your account &#8250;</div>
       ${NUD_FOOT}
     </div>`;
     const b = nudChart('bench-svg', 150); nudTranslucent(b.el); document.getElementById('nud-sim-b').appendChild(b.el);
@@ -1679,6 +1691,7 @@
         ${row(3, 0.55, 'Month six', '6 OF 11 AHEAD')}
         ${row(4, 1, 'Year one', '+39.4% VS +45.2%')}
       </div>
+      <div style="margin-top:20px; font-size:12px; color:#c7c7c7; line-height:1.5;">Fund your account &#8250;</div>
       ${NUD_FOOT}
     </div>`;
     const ch = nudChart('bench-svg', 140); nudTranslucent(ch.el);
@@ -1748,6 +1761,7 @@
         </div>
         <div style="position:absolute; left:50%; top:40%; transform:translateX(-50%); color:#565b5e; font-size:15px;">&#8594;</div>
       </div>
+      <div style="margin-top:20px; font-size:12px; color:#c7c7c7; line-height:1.5;">Fund your account &#8250;</div>
       ${NUD_FOOT}
     </div>`;
     const b = nudChart('bench-svg', 64); b.setT(1); document.getElementById('nud-spl-b').appendChild(b.el);
@@ -1785,7 +1799,10 @@
         </div>
         <div class="nud-wipe-handle" id="nud-wp-h"></div>
       </div>
-      <div class="nud-wrap"><div class="nud-foot">Slide anywhere on the card &mdash; your present on the left, a demonstrated year one on the right.</div></div>`;
+      <div class="nud-wrap">
+        <div style="margin-top:18px; font-size:12px; color:#c7c7c7; line-height:1.5;">Fund your account &#8250;</div>
+        <div class="nud-foot">Slide anywhere on the card &mdash; your present on the left, a demonstrated year one on the right.</div>
+      </div>`;
     const b = nudChart('bench-svg', 118); b.setT(1); nudTranslucent(b.el); document.getElementById('nud-wp-b').appendChild(b.el);
     const c = nudChart('cal-svg', 118); c.setT(1); nudTranslucent(c.el); document.getElementById('nud-wp-c').appendChild(c.el);
     const wp = document.getElementById('nud-wp');
@@ -1995,26 +2012,12 @@
   }
   // V8 — paired accounts: a real account and a numbered simulated twin.
   // Only the demo side carries a marker (IBKR rule: no marker means real),
-  // and inside the demo a persistent gold bar signs every screen (Stripe rule)
+  // and the demo view mirrors exactly what this dashboard section shows once
+  // funded — Performance and Calibration, nothing that lives elsewhere
   function nudPair(sb) {
     const hairline = `<div style="height:1px; background:#1c1c1c; margin:24px 0 0;"></div>`;
     const secHead = (t) => `<div style="margin-top:24px; display:flex; align-items:baseline; justify-content:space-between;">
       <span style="font-size:15px; letter-spacing:-0.3px;">${t}</span><span class="nud-tag" style="margin:0;">Demonstration</span></div>`;
-    const att = (tick, tag, tagCol, line, note) => `<div style="margin-top:12px; padding:12px 14px; background:#0b0b0b; border:0.5px solid #232627;">
-      <div style="display:flex; justify-content:space-between; align-items:baseline;">
-        <span style="font-size:13px; font-weight:500;">${tick}</span>
-        <span style="font-size:8.5px; letter-spacing:1.1px; color:${tagCol};">${tag}</span>
-      </div>
-      <div style="margin-top:7px; font-size:12px; color:#c7c7c7; line-height:1.5;">${line}</div>
-      <div style="margin-top:5px; font-size:11px; color:#565b5e; line-height:1.5;">${note}</div>
-    </div>`;
-    const pos = (tick, ret, retCol, pp, ppCol, thesis, thCol, status, stCol) => `<div style="display:flex; align-items:baseline; padding:11px 0; border-top:0.5px solid #1c1c1c; font-size:11.5px;">
-      <span style="flex:1.1; font-weight:500; font-size:12px;">${tick}</span>
-      <span class="num" style="flex:1; text-align:right; color:${retCol};">${ret}</span>
-      <span class="num" style="flex:1.1; text-align:right; color:${ppCol};">${pp}</span>
-      <span style="flex:1; text-align:right; color:${thCol};">${thesis}</span>
-      <span style="flex:1.1; text-align:right; color:${stCol};">${status}</span>
-    </div>`;
     sb.innerHTML = `<div class="nud-wrap">
       <div style="font-size:10px; letter-spacing:1.4px; color:#565b5e;">ACCOUNTS</div>
       <div id="nud-pa-r0" onclick="window.__nudPa && window.__nudPa(0)" style="margin-top:12px; padding:13px 14px; background:#0b0b0b; border:0.5px solid #232627; border-left:2px solid #fff; cursor:pointer;">
@@ -2043,7 +2046,8 @@
       </div>
 
       <div id="nud-pa-demo" style="display:none;">
-        <div class="nud-panel" style="margin-top:16px;">
+        ${secHead('Performance')}
+        <div class="nud-panel" style="margin-top:12px;">
           <div style="display:flex; justify-content:space-between; font-size:10px; color:#565b5e; margin-bottom:8px;"><span>vs S&amp;P 500 &middot; since inception</span><span class="num">&minus;3.8 pp</span></div>
           <div id="nud-pa-b"></div>
         </div>
@@ -2054,88 +2058,16 @@
         </div>
 
         ${hairline}
-        <div style="margin-top:24px; font-size:15px; letter-spacing:-0.3px;">3 things require attention</div>
-        ${att('NVDA', 'EXPECTATIONS CHANGED', '#C9A24B', 'Revenue outlook increased following earnings.', 'Your original thesis remains intact.')}
-        ${att('GOOGL', 'TRAILING BENCHMARK', '#BE3C36', '&minus;12.4 pp vs S&amp;P since purchase.', 'Thesis remains intact &middot; next review Nov 4.')}
-        ${att('META', 'PRICE MOVEMENT', '#565b5e', '+6.8% today.', 'No material change detected in underlying expectations.')}
-
-        ${hairline}
-        ${secHead('What changed')}
-        <div style="margin-top:12px; padding:14px; background:#0b0b0b; border:0.5px solid #232627;">
-          <div style="display:flex; justify-content:space-between; align-items:baseline;">
-            <span style="font-size:13px; font-weight:500;">GOOGL <span style="color:#929292; font-weight:400;">&middot; Earnings</span></span>
-          </div>
-          <div style="margin-top:8px; font-size:12px; color:#c7c7c7; line-height:1.55;">Revenue exceeded expectations by 4%. Cloud growth accelerated. Management increased capex expectations.</div>
-          <div style="display:flex; justify-content:space-between; margin-top:12px; font-size:11px;"><span style="color:#565b5e;">Impact on thesis</span><span style="color:#288752;">Positive</span></div>
-          <div style="margin-top:9px; font-size:11px; color:#565b5e;">What hasn't changed</div>
-          <div style="margin-top:4px; font-size:11px; color:#929292; line-height:1.5;">Advertising growth remains within the range assumed in the investment case.</div>
-          <div style="display:flex; justify-content:space-between; margin-top:12px; font-size:11px;"><span style="color:#565b5e;">AI assessment</span><span style="color:#c7c7c7;">Expected return: unchanged</span></div>
-          <div style="margin-top:12px; font-size:12px; color:#c7c7c7;">Review position &#8250;</div>
-        </div>
-
-        ${hairline}
-        ${secHead('Positions')}
-        <div style="display:flex; margin-top:12px; font-size:9px; letter-spacing:0.7px; color:#565b5e;">
-          <span style="flex:1.1;">TICK</span><span style="flex:1; text-align:right;">RETURN</span><span style="flex:1.1; text-align:right;">VS S&amp;P</span><span style="flex:1; text-align:right;">THESIS</span><span style="flex:1.1; text-align:right;">STATUS</span>
-        </div>
-        <div style="margin-top:8px;">
-          ${pos('META', '+32.4%', '#fff', '+17.8 pp', '#30d158', 'Intact', '#929292', 'On track', '#288752')}
-          ${pos('AMZN', '+18.2%', '#fff', '+3.1 pp', '#30d158', 'Intact', '#929292', 'On track', '#288752')}
-          ${pos('GOOGL', '+2.7%', '#fff', '&minus;12.4 pp', '#ff3533', 'Intact', '#929292', 'Review', '#C9A24B')}
-          ${pos('XYZ', '&minus;16.8%', '#929292', '&minus;29.2 pp', '#ff3533', 'Weakening', '#C9A24B', 'Attention', '#BE3C36')}
-        </div>
-
-        ${hairline}
-        ${secHead('Decision record')}
-        <div style="margin-top:12px; padding:13px 14px; background:#0b0b0b; border:0.5px solid #232627;">
-          <div style="display:flex; justify-content:space-between; align-items:baseline;">
-            <span style="font-size:13px; font-weight:500;">META <span style="color:#929292; font-weight:400;">&middot; Added 14 shares</span></span>
-            <span class="num" style="font-size:10px; color:#565b5e;">Mar 18</span>
-          </div>
-          <div style="margin-top:7px; font-size:11.5px; color:#929292; line-height:1.5;">Reason: expected return remained attractive after the earnings decline.</div>
-          <div style="display:flex; justify-content:space-between; margin-top:10px; font-size:11.5px;">
-            <span style="color:#565b5e;">Price at decision <span class="num" style="color:#c7c7c7;">$482</span> &middot; today <span class="num" style="color:#c7c7c7;">$571</span></span>
-            <span class="num" style="color:#30d158;">+13.7 pp vs S&amp;P</span>
-          </div>
-        </div>
-        <div style="margin-top:12px; padding:13px 14px; background:#0b0b0b; border:0.5px solid #232627;">
-          <div style="display:flex; justify-content:space-between; align-items:baseline;">
-            <span style="font-size:13px; font-weight:500;">TSLA <span style="color:#929292; font-weight:400;">&middot; Bought</span></span>
-            <span class="num" style="font-size:10px; color:#565b5e;">Jan 12</span>
-          </div>
-          <div style="margin-top:7px; font-size:11.5px; color:#929292; line-height:1.5;">Reason: revenue growth expected to reaccelerate.</div>
-          <div style="display:flex; justify-content:space-between; margin-top:10px; font-size:11.5px;">
-            <span style="color:#565b5e;">What happened: growth kept decelerating.</span>
-            <span class="num" style="color:#ff3533;">&minus;21.4 pp vs S&amp;P</span>
-          </div>
-        </div>
-
-        ${hairline}
         ${secHead('Calibration')}
         <div class="nud-panel" style="margin-top:12px;">
           <div style="display:flex; justify-content:space-between; font-size:10px; color:#565b5e; margin-bottom:8px;"><span>Calls vs the S&amp;P 500</span><span class="num" style="color:#288752;">12 resolved</span></div>
           <div id="nud-pa-c"></div>
         </div>
         <div style="margin-top:12px; font-size:12px; color:#c7c7c7;">12 forecasts resolved &mdash; <span style="color:#288752;">7 correct</span> &middot; <span style="color:#BE3C36;">5 incorrect</span></div>
-        <div style="margin-top:12px; padding:12px 14px; background:#0b0b0b; border:0.5px solid #232627;">
-          <div style="font-size:11px; color:#929292;">Confidence vs reality</div>
-          <div style="display:flex; justify-content:space-between; margin-top:8px; font-size:12px;"><span style="color:#c7c7c7;">70&ndash;79% confidence</span><span class="num" style="color:#fff;">actual 58%</span></div>
-          <div style="margin-top:8px; font-size:11px; color:#C9A24B; line-height:1.5;">You were more confident than the evidence justified.</div>
-        </div>
-        <div style="display:flex; gap:12px; margin-top:12px;">
-          <div style="flex:1; padding:11px 13px; background:#0b0b0b; border:0.5px solid #232627;">
-            <div style="font-size:10px; color:#565b5e;">Strongest</div>
-            <div style="margin-top:5px; font-size:12px; color:#288752;">Business quality</div>
-          </div>
-          <div style="flex:1; padding:11px 13px; background:#0b0b0b; border:0.5px solid #232627;">
-            <div style="font-size:10px; color:#565b5e;">Weakest</div>
-            <div style="margin-top:5px; font-size:12px; color:#BE3C36;">Timing &middot; sizing</div>
-          </div>
-        </div>
-        <div style="margin-top:10px; font-size:11px; color:#565b5e; line-height:1.5;">Your largest positions produced less excess return than your smaller ones.</div>
+        <div style="margin-top:8px; font-size:12px; color:#929292;">6 of 11 ahead of the S&amp;P 500 &middot; avg <span class="num" style="color:#c7c7c7;">+1.9 pp</span></div>
 
         ${hairline}
-        <div style="margin-top:20px; font-size:12px; color:#c7c7c7; line-height:1.5;">Fund your account &mdash; II starts building your record &#8250;</div>
+        <div style="margin-top:20px; font-size:12px; color:#c7c7c7; line-height:1.5;">Fund your account &#8250;</div>
       </div>
       ${NUD_FOOT}
     </div>`;
