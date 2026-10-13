@@ -162,9 +162,16 @@
   .bpad{padding:0 16px;}
   .bx-sec-title{font-size:15px;color:#fff;letter-spacing:-0.02em;}
   .bx-chev{font-size:17px;color:#565b5e;line-height:1;}
-  .chart-plot{position:relative;background:#0A0A0A;border:0.5px solid #232627;padding:12px;}
+  .chart-plot{position:relative;}
   .plot-window{font-size:11px;color:#929292;letter-spacing:-0.02em;margin-bottom:8px;}
-  .bx-chart{display:block;width:100%;height:180px;overflow:visible;touch-action:none;cursor:crosshair;}
+  .bx-chart{display:block;width:100%;height:210px;overflow:visible;touch-action:none;cursor:crosshair;}
+  /* reference widget rows: hairline-separated, row labels double as the legend */
+  .pwrows{display:flex;flex-direction:column;}
+  .pwrows .bx-row{padding:13px 0;border-bottom:0.5px solid #232627;}
+  /* live dot: soft ring expands and fades (reference pulse) */
+  .lpulse{transform-box:fill-box;transform-origin:center;animation:lring 2.4s ease-out infinite;}
+  @keyframes lring{0%{transform:scale(1);opacity:.35;}70%,100%{transform:scale(3.2);opacity:0;}}
+  @media (prefers-reduced-motion: reduce){.lpulse{animation:none;opacity:.15;transform:scale(2.4);}}
   .plot-ends{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-top:8px;
     font-size:11px;letter-spacing:-0.02em;font-variant-numeric:tabular-nums;white-space:nowrap;}
   .plot-ends .pe-acct{color:#fff;} .plot-ends .pe-bm{color:#C29A2A;}
@@ -204,6 +211,23 @@
   .calc-val{margin-top:10px; font-size:19px; letter-spacing:-0.38px; font-variant-numeric:tabular-nums;}
   .calc-lbl{margin-top:4px; font-size:12px; color:#c7c7c7;}
   .calc-n{margin-top:3px; font-size:11px; color:#565b5e;}
+  /* tour micro-animations: one quiet motion per card */
+  .ta-row{display:flex; align-items:center; gap:6px; opacity:.25; animation:taRow 3.6s infinite;}
+  .ta-row+.ta-row{margin-top:7px;}
+  .ta-row:nth-child(2){animation-delay:1.2s;} .ta-row:nth-child(3){animation-delay:2.4s;}
+  @keyframes taRow{0%,22%{opacity:1;}32%,100%{opacity:.25;}}
+  .ta-dot{width:5px; height:5px; border-radius:50%; flex-shrink:0;}
+  .ta-bar{height:3px; background:#2a2d2e; flex:1;}
+  .ta-chip{width:14px; height:5px; flex-shrink:0;}
+  .ta-spark path{stroke-dasharray:150; stroke-dashoffset:150; animation:taDraw 3s ease-in-out infinite;}
+  .ta-spark circle{animation:taEnd 3s ease-in-out infinite;}
+  @keyframes taDraw{0%{stroke-dashoffset:150; opacity:1;}60%,82%{stroke-dashoffset:0; opacity:1;}100%{stroke-dashoffset:0; opacity:0;}}
+  @keyframes taEnd{0%,55%{opacity:0;}62%,82%{opacity:1;}100%{opacity:0;}}
+  .ta-cg{animation:taPop 3s cubic-bezier(0.22,1,0.36,1) infinite;}
+  .ta-cr{animation:taPop 3s cubic-bezier(0.22,1,0.36,1) infinite 1.5s;}
+  @keyframes taPop{0%{transform:scale(0.35); opacity:.25;}16%{transform:scale(1); opacity:1;}84%{transform:scale(1); opacity:1;}100%{transform:scale(0.35); opacity:.25;}}
+  .ta-seg{height:4px; background:#e8e8e4; animation:taSeg 3.6s ease-in-out infinite;}
+  @keyframes taSeg{0%,100%{width:62%;}50%{width:44%;}}
   @keyframes calc-pop{from{transform:scale(0.35);}to{transform:scale(1);}}
   .calc-dot.pop{animation:calc-pop 520ms cubic-bezier(0.22,1,0.36,1);}
   #nud-lg-track::-webkit-scrollbar{width:3px;}
@@ -648,6 +672,16 @@
       <div class="iter-row"><span class="ttl">New user</span><span class="iter-sw"></span></div>
       <span class="sub">Transfer pending · no capital deployed. Off = funded account.</span>
     </div>
+
+    <div class="iter-head" style="margin-top:10px;">FIRST-RUN · TOUR <span style="text-transform:none; letter-spacing:0; color:#3f4447;">— stepped intro cards</span></div>
+    <div class="iter-item" onclick="tourStart('new')">
+      <div class="iter-row"><span class="ttl">Play intro · new user</span></div>
+      <span class="sub">5 steps — notifications, benchmark, core, demonstration, under review</span>
+    </div>
+    <div class="iter-item" onclick="tourStart('funded')">
+      <div class="iter-row"><span class="ttl">Play intro · funded</span></div>
+      <span class="sub">4 steps — notifications, performance, calibration, positions</span>
+    </div>
     <div class="iter-head" style="margin-top:10px;">NEW-USER DEMO · PERF &amp; CALIBRATION <span style="text-transform:none; letter-spacing:0; color:#3f4447;">— pick one</span></div>
     <div class="iter-item on" id="nud-item-0" onclick="setNuDemo(0)">
       <div class="iter-row"><span class="ttl">V0 · Quiet lines</span><span class="iter-sw"></span></div>
@@ -746,6 +780,24 @@
     </div>
 
     <div class="frame">
+      <!-- first-run tour: dim + stepped coachmark card -->
+      <div id="tour-overlay" style="display:none; position:absolute; left:0; top:0; width:100%; height:100%; z-index:80; overflow:hidden;">
+        <div id="tour-spot" style="position:absolute; left:4px; width:385px; top:0; height:0; box-shadow:0 0 0 9999px rgba(0,0,0,0.55); transition:top 380ms ease, height 380ms ease;"></div>
+      </div>
+      <div id="tour-card" style="display:none; position:absolute; left:16px; width:361px; background:#111111; border:0.5px solid #2a2d2e; padding:15px 16px 11px; z-index:81;">
+        <div id="tour-caret" style="position:absolute; top:-5.5px; left:40px; width:10px; height:10px; background:#111111; border-left:0.5px solid #2a2d2e; border-top:0.5px solid #2a2d2e; transform:rotate(45deg);"></div>
+        <div style="display:flex; gap:14px; align-items:center; justify-content:space-between; min-height:40px;">
+          <div id="tour-title" style="font-size:14px; font-weight:500; letter-spacing:-0.2px; flex:1; min-width:0;"></div>
+          <div id="tour-anim" style="display:none; width:86px; flex-shrink:0; align-items:center; justify-content:flex-end;"></div>
+        </div>
+        <div id="tour-body" style="margin-top:9px; font-size:12.5px; color:#929292; line-height:1.6;"></div>
+        <div style="height:1px; background:#232627; margin:13px -16px 0;"></div>
+        <div style="display:flex; align-items:center; margin-top:10px;">
+          <span id="tour-back" onclick="tourBack()" style="cursor:pointer; font-size:12.5px; color:#c7c7c7;">&#8592; Back</span>
+          <span id="tour-n" class="num" style="margin:0 auto; font-size:11px; color:#565b5e;"></span>
+          <span id="tour-next" onclick="tourNext()" style="cursor:pointer; font-size:12.5px; color:#fff;">Next &#8594;</span>
+        </div>
+      </div>
 
       <!-- ============ HEADER ============ -->
       <div class="abs" style="left:31px; top:26px; font-size:23px; font-weight:700; letter-spacing:-1px;">//</div>
@@ -865,42 +917,30 @@
       <div class="divider" style="left:14.5px; top:1078.97px; width:366px;"></div>
       <div class="abs" style="left:14.5px; top:1109.97px; font-size:18px; color:#c7c7c7; letter-spacing:-0.36px;">Active</div>
       <div class="abs" style="left:14.5px; top:1140.67px; font-size:15px; color:#565b5e; letter-spacing:-0.3px;">Self-Directed</div>
-      <div class="abs" style="left:331.2px; top:1109.97px; font-size:15px; color:#c7c7c7; letter-spacing:-0.3px;">RRSP</div>
+      <div class="abs" style="right:29px; top:1109.97px; font-size:15px; color:#c7c7c7; letter-spacing:-0.3px;">All Accounts</div>
       <svg class="abs" style="left:374px; top:1118.6px;" width="6" height="3" viewBox="0 0 6.70711 4.06066" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M0.353553 0.353553L3.35355 3.35355L6.35355 0.353553" stroke="#C7C7C7"/>
       </svg>
 
-      <div class="abs" style="right:16px; top:1208.67px; font-size:13px; color:#929292; letter-spacing:-0.22px;">Value</div>
-      <div id="stat-active-value" class="abs nu-hide" style="right:16px; top:1230.92px; font-size:22px; letter-spacing:-0.44px;">46,777.23</div>
-      <div class="abs nu-hide" style="left:205.8px; top:1262.92px; font-size:13px; letter-spacing:-0.26px; color:#929292;">
-        All Time <span id="stat-active-allchg" style="color:#c7c7c7;">+2,353.46</span> <span id="stat-active-allpct" style="color:#c7c7c7;">(+5.3%)</span>
-      </div>
-      <div class="abs nu-only" style="right:16px; top:1230.92px; font-size:22px; letter-spacing:-0.44px;">0.00</div>
-      <div class="abs nu-only" style="right:16px; top:1272.92px; font-size:13px; color:#929292; letter-spacing:-0.26px;">No Capital Deployed</div>
-      <div class="abs nu-only" style="right:16px; top:1294.92px; font-size:13px; color:#fff; font-weight:500; letter-spacing:-0.26px;">Transfer Pending</div>
-
-      <!-- ============ CASH ============ -->
-      <div class="abs nu-hide" style="left:309.6px; top:1331.92px; font-size:13px; color:#929292; letter-spacing:-0.26px;">Cash (10%)</div>
-      <div class="abs nu-hide" style="left:317.6px; top:1353.92px; font-size:15px; color:#c7c7c7; letter-spacing:-0.3px;">4,677.72</div>
 
       <!-- ============ S&P 500 COMPARISON CARD + CALIBRATION FAN ============
            Ported from main-dashboard-states: percent-growth chart with press-scrub,
            dollar rows below it, then the calibration fan (11 calls vs the S&P). -->
-      <div id="bench-cal-block" style="position:absolute; left:0; top:1442.92px; width:100%; white-space:normal;">
+      <div id="bench-cal-block" style="position:absolute; left:0; top:1198.92px; width:100%; white-space:normal;">
 
         <!-- collapsed state — one summary line (WHOOP "get out of my face"
              pattern: dismissable, with an obvious way back). Collapsed
              Performance shows only the alpha — unlabeled, per the jam. -->
-        <div id="bench-collapsed" style="display:none; padding:0 16px; align-items:center; cursor:pointer;" onclick="toggleBench()">
-          <span class="bx-sec-title">Performance</span>
-          <svg style="margin-left:12px; transform:rotate(-90deg);" width="11" height="7" viewBox="0 0 11 7" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M1 1.5L5.5 6L10 1.5" stroke="#929292" stroke-width="1.2"/>
-          </svg>
+        <div id="bench-collapsed" style="display:none; padding:0 16px; align-items:center;">
+          <span class="bx-sec-title" style="cursor:pointer;" onclick="openPerfPage()">Performance <span style="color:#565b5e; font-size:14px; margin-left:1px;">&#8250;</span></span>
           <span style="margin-left:auto; font-size:13px; font-weight:300; letter-spacing:-0.24px; font-variant-numeric:tabular-nums;">
             <span id="bench-sum-alpha" style="color:#fff;">&minus;2,373.90</span>
             <span id="bench-sum-pp" style="color:#929292; font-size:12px; margin-left:7px;">&minus;5.8 pp</span>
             <span id="bench-sum-arrow" class="bx-trend down" style="margin-left:7px;">&#9660;</span>
           </span>
+          <svg onclick="toggleBench()" style="margin-left:14px; cursor:pointer;" width="11" height="7" viewBox="0 0 11 7" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M1 1.5L5.5 6L10 1.5" stroke="#929292" stroke-width="1.2"/>
+          </svg>
         </div>
 
         <!-- new-user empty states — the sections keep their place from day
@@ -915,44 +955,66 @@
         <div id="nud-stage-bench"></div>
 
         <div id="card-bench">
-          <div class="bpad" style="display:flex; align-items:baseline; justify-content:space-between; cursor:pointer;" onclick="toggleBench()">
-            <span class="bx-sec-title">Performance <span style="color:#929292;">&middot;</span> <span style="color:#565b5e;">All Accounts</span><span class="demo-tag">Demonstration</span></span>
-            <svg style="margin-top:3px;" width="11" height="7" viewBox="0 0 11 7" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- new-user: the Active zero-state leads where the chart will live -->
+          <div class="nu-only bpad" style="text-align:right; padding-bottom:6px;">
+            <div style="font-size:22px; letter-spacing:-0.44px;">0.00</div>
+            <div style="margin-top:12px; font-size:13px; color:#929292; letter-spacing:-0.26px;">No Capital Deployed</div>
+            <div style="margin-top:6px; font-size:13px; color:#fff; font-weight:500; letter-spacing:-0.26px;">Transfer Pending</div>
+          </div>
+          <!-- header: "Performance ›" routes to the (future) Performance page;
+               the chevron on the right is the separate collapse control -->
+          <div class="bpad" style="display:flex; align-items:center; justify-content:space-between;">
+            <span class="bx-sec-title" style="cursor:pointer;" onclick="openPerfPage()">Performance <span style="color:#565b5e; font-size:14px; margin-left:1px;">&#8250;</span><span class="demo-tag">Demonstration</span></span>
+            <svg onclick="toggleBench()" style="cursor:pointer;" width="11" height="7" viewBox="0 0 11 7" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M1 1.5L5.5 6L10 1.5" stroke="#929292" stroke-width="1.2"/>
             </svg>
           </div>
-          <div class="bpad" style="margin-top:18px;">
+          <!-- the sleeve's value leads the section, film-style -->
+          <div class="bpad nu-hide" style="margin-top:14px;">
+            <div class="num" style="font-size:24px; letter-spacing:-0.48px;"><span id="stat-active-value">46,777.23</span></div>
+            <div style="margin-top:5px; font-size:12px; color:#929292;"><span id="stat-active-allchg">+2,353.46</span> <span id="stat-active-allpct">(+5.3%)</span> all time<span style="font-size:8px; vertical-align:1.5px; color:#30d158; margin-left:5px;">&#9650;</span></div>
+          </div>
+          <div class="bpad" style="margin-top:12px; font-size:10px; color:#565b5e; letter-spacing:-0.02em;">vs S&amp;P 500 &middot; 3y 4m</div>
+          <div style="margin-top:6px; padding-right:20px;">
             <div class="chart-plot">
-              <div class="plot-window">3y 4m &middot; Portfolio vs S&amp;P 500</div>
               <svg class="bx-chart" id="bench-svg" viewBox="0 0 320 180" preserveAspectRatio="none" aria-hidden="true">
-                <path id="bench-curveBm" d="" fill="none" stroke="#C29A2A" stroke-width="1" vector-effect="non-scaling-stroke"/>
-                <path id="bench-curveAcct" d="" fill="none" stroke="#FFFFFF" stroke-width="1" vector-effect="non-scaling-stroke"/>
+                <g id="bench-ax" class="ax"></g>
+                <path id="bench-curveBm" d="" fill="none" stroke="#C29A2A" stroke-width="2" vector-effect="non-scaling-stroke" stroke-linejoin="round" stroke-linecap="round"/>
+                <path id="bench-curveAcct" d="" fill="none" stroke="#FFFFFF" stroke-width="2.25" vector-effect="non-scaling-stroke" stroke-linejoin="round" stroke-linecap="round"/>
+                <g id="bench-ends" class="ax"></g>
                 <line class="scrub-line" x1="0" y1="12" x2="0" y2="172" stroke="#565B5E" stroke-width="0.5" vector-effect="non-scaling-stroke" visibility="hidden"/>
                 <ellipse class="scrub-dot-b" rx="2.5" ry="2.5" fill="#C29A2A" visibility="hidden"/>
                 <ellipse class="scrub-dot-a" rx="2.5" ry="2.5" fill="#FFFFFF" visibility="hidden"/>
                 <text class="scrub-date-label" x="0" y="22" font-size="11" font-family="Inter" text-anchor="middle" fill="#FFFFFF" letter-spacing="-0.02em" visibility="hidden">Jan 24</text>
               </svg>
-              <div class="plot-ends">
-                <span class="pe-acct">Portfolio <span data-pct-acct>+39.4%</span></span>
-                <span class="pe-bm">S&amp;P 500 <span data-pct-sp>+45.2%</span></span>
-              </div>
             </div>
           </div>
-          <div class="bpad bx-rows" style="margin-top:20px;">
+          <!-- film-language legend trio: percent readings keyed to the lines -->
+          <div class="bpad" style="display:flex; gap:22px; margin-top:16px; font-size:12px;">
+            <span><span style="color:#929292;">Portfolio</span> <span class="num" id="bench-tri-a" style="color:#fff;">+39.4%</span></span>
+            <span><span style="color:#929292;">S&amp;P 500</span> <span class="num" id="bench-tri-s" style="color:#C29A2A;">+45.2%</span></span>
+            <span><span style="color:#929292;">Alpha</span> <span class="num" id="bench-tri-d" style="color:#fff;">&minus;5.8 pp</span><span class="bx-trend down" id="bench-tri-ar" style="margin-left:5px;">&#9660;</span></span>
+          </div>
+          <div class="bpad pwrows" style="margin-top:20px;">
             <div class="bx-row">
-              <span class="bx-label">Portfolio P/L</span>
+              <span class="bx-label" style="color:#fff;">Portfolio P/L</span>
               <span class="bx-val"><span data-pl-acct>+16,142.02</span><span class="bx-pct" data-pl-acct-pct>+39.4%</span></span>
             </div>
             <div class="bx-row">
-              <span class="bx-label">S&amp;P 500 P/L<br>(Same Window)</span>
+              <span class="bx-label" style="color:#C29A2A;">S&amp;P 500 P/L <span style="font-size:12px; color:#929292;">(Same Window)</span></span>
               <span class="bx-val"><span data-pl-sp>+18,515.92</span><span class="bx-pct" data-pl-sp-pct>+45.2%</span></span>
             </div>
-          </div>
-          <div style="height:1px; background:#1c1c1c; margin:18px 16px;"></div>
-          <div class="bpad bx-rows">
             <div class="bx-row">
               <span class="bx-label">Alpha</span>
               <span class="bx-val"><span data-alpha>&minus;2,373.90</span><span class="bx-pct" data-alpha-pp>&minus;5.8 pp</span><span class="bx-trend down" data-alpha-arrow>&#9660;</span></span>
+            </div>
+          </div>
+          <!-- the Active section's own holdings summary — two rows, all-time
+               folded into Value as its quiet suffix -->
+          <div class="bpad pwrows nu-hide" style="margin-top:4px;">
+            <div class="bx-row">
+              <span class="bx-label">Cash <span style="font-size:12px; color:#565b5e;">&middot; 10%</span></span>
+              <span class="bx-val" style="color:#c7c7c7;">4,677.72</span>
             </div>
           </div>
           <p class="bpad bx-foot">Alpha is your P/L against what the same deposits would have made in the S&amp;P 500 over the same window.</p>
@@ -1542,7 +1604,7 @@
     const src = document.getElementById(srcId);
     const c = src.cloneNode(true);
     c.removeAttribute('id'); c.removeAttribute('class');
-    c.querySelectorAll('.scrub-line,.scrub-dot-a,.scrub-dot-b,.scrub-date-label').forEach(e => e.remove());
+    c.querySelectorAll('.scrub-line,.scrub-dot-a,.scrub-dot-b,.scrub-date-label,.ax').forEach(e => e.remove());
     c.querySelectorAll('[id]').forEach(e => e.removeAttribute('id'));
     c.setAttribute('preserveAspectRatio', 'none');
     c.style.cssText = 'display:block; width:100%; height:' + height + 'px; overflow:hidden;';
@@ -2124,7 +2186,7 @@
     sb.innerHTML = `<div class="nud-wrap">
       <div style="display:flex; align-items:center; justify-content:space-between;">
         <span style="font-size:9.5px; font-weight:600; letter-spacing:1.2px; text-transform:uppercase; color:#EDCB78;">Demonstration</span>
-        <span style="font-size:10px; color:#565b5e;">Tap to skip</span>
+        <span style="display:inline-flex; gap:14px; align-items:baseline;"><span class="nud-f-pb" onclick="event.stopPropagation(); window.__nudFPause && window.__nudFPause()" style="font-size:9px; letter-spacing:1.2px; color:#929292; cursor:pointer;">PAUSE</span><span style="font-size:10px; color:#565b5e;">Tap to skip</span></span>
       </div>
       <div style="display:flex; gap:5px; margin-top:12px;">
         ${[0, 1, 2, 3].map(i => `<div onclick="window.__nudFmGo && window.__nudFmGo(${i})" style="flex:1; padding:6px 0; cursor:pointer;"><div style="height:2px; background:#1c1c1c;"><div id="nud-fm-pr${i}" style="height:2px; width:0%; background:#929292;"></div></div></div>`).join('')}
@@ -2195,9 +2257,9 @@
           <span style="font-size:10px; letter-spacing:1.4px; color:#565b5e;">02 &middot; PERFORMANCE</span>
           <span class="nud-tag" style="margin:0;">Demonstration</span>
         </div>
-        <div class="nud-panel" style="margin-top:16px;">
+        <div style="margin-top:16px;">
           <div style="display:flex; justify-content:space-between; font-size:10px; color:#565b5e; margin-bottom:8px;"><span>vs S&amp;P 500 &middot; one year</span><span class="num" id="nud-fm-mo">Month 0</span></div>
-          <div id="nud-fm-bc"></div>
+          <div id="nud-fm-bc" style="margin-left:-16px;"></div>
         </div>
         <div class="bx-rows" style="margin-top:14px;">
           <div class="bx-row"><span class="bx-label" style="font-size:13px;">Portfolio P/L</span><span class="bx-val" style="font-size:13px;"><span class="num" id="nud-fm-p1"></span><span class="bx-pct" id="nud-fm-p1p"></span></span></div>
@@ -2327,6 +2389,9 @@
     };
     const show = i => {
       clearFT();
+      fPaused = false;
+      const _pb = document.querySelector('.nud-f-pb');
+      if (_pb) _pb.textContent = 'PAUSE';
       idx = i;
       L.style.opacity = '0'; L.style.transform = 'translateY(10px)';
       document.getElementById('nud-fm-n').innerHTML = '';
@@ -2340,6 +2405,21 @@
     window.__nudFmSkip = () => { if (fmSwiped) { fmSwiped = false; return; } show(idx < SCENES.length - 1 ? idx + 1 : 0); };
     window.__nudFmRe = () => show(0);
     window.__nudFmGo = i => show(i);
+    let fPaused = false;
+    window.__nudFPause = () => {
+      const btn = document.querySelector('.nud-f-pb');
+      if (!fPaused) {
+        fPaused = true;
+        clearFT(); // freezes counters, reveals and the auto-advance mid-frame
+        const p = document.getElementById('nud-fm-pr' + idx);
+        const pw = p.parentElement.getBoundingClientRect().width;
+        p.style.transition = 'none';
+        p.style.width = (pw ? p.getBoundingClientRect().width / pw * 100 : 0).toFixed(1) + '%';
+        if (btn) btn.textContent = 'PLAY';
+      } else {
+        show(idx); // resume replays the current act from its top
+      }
+    };
     // swipe left = next act, swipe right = previous (or replay this one)
     let fmSx = null, fmSwiped = false;
     const fmStage = document.getElementById('nud-fm-stage');
@@ -2363,7 +2443,7 @@
     sb.innerHTML = `<div class="nud-wrap">
       <div style="display:flex; align-items:center; justify-content:space-between;">
         <span style="font-size:9.5px; font-weight:600; letter-spacing:1.2px; text-transform:uppercase; color:#EDCB78;">Demonstration</span>
-        <span style="font-size:10px; color:#565b5e;">Tap to skip</span>
+        <span style="display:inline-flex; gap:14px; align-items:baseline;"><span class="nud-f-pb" onclick="event.stopPropagation(); window.__nudFPause && window.__nudFPause()" style="font-size:9px; letter-spacing:1.2px; color:#929292; cursor:pointer;">PAUSE</span><span style="font-size:10px; color:#565b5e;">Tap to skip</span></span>
       </div>
       <div style="display:flex; gap:5px; margin-top:12px;">
         ${[0, 1, 2, 3].map(i => `<div onclick="window.__nudF2Go && window.__nudF2Go(${i})" style="flex:1; padding:6px 0; cursor:pointer;"><div style="height:2px; background:#1c1c1c;"><div id="nud-f2-pr${i}" style="height:2px; width:0%; background:#929292;"></div></div></div>`).join('')}
@@ -2424,9 +2504,9 @@
         <div style="display:flex; justify-content:space-between; align-items:baseline;">${cap('01 &middot; PORTFOLIO REALITY')}${tag}</div>
         <div class="num" id="nud-f2-v" style="margin-top:24px; font-size:30px; letter-spacing:-0.6px;">$0</div>
         <div id="nud-f2-vs" style="margin-top:6px; font-size:12px; color:#929292; opacity:0; transition:opacity 500ms ease;">+$18,420 since inception <span style="font-size:8px; vertical-align:1.5px; color:#30d158; margin-left:4px;">&#9650;</span></div>
-        <div class="nud-panel" style="margin-top:14px;">
+        <div style="margin-top:14px;">
           <div style="display:flex; justify-content:space-between; font-size:10px; color:#565b5e; margin-bottom:8px;"><span>vs S&amp;P 500 &middot; since inception</span><span class="num" id="nud-f2-mo"></span></div>
-          <div id="nud-f2-bc"></div>
+          <div id="nud-f2-bc" style="margin-left:-16px;"></div>
         </div>
         <div id="nud-f2-trio" style="display:flex; gap:22px; margin-top:10px; font-size:12px;">
           <span><span style="color:#929292;">Portfolio</span> <span class="num" id="nud-f2-t1" style="color:#fff;"></span></span>
@@ -2551,27 +2631,12 @@
       L.innerHTML = `
         <div style="display:flex; justify-content:space-between; align-items:baseline;">${cap('02 &middot; CALIBRATION')}${tag}</div>
         <div style="margin-top:16px; display:flex; justify-content:space-between; font-size:10px; color:#565b5e;"><span>Calls vs the S&amp;P 500</span><span class="num" id="nud-f2-cr"></span></div>
-        <div class="calc-row" style="margin-top:14px;">
-          <div class="calc-cell"><div class="calc-dot none" id="nud-f2-cbd"></div><div class="calc-val num" id="nud-f2-cbv">&mdash;</div><div class="calc-lbl">Beat the S&amp;P</div><div class="calc-n" id="nud-f2-cbn">none</div></div>
-          <div class="calc-cell"><div class="calc-dot none" id="nud-f2-ctd"></div><div class="calc-val num" id="nud-f2-ctv">&mdash;</div><div class="calc-lbl">Trailed the S&amp;P</div><div class="calc-n" id="nud-f2-ctn">none</div></div>
+        <div class="calc-row" style="margin-top:26px;">
+          <div class="calc-cell"><div style="height:80px; display:flex; align-items:center; justify-content:center;"><div class="calc-dot none" id="nud-f2-cbd" style="width:34px; height:34px;"></div></div><div class="calc-val num" id="nud-f2-cbv" style="margin-top:12px;">&mdash;</div><div class="calc-lbl">Beat the S&amp;P</div><div class="calc-n" id="nud-f2-cbn">none</div></div>
+          <div class="calc-cell"><div style="height:80px; display:flex; align-items:center; justify-content:center;"><div class="calc-dot none" id="nud-f2-ctd" style="width:34px; height:34px;"></div></div><div class="calc-val num" id="nud-f2-ctv" style="margin-top:12px;">&mdash;</div><div class="calc-lbl">Trailed the S&amp;P</div><div class="calc-n" id="nud-f2-ctn">none</div></div>
         </div>
-        <div id="nud-f2-cs" style="margin-top:12px; font-size:13px; color:#c7c7c7; min-height:20px;"></div>
-        <div id="nud-f2-conf" style="margin-top:10px; padding:11px 13px; background:#0b0b0b; border:0.5px solid #232627; ${HID}">
-          <div style="display:flex; justify-content:space-between; align-items:baseline;"><span style="font-size:11px; color:#929292;">Confidence vs reality</span><span style="font-size:9px; letter-spacing:1px; color:#565b5e;">EARLY SAMPLE &middot; 12 RESOLVED</span></div>
-          <div style="display:flex; justify-content:space-between; margin-top:8px; font-size:12px;"><span style="color:#c7c7c7;">70&ndash;79% confidence</span><span class="num" style="color:#fff;">actual 58%</span></div>
-          <div style="margin-top:6px; font-size:11px; color:#C9A24B; line-height:1.5;">You were more confident than the evidence justified.</div>
-        </div>
-        <div id="nud-f2-sw" style="display:flex; gap:12px; margin-top:10px; ${HID}">
-          <div style="flex:1; padding:10px 12px; background:#0b0b0b; border:0.5px solid #232627;">
-            <div style="font-size:10px; color:#565b5e;">Strongest</div>
-            <div style="margin-top:4px; font-size:12px; color:#288752;">Business quality</div>
-          </div>
-          <div style="flex:1; padding:10px 12px; background:#0b0b0b; border:0.5px solid #232627;">
-            <div style="font-size:10px; color:#565b5e;">Weakest</div>
-            <div style="margin-top:4px; font-size:12px; color:#BE3C36;">Timing &middot; sizing</div>
-          </div>
-        </div>
-        <div id="nud-f2-lg" style="margin-top:9px; font-size:11px; color:#565b5e; line-height:1.5; ${HID}">Your largest positions produced less excess return than your smaller ones.</div>`;
+        <div id="nud-f2-cs" style="margin-top:20px; text-align:center; font-size:13px; color:#c7c7c7; min-height:20px;"></div>
+        <div id="nud-f2-ratio" style="margin-top:12px; text-align:center; font-size:14.5px; color:#fff; ${HID}">You made 0.7&times; what you lost.</div>`;
       after(1250, () => {
         contentIn();
         narr('Over time, II shows you where your judgment actually adds value.');
@@ -2579,6 +2644,9 @@
       after(1600, () => tween(3600, k => {
         const n = Math.round(12 * k);
         const bn = Math.round(6 * k), tn = Math.round(5 * k);
+        const cbd = document.getElementById('nud-f2-cbd'), ctd = document.getElementById('nud-f2-ctd');
+        cbd.style.width = cbd.style.height = Math.round(34 + Math.sqrt(bn) * 16) + 'px';
+        ctd.style.width = ctd.style.height = Math.round(34 + Math.sqrt(tn) * 16) + 'px';
         document.getElementById('nud-f2-cbd').className = 'calc-dot ' + (bn > 0 ? 'beat pop' : 'none');
         document.getElementById('nud-f2-cbv').textContent = bn > 0 ? '+' + (k * 1.9).toFixed(1) + ' pp' : '\u2014';
         document.getElementById('nud-f2-cbn').textContent = bn > 0 ? bn + ' positions' : 'none';
@@ -2587,7 +2655,7 @@
         document.getElementById('nud-f2-ctn').textContent = tn > 0 ? tn + ' positions' : 'none';
         document.getElementById('nud-f2-cr').textContent = n + ' resolved';
         document.getElementById('nud-f2-cs').innerHTML = n + ' forecasts resolved' + (k > 0.98 ? ' &mdash; <span style="color:#288752;">7 correct</span> &middot; <span style="color:#BE3C36;">5 incorrect</span>' : '');
-      }, () => { rise('nud-f2-conf', 150); rise('nud-f2-sw', 500); rise('nud-f2-lg', 800); }));
+      }, () => { rise('nud-f2-ratio', 250); }));
     };
     // act 6 — fund: reality takes the front, the demonstration steps back
     const s6 = () => {
@@ -2620,7 +2688,7 @@
       });
     };
     const SCENES = [
-      { d: 8600, build: s1 }, { d: 9800, build: s5 },
+      { d: 8600, build: s1 }, { d: 8800, build: s5 },
       { d: 12600, build: s3 }, { d: 8000, build: s6 }
     ];
     let idx = -1;
@@ -2635,6 +2703,9 @@
     };
     const show = i => {
       clearFT();
+      fPaused = false;
+      const _pb = document.querySelector('.nud-f-pb');
+      if (_pb) _pb.textContent = 'PAUSE';
       idx = i;
       L.style.opacity = '0'; L.style.transform = 'translateY(10px)';
       document.getElementById('nud-f2-n').innerHTML = '';
@@ -2648,6 +2719,21 @@
     window.__nudF2Skip = () => { if (f2Swiped) { f2Swiped = false; return; } show(idx < SCENES.length - 1 ? idx + 1 : 0); };
     window.__nudF2Re = () => show(0);
     window.__nudF2Go = i => show(i);
+    let fPaused = false;
+    window.__nudFPause = () => {
+      const btn = document.querySelector('.nud-f-pb');
+      if (!fPaused) {
+        fPaused = true;
+        clearFT(); // freezes counters, reveals and the auto-advance mid-frame
+        const p = document.getElementById('nud-f2-pr' + idx);
+        const pw = p.parentElement.getBoundingClientRect().width;
+        p.style.transition = 'none';
+        p.style.width = (pw ? p.getBoundingClientRect().width / pw * 100 : 0).toFixed(1) + '%';
+        if (btn) btn.textContent = 'PLAY';
+      } else {
+        show(idx); // resume replays the current act from its top
+      }
+    };
     // swipe left = next act, swipe right = previous (or replay this one)
     let f2Sx = null, f2Swiped = false;
     const f2Stage = document.getElementById('nud-f2-stage');
@@ -2965,6 +3051,128 @@
     tweenTo(1, 3600); // auto-plays the year once, then the wheel is yours
   }
 
+  // ── first-run tour: stepped coachmarks in the product's own grammar.
+  // Each step anchors to a live element; Next scrolls the page there.
+  const TOUR = { steps: [], i: -1 };
+  function tourAbs(txt) {
+    return [...document.querySelectorAll('.abs')].find(e => e.textContent.trim() === txt);
+  }
+  function tourRect(el, gTop, gBot) {
+    const sc = document.getElementById('screen');
+    const r = el.getBoundingClientRect(), b = sc.getBoundingClientRect();
+    return {
+      top: r.top - b.top + sc.scrollTop - (gTop || 8),
+      bottom: r.bottom - b.top + sc.scrollTop + (gBot != null ? gBot : (gTop || 8)),
+      cx: r.left - b.left + r.width / 2
+    };
+  }
+  const TOURS = {
+    new: [
+      { t: 'Your notifications', b: 'Account events land here. For now: the transfer you initiated &mdash; it clears in one to two days.',
+        a: () => document.getElementById('orig-market-status'), g: 6, gb: 62, anim: 'feed' },
+      { t: 'The benchmark', b: 'The S&amp;P 500, live. Everything you do here is measured against it &mdash; performance, positions, every call you record.',
+        a: () => document.getElementById('sp500-page') || document.querySelector('.sp500-inner'), g: 6, anim: 'spark' },
+      { t: 'Core &middot; Managed', b: 'The managed sleeve &mdash; allocation and rebalancing run for you.',
+        a: () => document.getElementById('core-toggle'), g: 40, anim: 'alloc' },
+      { t: 'Active &middot; Self-Directed', b: 'Your own decisions, measured against the S&amp;P 500. Until your deposit lands, a demonstration shows how performance and calibration will read.',
+        a: () => tourAbs('Active'), g: 10, gb: 44, anim: 'chart' },
+      { t: 'Already working', b: 'Ten names queued with notes, events and benchmark tracking. The watchlist starts before the money does.',
+        a: () => tourAbs('Under Review'), g: 12, anim: 'list' }
+    ],
+    funded: [
+      { t: 'Your notifications', b: 'What changed while you were away &mdash; kill criteria first, then earnings and contributions. Tap any line to jump straight to its position.',
+        a: () => document.getElementById('orig-market-status'), g: 6, gb: 160, anim: 'feed' },
+      { t: 'Measured against the S&amp;P 500', b: 'The white line is you; the gold line is the index you could have owned. The gap &mdash; alpha &mdash; is the honest score. Press and drag to scrub.',
+        a: () => document.getElementById('bench-svg'), g: 118, gb: 42, anim: 'chart' },
+      { t: 'Calibration', b: 'Every resolved call lands on one of these circles &mdash; beat the index or trailed it. Size is the count; the pp is the average margin.',
+        a: () => document.querySelector('.calx .calc-row'), g: 10, anim: 'circles' },
+      { t: 'Positions carry their reasoning', b: 'Every holding shows its gap vs the S&amp;P, its weight, your memo and the thesis behind it &mdash; kill criteria included. The record follows every decision.',
+        a: () => tourAbs('Active Positions'), g: 12, gb: 120, anim: 'list' }
+    ]
+  };
+  // the card's micro-animation — one quiet motion, house colors only
+  function tourAnim(kind) {
+    if (TOUR.raf) { cancelAnimationFrame(TOUR.raf); TOUR.raf = 0; }
+    const an = document.getElementById('tour-anim');
+    an.innerHTML = ''; an.style.display = 'none';
+    if (!kind) return;
+    an.style.display = 'flex';
+    const row = (dot, chip) => '<div class="ta-row"><span class="ta-dot" style="background:' + dot + ';"></span><span class="ta-bar"></span>' +
+      (chip ? '<span class="ta-chip" style="background:' + chip + ';"></span>' : '') + '</div>';
+    if (kind === 'feed') {
+      an.innerHTML = '<div style="width:100%;">' + row('#ff3533') + row('#fbc308') + row('#30d158') + '</div>';
+    } else if (kind === 'list') {
+      an.innerHTML = '<div style="width:100%;">' + row('#565b5e', '#288752') + row('#565b5e', '#BE3C36') + row('#565b5e', '#288752') + '</div>';
+    } else if (kind === 'spark') {
+      an.innerHTML = '<svg class="ta-spark" width="86" height="44" viewBox="0 0 86 44">' +
+        '<path d="M2,38 L12,34 L20,35.5 L30,28 L38,30 L48,22 L56,24 L66,14 L74,16 L84,7" fill="none" stroke="#C29A2A" stroke-width="1.6"/>' +
+        '<circle cx="84" cy="7" r="2.4" fill="#C29A2A"/></svg>';
+    } else if (kind === 'alloc') {
+      an.innerHTML = '<div style="width:100%;"><div style="height:4px; background:#2a2d2e;"><div class="ta-seg"></div></div>' +
+        '<div style="margin-top:8px; height:4px; background:#2a2d2e;"><div class="ta-seg" style="animation-delay:1.8s;"></div></div></div>';
+    } else if (kind === 'circles') {
+      an.innerHTML = '<span style="display:inline-flex; gap:14px; align-items:center;">' +
+        '<span class="calc-dot beat ta-cg" style="width:22px; height:22px;"></span>' +
+        '<span class="calc-dot trail ta-cr" style="width:18px; height:18px;"></span></span>';
+    } else if (kind === 'chart') {
+      const c = nudChart('bench-svg', 46);
+      c.el.style.width = '86px';
+      nudTranslucent(c.el);
+      an.appendChild(c.el);
+      const t0 = performance.now();
+      const loop = now => {
+        const k = ((now - t0) % 3600) / 2800;
+        c.setT(Math.min(1, k));
+        TOUR.raf = requestAnimationFrame(loop);
+      };
+      TOUR.raf = requestAnimationFrame(loop);
+    }
+  }
+  function tourShow(i) {
+    TOUR.i = i;
+    const st = TOUR.steps[i];
+    const el = st.a();
+    if (!el) { i < TOUR.steps.length - 1 ? tourShow(i + 1) : tourEnd(); return; }
+    const r = tourRect(el, st.g, st.gb);
+    const sc = document.getElementById('screen');
+    document.getElementById('tour-overlay').style.height =
+      document.querySelector('.frame').offsetHeight + 'px';
+    sc.scrollTo({ top: Math.max(0, r.top - 96), behavior: 'smooth' });
+    const spot = document.getElementById('tour-spot');
+    spot.style.top = r.top + 'px';
+    spot.style.height = (r.bottom - r.top) + 'px';
+    const card = document.getElementById('tour-card');
+    card.style.top = (r.bottom + 16) + 'px';
+    document.getElementById('tour-caret').style.left =
+      Math.max(14, Math.min(333, r.cx - 16 - 5)) + 'px';
+    document.getElementById('tour-title').innerHTML = st.t;
+    document.getElementById('tour-body').innerHTML = st.b;
+    document.getElementById('tour-n').textContent = (i + 1) + ' / ' + TOUR.steps.length;
+    document.getElementById('tour-back').style.visibility = i ? 'visible' : 'hidden';
+    document.getElementById('tour-next').innerHTML =
+      i === TOUR.steps.length - 1 ? 'Done' : 'Next &#8594;';
+    tourAnim(st.anim);
+  }
+  function tourStart(kind) {
+    setAccountState(kind === 'new' ? 'new' : 'funded');
+    if (kind === 'funded') {
+      if (BENCH_COLLAPSED) toggleBench();
+      if (CAL_COLLAPSED) toggleCal();
+    }
+    TOUR.steps = TOURS[kind];
+    document.getElementById('tour-overlay').style.display = '';
+    document.getElementById('tour-card').style.display = '';
+    tourShow(0);
+  }
+  function tourNext() { TOUR.i >= TOUR.steps.length - 1 ? tourEnd() : tourShow(TOUR.i + 1); }
+  function tourBack() { if (TOUR.i > 0) tourShow(TOUR.i - 1); }
+  function tourEnd() {
+    if (TOUR.raf) { cancelAnimationFrame(TOUR.raf); TOUR.raf = 0; }
+    document.getElementById('tour-overlay').style.display = 'none';
+    document.getElementById('tour-card').style.display = 'none';
+    TOUR.i = -1;
+  }
+
   function setAccountState(s) {
     NEW_USER = s === 'new';
     // body.newuser drives every .nu-only / .nu-hide swap (feed, totals, the
@@ -2979,6 +3187,9 @@
       `translateY(${NEW_USER ? TOP_SPACING_EXTRA - 227 : TOP_SPACING_EXTRA}px)`;
     buildPositions();
   }
+  // the Performance page is a separate route — not built in this prototype
+  // yet, so the entry point is wired to a stub
+  function openPerfPage() {}
   function toggleBench() {
     if (NEW_USER) {
       // V2: tapping the demo's header folds it back to the quiet line
@@ -3056,7 +3267,7 @@
   // the comparison card + calibration fan block above is normal-flow content of
   // variable height, so the list starts wherever it ends (+30 section seam)
   const bcb = document.getElementById('bench-cal-block');
-  let cursorTop = bcb && bcb.offsetHeight > 0 ? (1442.92 + bcb.offsetHeight + 30) : LIST_TOP;
+  let cursorTop = bcb && bcb.offsetHeight > 0 ? (1198.92 + bcb.offsetHeight + 30) : LIST_TOP;
   const HDR_BLOCK = 53.27; // headline row → first position row (matches the original spacing)
 
   // new user: no holdings — no Treasury, no Active Positions — but the
@@ -4067,8 +4278,18 @@
         (i ? 'L' : 'M') + (i / (arr.length - 1) * 320).toFixed(1) + ',' + y(v).toFixed(1)).join(' ');
       document.getElementById('bench-curveAcct').setAttribute('d', path(ap));
       document.getElementById('bench-curveBm').setAttribute('d', path(bp));
-      document.querySelector('[data-pct-acct]').textContent = fmtPct1(ap[ap.length - 1]);
-      document.querySelector('[data-pct-sp]').textContent = fmtPct1(bp[bp.length - 1]);
+      document.getElementById('bench-ax').innerHTML = '';
+      const ea = y(ap[ap.length - 1]).toFixed(1), eb = y(bp[bp.length - 1]).toFixed(1);
+      document.getElementById('bench-ends').innerHTML =
+        `<circle cx="320" cy="${eb}" r="2.6" fill="#C29A2A"/>` +
+        `<circle class="lpulse" cx="320" cy="${ea}" r="2.6" fill="#fff"/><circle cx="320" cy="${ea}" r="2.6" fill="#fff"/>`;
+      document.getElementById('bench-tri-a').textContent = fmtPct1(ap[ap.length - 1]);
+      document.getElementById('bench-tri-s').textContent = fmtPct1(bp[bp.length - 1]);
+      const dpp = ap[ap.length - 1] - bp[bp.length - 1];
+      document.getElementById('bench-tri-d').textContent = (dpp < 0 ? '\u2212' : '+') + Math.abs(dpp).toFixed(1) + ' pp';
+      const triAr = document.getElementById('bench-tri-ar');
+      triAr.classList.toggle('down', dpp < 0); triAr.classList.toggle('up', dpp >= 0);
+      triAr.textContent = dpp < 0 ? '\u25bc' : '\u25b2';
       CHART = { av, bv, ap, bp, y };
     }
     const rowEls = {
