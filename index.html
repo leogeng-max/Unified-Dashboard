@@ -675,17 +675,7 @@
       <span class="sub">Transfer pending · no capital deployed. Off = funded account.</span>
     </div>
 
-    <div class="iter-head" style="margin-top:10px;">CONTEXT HELP <span style="text-transform:none; letter-spacing:0; color:#3f4447;">— ⓘ in the header, adapts to account state</span></div>
-    <div class="iter-item" id="help-item-1" onclick="helpArm(1)">
-      <div class="iter-row"><span class="ttl">ⓘ · Reveal icon → explain mode</span><span class="iter-sw"></span></div>
-      <span class="sub">tap the ⓘ to walk the page card by card — empty and funded accounts get different scripts</span>
-    </div>
-    <div class="iter-head" style="margin-top:10px;">NEW-USER DEMO <span style="text-transform:none; letter-spacing:0; color:#3f4447;">— the first-session film</span></div>
-    <div class="iter-item" id="nud-item-13" onclick="setNuDemo(NU_DEMO === 13 ? 0 : 13)">
-      <div class="iter-row"><span class="ttl">V12 · The first session</span><span class="iter-sw"></span></div>
-      <span class="sub">Dave's choreography as a film — portfolio reality → what changed → positions → decisions → calibration → fund</span>
-    </div>
-      </div>
+          </div>
 </div>
 
 <div class="phone">
@@ -2335,6 +2325,8 @@
     // Core & Active cards) via CSS
     document.body.classList.toggle('newuser', NEW_USER);
     document.getElementById('acct-item-new').classList.toggle('on', NEW_USER);
+    // the first-session film IS the new-user state — no separate toggle
+    NU_DEMO = NEW_USER ? 13 : 0;
     NU_V5.bench = NU_V5.cal = false;
     applyBenchCalVisibility();
     renderNuDemo();
@@ -3659,6 +3651,9 @@
     const reflow = () => { if (typeof buildPositions === 'function') buildPositions(); };
     window.addEventListener('load', reflow);
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => setTimeout(reflow, 0));
+
+    // context help ships armed — the ⓘ is part of the product, not a demo option
+    helpArm(1);
     setTimeout(reflow, 400);
   })();
 
